@@ -29,7 +29,7 @@ public class BoardController {
 
       return ResponseEntity.ok().body("게시판 생성이 완료되었습니다.");
     } catch (Exception e) {
-      return ResponseEntity.badRequest().body("게시판 생성 중 오류가 발생하였습니다.");
+      return ResponseEntity.badRequest().body("게시판 생성 중 오류가 발생하였습니다 : " + e.getMessage());
     }
   }
 }
