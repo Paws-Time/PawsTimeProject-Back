@@ -1,14 +1,13 @@
 package com.pawstime.pawstime.domain.user.entity;
 
-import com.pawstime.pawstime.domain.Role.entity.Role;
+import com.pawstime.pawstime.domain.userrole.entity.UserRole;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -35,13 +34,7 @@ public class User {
 
   private String password;
 
-  @ManyToMany
-  @JoinTable(
-      name = "user_roles", // 중간 테이블 이름
-      joinColumns = @JoinColumn(name = "user_id"), // User 테이블의 외래키
-      inverseJoinColumns = @JoinColumn(name = "role_id") // Role 테이블의 외래키
-  )
-  private Set<Role> roles = new HashSet<>();
-
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<UserRole> userRoles = new HashSet<>();
 
 }

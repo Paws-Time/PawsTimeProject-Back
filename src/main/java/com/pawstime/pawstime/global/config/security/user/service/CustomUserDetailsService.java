@@ -28,7 +28,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     if (user == null) {
       throw new UsernameNotFoundException("존재하지 않는 유저입니다.");
     }
-
     CustomUserInfoDto customUserInfoDto = CustomUserInfoDto.of(user);
     return new CustomUserDetails(customUserInfoDto);
   }
