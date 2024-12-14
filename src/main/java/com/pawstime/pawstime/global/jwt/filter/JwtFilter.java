@@ -1,6 +1,6 @@
 package com.pawstime.pawstime.global.jwt.filter;
 
-import com.pawstime.pawstime.global.config.security.user.service.CustomUserDetailsService;
+import com.pawstime.pawstime.global.security.user.service.CustomUserDetailsService;
 import com.pawstime.pawstime.global.jwt.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

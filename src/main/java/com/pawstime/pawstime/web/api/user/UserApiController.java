@@ -36,7 +36,7 @@ public class UserApiController {
 
   @Operation(summary = "로그인")
   @PostMapping("/login")
-  public ResponseEntity<?> loginrUser(@Valid @RequestBody LoginUserRequestDto dto) {
+  public ResponseEntity<?> loginUser(@Valid @RequestBody LoginUserRequestDto dto) {
     String token = userFacade.login(dto);
     return ResponseEntity.status(HttpStatus.OK).body(token);
   }

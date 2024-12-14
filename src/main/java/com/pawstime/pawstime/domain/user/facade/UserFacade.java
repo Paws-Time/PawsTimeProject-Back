@@ -31,10 +31,12 @@ public class UserFacade {
   @Transactional
   public void createUser(@Valid UserCreateRequestDto dto) {
 
-    //1.이메일 중복 확인
-    if(readUserService.existsByEmail(dto.email())){
-      throw new BadCredentialsException("존재하는 이메일입니다.");
-    }
+    try {
+      //1.이메일 중복 확인
+      if (readUserService.existsByEmail(dto.email())) {
+        throw new BadCredentialsException("존재하는 이메일입니다.");
+      }
+
     //역할 확인 및 변환
     Role role = roleRepository.findByRoleName(dto.roleName())
       .orElseThrow(() -> new IllegalArgumentException("잘못된 역할 이름입니다."));
@@ -44,6 +46,16 @@ public class UserFacade {
 
     // User 및 UserRole 저장
     createUserService.createUser(user, role);
+  }catch (BadCredentialsException e) {
+      log.error("이메일 중복 오류: {}", e.getMessage());
+      throw e; // 이메일 중복 오류를 클라이언트에게 반환
+    } catch (IllegalArgumentException e) {
+      log.error("역할 이름 오류: {}", e.getMessage());
+      throw e; // 잘못된 역할 이름 오류를 클라이언트에게 반환
+    } catch (Exception e) {
+      log.error("사용자 생성 중 오류 발생: {}", e.getMessage());
+      throw new RuntimeException("사용자 생성에 실패했습니다.", e);
+    }
   }
 
   public String login(LoginUserRequestDto dto) {

@@ -40,7 +40,7 @@ public class JwtUtil {
 
   public String createToken(CustomUserInfoDto user, long expireTime) {
     Claims claims = Jwts.claims();
-    claims.put("userId", user.UserId());
+    claims.put("userId", user.userId());
     claims.put("email", user.email());
 
     String roles = user.roles().stream()
