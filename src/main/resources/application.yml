@@ -1,14 +1,15 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3308/pawsTime
+    url: jdbc:mysql://my_mysql:3306/pawsTime?serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
     username: root
-    password: 1q2w3e4r
+    password: 1234
   application:
     name: basic
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
+    database: mysql
     show-sql: true
     properties:
       hibernate:
@@ -19,10 +20,10 @@ spring:
     secret:
       key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
   # ???? ???? ??? enable: false?? ????(gradle? ??? ????)
-  security:
-    enable: false
+  #security:
+  #  enable: false
 server:
-  port: 5000
+  port: 8080
 
 #mybatis:
 #  mapper-locations: classpath:mapper/*.xml
