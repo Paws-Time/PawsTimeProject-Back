@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  # MySQL 데이터베이스 서비스
+  mysql:
+    image: mysql:8.0
+    container_name: my_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: pawsTime
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - my_network
+
+  # Spring Boot 애플리케이션 서비스
+  springboot:
+    image: dgf0020/paws_time:1.0.0
+    container_name: springboot_app
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://my_mysql:3306/pawsTime
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - my_network
+
+volumes:
+  mysql_data:
+
+networks:
+  my_network:
+    driver: bridge
