@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
     security = @SecurityRequirement(name = "bearerAuth"),
     servers = {
         @io.swagger.v3.oas.annotations.servers.Server(
-            url = "http://localhost:5000/",
+            url = "http://localhost:8080/",
             description = "local test"
         )
     }
