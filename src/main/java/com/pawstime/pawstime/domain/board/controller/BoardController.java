@@ -7,6 +7,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,5 +33,12 @@ public class BoardController {
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("게시판 생성 중 오류가 발생하였습니다 : " + e.getMessage());
     }
+  }
+
+  @Operation(summary = "게시판 상세 조회",
+      description = "board_id를 입력하면 title, description을 조회할 수 있습니다.")
+  @GetMapping("/{boardId}")
+  public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
+    return ResponseEntity.ok().body(boardFacade.getBoard(boardId));
   }
 }

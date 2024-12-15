@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.board.facade;
 
 import com.pawstime.pawstime.domain.board.dto.req.CreateBoardReqDto;
+import com.pawstime.pawstime.domain.board.dto.resp.GetBoardRespDto;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.board.service.CreateBoardService;
 import com.pawstime.pawstime.domain.board.service.ReadBoardService;
@@ -26,5 +27,15 @@ public class BoardFacade {
     }
 
     createBoardService.createBoard(req.of());
+  }
+
+  public GetBoardRespDto getBoard(Long boardId) {
+    Board board = readBoardService.findById(boardId);
+
+    if (board == null) {
+      throw new RuntimeException("해당 ID의 게시판은 존재하지 않습니다.");
+    }
+
+    return GetBoardRespDto.from(board);
   }
 }
