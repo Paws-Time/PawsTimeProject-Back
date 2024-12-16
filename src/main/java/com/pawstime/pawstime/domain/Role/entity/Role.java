@@ -1,4 +1,4 @@
-package com.pawstime.pawstime.domain.user.entity;
+package com.pawstime.pawstime.domain.Role.entity;
 
 import com.pawstime.pawstime.domain.userrole.entity.UserRole;
 import jakarta.persistence.CascadeType;
@@ -20,21 +20,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Role {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(unique = true, nullable = false)
-  private String email;
-
   @Column(nullable = false)
-  private String nick;
+  private String roleName;  // 역할 이름을 저장하는 필드
 
-  private String password;
-
-  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<UserRole> userRoles = new HashSet<>();
 
+  public String getRoleName(){
+    return this.getRoleName();
+  }
 }
