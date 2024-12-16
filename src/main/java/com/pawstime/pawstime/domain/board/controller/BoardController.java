@@ -1,9 +1,11 @@
 package com.pawstime.pawstime.domain.board.controller;
 
 import com.pawstime.pawstime.domain.board.dto.req.CreateBoardReqDto;
+import com.pawstime.pawstime.domain.board.dto.resp.GetBoardRespDto;
 import com.pawstime.pawstime.domain.board.facade.BoardFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -38,7 +41,18 @@ public class BoardController {
   @Operation(summary = "게시판 상세 조회",
       description = "board_id를 입력하면 title, description을 조회할 수 있습니다.")
   @GetMapping("/{boardId}")
-  public ResponseEntity<?> getBoard(@PathVariable Long boardId) {
+  public ResponseEntity<GetBoardRespDto> getBoard(@PathVariable Long boardId) {
     return ResponseEntity.ok().body(boardFacade.getBoard(boardId));
+  }
+
+  @Operation(summary = "게시판 목록 조회", description = "생성되어있는 모든 게시판을 조회합니다.")
+  @GetMapping("/list")
+  public ResponseEntity<List<GetBoardRespDto>> getBoardList(
+      @RequestParam(defaultValue = "0") int pageNo,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "DESC") String direction
+  ) {
+    return ResponseEntity.ok().body(boardFacade.getBoardList(pageNo, pageSize, sortBy, direction).getContent());
   }
 }
