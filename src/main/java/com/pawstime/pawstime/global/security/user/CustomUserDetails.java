@@ -1,4 +1,4 @@
-package com.pawstime.pawstime.global.config.security.user;
+package com.pawstime.pawstime.global.security.user;
 
 import com.pawstime.pawstime.domain.user.service.dto.CustomUserInfoDto;
 import java.util.ArrayList;

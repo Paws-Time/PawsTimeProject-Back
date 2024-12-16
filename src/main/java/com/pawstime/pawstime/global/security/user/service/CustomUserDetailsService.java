@@ -1,9 +1,9 @@
-package com.pawstime.pawstime.global.config.security.user.service;
+package com.pawstime.pawstime.global.security.user.service;
 
 import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.domain.user.entity.repository.UserRepository;
 import com.pawstime.pawstime.domain.user.service.dto.CustomUserInfoDto;
-import com.pawstime.pawstime.global.config.security.user.CustomUserDetails;
+import com.pawstime.pawstime.global.security.user.CustomUserDetails;
 import com.pawstime.pawstime.global.jwt.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

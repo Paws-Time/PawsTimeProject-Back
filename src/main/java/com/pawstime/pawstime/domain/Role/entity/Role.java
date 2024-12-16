@@ -27,12 +27,12 @@ public class Role {
   private Long id;
 
   @Column(nullable = false)
-  private String roleName;  // 역할 이름을 저장하는 필드
+  private String name;  // 역할 이름을 저장하는 필드
 
   @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<UserRole> userRoles = new HashSet<>();
 
-  public String getRoleName(){
-    return this.getRoleName();
+  public String getName(){
+    return this.getName();
   }
 }

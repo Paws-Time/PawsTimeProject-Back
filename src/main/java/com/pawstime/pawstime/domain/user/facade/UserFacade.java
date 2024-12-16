@@ -36,7 +36,7 @@ public class UserFacade {
       throw new BadCredentialsException("존재하는 이메일입니다.");
     }
     //역할 확인 및 변환
-    Role role = roleRepository.findByRoleName(dto.roleName())
+    Role role = roleRepository.findByName(dto.Name())
       .orElseThrow(() -> new IllegalArgumentException("잘못된 역할 이름입니다."));
 
   // User 엔티티 생성
