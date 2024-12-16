@@ -40,11 +40,11 @@ public class JwtUtil {
 
   public String createToken(CustomUserInfoDto user, long expireTime) {
     Claims claims = Jwts.claims();
-    claims.put("userId", user.UserId());
+    claims.put("userId", user.userId());
     claims.put("email", user.email());
 
     String roles = user.roles().stream()
-        .map(role -> role.getRoleName())
+        .map(role -> role.getName())
         .collect(Collectors.joining(","));
     claims.put("roles", roles);
 

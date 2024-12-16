@@ -7,7 +7,7 @@ import lombok.Builder;
 
 @Builder
 public record CustomUserInfoDto(
-    Long UserId,
+    Long userId,
     String email,
     String password,
     Set<Role> roles
@@ -15,7 +15,7 @@ public record CustomUserInfoDto(
 
   public static CustomUserInfoDto of(User user) {
     return CustomUserInfoDto.builder()
-        .UserId(user.getId())
+        .userId(user.getId())
         .email(user.getEmail())
         .password(user.getPassword())
         .roles(user.getRoles())

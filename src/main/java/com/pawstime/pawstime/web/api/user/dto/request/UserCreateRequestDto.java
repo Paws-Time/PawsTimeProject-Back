@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-
 public record UserCreateRequestDto(
     @NotBlank
     String email,
@@ -18,7 +17,7 @@ public record UserCreateRequestDto(
     String password,
     @NotBlank
     String nick,
-    String roleName // String role로 받되, of에서 Role객체로 변환함
+    String Name // String role로 받되, of에서 Role객체로 변환함
 ) {
 
   public User of(String password, Role role) {
