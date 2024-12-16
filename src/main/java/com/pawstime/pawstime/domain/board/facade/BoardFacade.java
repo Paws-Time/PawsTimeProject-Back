@@ -5,8 +5,13 @@ import com.pawstime.pawstime.domain.board.dto.resp.GetBoardRespDto;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.board.service.CreateBoardService;
 import com.pawstime.pawstime.domain.board.service.ReadBoardService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +42,12 @@ public class BoardFacade {
     }
 
     return GetBoardRespDto.from(board);
+  }
+
+  public Page<GetBoardRespDto> getBoardList(int pageNo, int pageSize, String sortBy, String direction) {
+
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+
+    return readBoardService.getBoardList(pageable).map(GetBoardRespDto::from);
   }
 }
