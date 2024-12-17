@@ -3,6 +3,7 @@ package com.pawstime.pawstime.domain.board.service;
 import com.pawstime.pawstime.domain.board.dto.resp.GetBoardRespDto;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.board.entity.repository.BoardRepository;
+import com.pawstime.pawstime.domain.post.entity.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,4 +20,5 @@ public class ReadBoardService {
   public Board findById(Long boardId) {
     return boardRepository.findById(boardId).orElse(null);
   }
+
 }

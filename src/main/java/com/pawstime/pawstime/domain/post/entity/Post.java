@@ -4,7 +4,6 @@ import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,9 +28,9 @@ public class Post extends BaseEntity {
   @Column(nullable = false)
   private String content;
 
-  @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user; // User 엔티티와 관계 설정
+  //@ManyToOne
+  //@JoinColumn(name = "user_id", nullable = false)
+  //private User user; // User 엔티티와 관계 설정
 
   @ManyToOne
   @JoinColumn(name = "board_id", nullable = false)
@@ -51,8 +50,20 @@ public class Post extends BaseEntity {
   public enum PostCategory {
     TECH, LIFESTYLE, EDUCATION, ENTERTAINMENT
   }
+
+  public void setTitle(String title){
+    this.title = title;
+  }
+  public void setContent(String content){
+    this.content = content;
+  }
+  public void setCategory(PostCategory category){
+    this.category = category;
+  }
+
   // 조회수를 증가시키는 메서드
   public void increaseViews() {
     this.views += 1;
   }
+
 }
