@@ -5,6 +5,7 @@ import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.service.CreatePostService;
+import com.pawstime.pawstime.domain.post.service.DeletePostService;
 import com.pawstime.pawstime.domain.post.service.ReadPostService;
 import com.pawstime.pawstime.domain.post.service.UpdatePostService;
 import com.pawstime.pawstime.domain.user.entity.User;
@@ -18,11 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class PostFacade {
+
   private final ReadPostService readPostService;
   private final CreatePostService createPostService;
   private final UpdatePostService updatePostService;
+  private final DeletePostService deletePostService;
 
-  public void createPost(CreatePostReqDto req){
+  public void createPost(CreatePostReqDto req) {
 
     /*
     User user = readPostService.findUserById(req.userId());
@@ -31,25 +34,30 @@ public class PostFacade {
     }
 */
     Board board = readPostService.findBoardById(req.boardId());
-    if (board == null){
+    if (board == null) {
       throw new RuntimeException("해당 Board ID는 존재하지 않습니다.");
     }
 
     //DTO를 엔티티로 변환
-    Post post = req.toEntity( board);
+    Post post = req.toEntity(board);
     createPostService.createPost(post);
   }
 
   //게시글 수정
-  public void updatePost(Long postId, UpdatePostReqDto req){
+  public void updatePost(Long postId, UpdatePostReqDto req) {
     Post existingPost = readPostService.findById(postId);
 
-    if(existingPost == null){
+    if (existingPost == null) {
       throw new RuntimeException("해당 id의 게시글은 존재하지 않습니다.");
     }
 
     //수정 서비스 호출
     updatePostService.updatePost(existingPost, req);
+  }
+
+  public void deletePost(Long postId) {
+
+    deletePostService.deletePost(postId);
   }
 
 
