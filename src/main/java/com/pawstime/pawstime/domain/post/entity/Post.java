@@ -1,14 +1,9 @@
 package com.pawstime.pawstime.domain.post.entity;
 
+import com.pawstime.pawstime.domain.board.entity.Board;
+import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,17 +29,19 @@ public class Post extends BaseEntity {
   @Column(nullable = false)
   private String content;
 
-  @Column(name = "user_id", nullable = false)
-  private Long userId;
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user; // User 엔티티와 관계 설정
 
-  @Column(name = "board_id", nullable = false)
-  private Long boardId;
+  @ManyToOne
+  @JoinColumn(name = "board_id", nullable = false)
+  private Board board; // Board 엔티티와 관계 설정
 
   @Column(name = "likes_count", nullable = false)
-  private int likesCount;
+  private int likesCount = 0; // 기본값을 0으로 설정
 
-  @Column(name = "base_time")
-  private LocalDateTime baseTime;
+  @Column(name = "views", nullable = false)
+  private int views = 0; // 조회수 기본값을 0으로 설정
 
   @Enumerated(EnumType.STRING)
   @Column(name = "category", nullable = false)
@@ -53,5 +50,9 @@ public class Post extends BaseEntity {
   // 카테고리를 정의한 Enum
   public enum PostCategory {
     TECH, LIFESTYLE, EDUCATION, ENTERTAINMENT
+  }
+  // 조회수를 증가시키는 메서드
+  public void increaseViews() {
+    this.views += 1;
   }
 }
