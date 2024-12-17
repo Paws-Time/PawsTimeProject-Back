@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -65,6 +66,20 @@ public class PostController {
       } catch (Exception e) {
         return ResponseEntity.badRequest().body("게시글 수정 중 오류가 발생했습니다. " + e.getMessage());
       }
+    }
+  }
+  @Operation(summary = "게시글 삭제", description = "게시글을 삭제할 수 있습니다.")
+  @DeleteMapping("/posts/{postId}")
+  public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+    try {
+      postFacade.deletePost(postId);
+      return ResponseEntity.ok("게시글 삭제가 완료되었습니다.");
+    } catch (IllegalArgumentException e) {
+      // 이미 삭제된 게시글인 경우
+      return ResponseEntity.badRequest().body("삭제할 수 없는 게시글입니다: " + e.getMessage());
+    } catch (Exception e) {
+      // 기타 예외 처리
+      return ResponseEntity.badRequest().body("게시글 삭제 중 오류가 발생했습니다. " + e.getMessage());
     }
   }
 }

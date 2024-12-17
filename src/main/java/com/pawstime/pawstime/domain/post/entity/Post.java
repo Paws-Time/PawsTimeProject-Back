@@ -1,7 +1,6 @@
 package com.pawstime.pawstime.domain.post.entity;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
-import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -65,5 +64,7 @@ public class Post extends BaseEntity {
   public void increaseViews() {
     this.views += 1;
   }
+
+
 
 }
