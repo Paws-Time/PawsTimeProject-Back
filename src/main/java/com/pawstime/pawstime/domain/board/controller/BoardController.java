@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.board.controller;
 
 import com.pawstime.pawstime.domain.board.dto.req.CreateBoardReqDto;
+import com.pawstime.pawstime.domain.board.dto.req.UpdateBoardReqDto;
 import com.pawstime.pawstime.domain.board.dto.resp.GetBoardRespDto;
 import com.pawstime.pawstime.domain.board.facade.BoardFacade;
 import io.swagger.v3.oas.annotations.Operation;
@@ -66,6 +67,18 @@ public class BoardController {
       return ResponseEntity.ok().body("게시판이 삭제되었습니다.");
     } catch (Exception e) {
       return ResponseEntity.badRequest().body("게시판 삭제 중 오류가 발생하였습니다 : " + e.getMessage());
+    }
+  }
+
+  @Operation(summary = "게시판 수정", description = "선택한 게시판의 제목, 설명을 수정할 수 있습니다.")
+  @PutMapping("/{boardId}")
+  public ResponseEntity<String> updateBoard(@PathVariable Long boardId, @RequestBody UpdateBoardReqDto req) {
+    try {
+      boardFacade.updateBoard(boardId, req);
+
+      return ResponseEntity.ok().body("게시판 수정이 완료되었습니다.");
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("게시판 수정 중 오류가 발생하였습니다 : " + e.getMessage());
     }
   }
 }
