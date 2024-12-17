@@ -50,4 +50,18 @@ public class BoardFacade {
 
     return readBoardService.getBoardList(pageable).map(GetBoardRespDto::from);
   }
+
+  public void deleteBoard(Long boardId) {
+    Board board = readBoardService.findById(boardId);
+
+    if (board == null) {
+      throw new RuntimeException("해당 ID의 게시판은 존재하지 않습니다.");
+    }
+    if (board.isDelete()) {
+      throw new RuntimeException("이미 삭제된 게시판입니다.");
+    }
+
+    board.softDelete();
+    createBoardService.createBoard(board);
+  }
 }

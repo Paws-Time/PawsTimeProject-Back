@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,5 +55,17 @@ public class BoardController {
       @RequestParam(defaultValue = "DESC") String direction
   ) {
     return ResponseEntity.ok().body(boardFacade.getBoardList(pageNo, pageSize, sortBy, direction).getContent());
+  }
+
+  @Operation(summary = "게시판 삭제", description = "선택한 게시판을 삭제합니다.")
+  @PutMapping("/delete/{boardId}")
+  public ResponseEntity<String> deleteBoard(@PathVariable Long boardId) {
+    try {
+      boardFacade.deleteBoard(boardId);
+
+      return ResponseEntity.ok().body("게시판이 삭제되었습니다.");
+    } catch (Exception e) {
+      return ResponseEntity.badRequest().body("게시판 삭제 중 오류가 발생하였습니다 : " + e.getMessage());
+    }
   }
 }
