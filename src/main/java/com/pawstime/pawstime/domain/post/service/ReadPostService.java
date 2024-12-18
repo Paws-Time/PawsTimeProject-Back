@@ -35,11 +35,10 @@ public class ReadPostService {
       .orElseThrow(() ->new RuntimeException("해당 게시글 id가 없습니다. " + postId));
   }
 
-
   // 포스트가 존재하는지 확인하고, 이미 삭제된 포스트인지 체크
   public void checkPostExists(Long postId) {
     Post post = postRepository.findById(postId)
-        .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("포스트가 존재하지 않습니다."));
 
     if (post.isDelete()) {
       throw new IllegalArgumentException("이미 삭제된 포스트입니다.");
