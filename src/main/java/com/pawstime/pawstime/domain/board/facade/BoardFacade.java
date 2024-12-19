@@ -6,7 +6,9 @@ import com.pawstime.pawstime.domain.board.dto.resp.GetBoardRespDto;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.board.service.CreateBoardService;
 import com.pawstime.pawstime.domain.board.service.ReadBoardService;
-import java.util.List;
+import com.pawstime.pawstime.global.exception.DuplicateException;
+import com.pawstime.pawstime.global.exception.InvalidException;
+import com.pawstime.pawstime.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,10 +28,14 @@ public class BoardFacade {
   private final CreateBoardService createBoardService;
 
   public void createBoard(CreateBoardReqDto req) {
+    if (req.title() == null) {
+      throw new InvalidException("게시판 제목은 필수 입력값입니다.");
+    }
+
     Board existingBoard = readBoardService.findByTitle(req.title());
 
     if (existingBoard != null) {
-      throw new RuntimeException("이미 존재하는 게시판입니다.");
+      throw new DuplicateException("이미 존재하는 게시판입니다.");
     }
 
     createBoardService.createBoard(req.of());
@@ -39,7 +45,7 @@ public class BoardFacade {
     Board board = readBoardService.findById(boardId);
 
     if (board == null) {
-      throw new RuntimeException("해당 ID의 게시판은 존재하지 않습니다.");
+      throw new NotFoundException("존재하지 않는 게시판 ID입니다.");
     }
 
     return GetBoardRespDto.from(board);
@@ -56,10 +62,10 @@ public class BoardFacade {
     Board board = readBoardService.findById(boardId);
 
     if (board == null) {
-      throw new RuntimeException("해당 ID의 게시판은 존재하지 않습니다.");
+      throw new NotFoundException("존재하지 않는 게시판 ID입니다.");
     }
     if (board.isDelete()) {
-      throw new RuntimeException("이미 삭제된 게시판입니다.");
+      throw new NotFoundException("이미 삭제된 게시판입니다.");
     }
 
     board.softDelete();
@@ -71,10 +77,10 @@ public class BoardFacade {
     Board board = readBoardService.findById(boardId);
 
     if (board == null) {
-      throw new RuntimeException("해당 ID의 게시판은 존재하지 않습니다.");
+      throw new NotFoundException("존재하지 않는 게시판 ID입니다.");
     }
     if (board.isDelete()) {
-      throw new RuntimeException("이미 삭제된 게시판입니다.");
+      throw new NotFoundException("이미 삭제된 게시판입니다.");
     }
 
     // 요청 받은 title이 비어있지 않으면 기존의 제목을 수정하고,
@@ -84,7 +90,7 @@ public class BoardFacade {
 
       // 이미 동일한 제목을 사용하는 게시판이 존재하는지 확인
       if (existingBoard != null && !existingBoard.getBoardId().equals(boardId)) {
-        throw new RuntimeException("이미 존재하는 게시판입니다.");
+        throw new DuplicateException("이미 존재하는 게시판입니다.");
       }
 
       board.updateTitle(req.title());
