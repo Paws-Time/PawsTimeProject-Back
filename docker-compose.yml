@@ -20,7 +20,7 @@ services:
 
   # Spring Boot 애플리케이션 서비스
   springboot:
-    image: dgf0020/pawstime:1.0.0
+    image: dgf0020/pawstime:1.0.1
     container_name: springboot_app
     restart: always
     environment:
