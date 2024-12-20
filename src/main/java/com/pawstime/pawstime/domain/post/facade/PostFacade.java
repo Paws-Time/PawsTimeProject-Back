@@ -65,43 +65,8 @@ public class PostFacade {
     Post post = readPostService.findPostId(postId);
     return getDetailPostService.getDetailPost(postId);  // DTO 반환
   }
-
-  public Page<GetListPostRespDto> getPosts(Long boardId, String titleKeyword, String contentKeyword, String sortBy, Pageable pageable) {
-    Page<Post> posts;
-
-    // 제목과 내용에서 검색
-    if (titleKeyword != null || contentKeyword != null) {
-      posts = postRepository.findByTitleContainingOrContentContainingAndIsDeleteFalse(titleKeyword, contentKeyword, pageable);
-    } else if (boardId != null) {
-      // 게시판 ID 기준으로 게시글 조회
-      posts = postRepository.findByBoard_boardIdAndIsDeleteFalse(boardId, pageable);
-    } else {
-      // 정렬 기준에 맞춰 게시글 조회
-      switch (sortBy) {
-        case "views":
-          posts = postRepository.findAllByIsDeleteFalseOrderByViewsDesc(pageable); // 조회수 내림차순
-          break;
-        case "title":
-          posts = postRepository.findAllByIsDeleteFalseOrderByTitleAsc(pageable); // 가나다순
-          break;
-        case "latest":
-        default:
-          posts = postRepository.findAllByIsDeleteFalseOrderByCreatedAtDesc(pageable); // 최신순
-          break;
-      }
-    }
-
-    // 엔티티(Post)에서 DTO(GetListPostRespDto)로 변환하여 반환
-    return posts.map(post -> GetListPostRespDto.builder()
-            .id(post.getPostId())
-            .title(post.getTitle())
-            .contentPreview(post.getContent().length() > 100 ? post.getContent().substring(0, 100) + "..." : post.getContent())
-            .createdAt(post.getCreatedAt())
-            .updatedAt(post.getUpdatedAt())
-            .views(post.getViews())
-            .likesCount(post.getLikesCount())
-            .category(post.getCategory().name())
-            .build());
+  // 게시글 조회 요청 처리 (검색어, 게시판 ID, 페이지 번호, 페이지 크기)
+  public Page<Post> queryPosts(String keyword, Long boardId, int page, int size) {
+    return readPostService.readPosts(keyword, boardId, page, size);
   }
-
 }
