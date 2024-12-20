@@ -41,6 +41,7 @@ public class BoardFacade {
     createBoardService.createBoard(req.of());
   }
 
+  @Transactional(readOnly = true)
   public GetBoardRespDto getBoard(Long boardId) {
     Board board = readBoardService.findById(boardId);
 
@@ -51,6 +52,7 @@ public class BoardFacade {
     return GetBoardRespDto.from(board);
   }
 
+  @Transactional(readOnly = true)
   public Page<GetBoardRespDto> getBoardList(int pageNo, int pageSize, String sortBy, String direction) {
 
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
