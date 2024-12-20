@@ -6,6 +6,7 @@ import com.pawstime.pawstime.domain.post.dto.resp.GetDetailPostRespDto;
 import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
 import com.pawstime.pawstime.domain.post.facade.PostFacade;
+import com.pawstime.pawstime.domain.post.service.GetListPostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,6 +32,7 @@ public class PostController {
 
     private final PostFacade postFacade;
     private final PostRepository postRepository;
+    private final GetListPostService getListPostService;
 
     @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성할 수 있습니다.")
     @PostMapping("/posts")
@@ -97,40 +99,31 @@ public class PostController {
         }
     }
 
-    @Operation(summary = "게시글 목록 조회", description = "게시글 목록조회를 할 수 있습니다.")
+    @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회를 할 수 있습니다.")
     @GetMapping("/posts")
     public ResponseEntity<?> getPosts(
-            @RequestParam(required = false) Long boardId,  // 특정 게시판 필터링
-            @RequestParam(required = false) String keyword,  // 제목/내용 검색
+            @RequestParam(required = false) Long boardId,
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt,desc") String sort) {
 
-        // sort 파라미터 분해
-        String[] sortParams = sort.split(",");
-        Sort.Direction direction = sortParams[1].equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        // 정렬 및 페이징 처리
+        Pageable pageable = createPageable(sort, page, size);
 
-        // sort 기준 설정 (기본값: createdAt)
-        String sortField = sortParams[0];
-        switch (sortField) {
-            case "views":
-                sortField = "views";  // 조회수 기준
-                break;
-            case "title":
-                sortField = "title";  // 제목(가나다순) 기준
-                break;
-            case "createdAt":
-            default:
-                sortField = "createdAt";  // 기본적으로 작성일 기준
-                break;
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));  // Pageable 생성
-
-        // PostFacade를 통해 게시글 가져오기 (검색 및 게시판 필터링 포함)
-        Page<GetListPostRespDto> posts = postFacade.getPosts(boardId, keyword, keyword, sortField, pageable);
+        // 서비스 호출
+        Page<GetListPostRespDto> posts = getListPostService.getPostList(boardId, keyword, sort, pageable);
 
         return ResponseEntity.ok().body(posts.getContent());
     }
+
+    private Pageable createPageable(String sort, int page, int size) {
+        String[] sortParams = sort.split(",");
+        String sortField = sortParams[0];
+        Sort.Direction direction = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("asc")
+                ? Sort.Direction.ASC : Sort.Direction.DESC;
+        return PageRequest.of(page, size, Sort.by(direction, sortField));
+    }
+
 
 }

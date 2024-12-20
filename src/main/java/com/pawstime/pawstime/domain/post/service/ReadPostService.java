@@ -10,12 +10,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @RequiredArgsConstructor
 public class ReadPostService {
 
   private final BoardRepository boardRepository;
   private final PostRepository postRepository;
+  private final GetListPostService getListPostService;
+
+  public Post findPostId(Long postId){
+    return postRepository.findById(postId)
+            .orElseThrow(()->new RuntimeException("해당 포스트 id가 없습니다. : " + postId));
+  }
 
   // Board를 ID로 조회하는 메서드
   public Board findBoardById(Long boardId) {
@@ -39,62 +46,8 @@ public class ReadPostService {
     }
   }
 
-  // 게시글 조회 (특정 게시판, 제목/내용 키워드 검색 포함, 페이징 처리)
-  public Page<GetListPostRespDto> getPosts(Long boardId, String titleKeyword, String contentKeyword, String sortField, Pageable pageable) {
-    Page<Post> posts;
-
-    if (boardId != null) {
-      // 특정 게시판에 대해 제목과 내용 검색
-      posts = postRepository.findByTitleContainingOrContentContainingAndBoard_boardIdAndIsDeleteFalse(
-              titleKeyword, contentKeyword, boardId, pageable);
-    } else {
-      // 게시판 ID 없이 제목과 내용 검색
-      posts = postRepository.findByTitleContainingOrContentContainingAndIsDeleteFalse(
-              titleKeyword, contentKeyword, pageable);
-    }
-
-    return posts.map(GetListPostRespDto::from);  // GetListPostRespDto.from() 사용
+  // 게시글 조회 요청 처리
+  public Page<Post> readPosts(String keyword, Long boardId, int page, int size) {
+    return getListPostService.getPosts(keyword, boardId, page, size);
   }
-
-  // 특정 게시판의 게시글 조회 (삭제되지 않은 게시글만)
-  public Page<Post> getPostsByBoard(Long boardId, Pageable pageable) {
-    if (boardId != null) {
-      return postRepository.findByBoard_boardIdAndIsDeleteFalse(boardId, pageable);
-    } else {
-      return postRepository.findAll(pageable);
-    }
-  }
-
-  // 제목과 내용에서 검색 (boardId가 있을 경우 해당 게시판에 한정)
-  public Page<Post> searchPosts(String titleKeyword, String contentKeyword, Long boardId, Pageable pageable) {
-    if (boardId != null) {
-      return postRepository.findByTitleContainingOrContentContainingAndBoard_boardIdAndIsDeleteFalse(
-              titleKeyword, contentKeyword, boardId, pageable);
-    } else {
-      return postRepository.findByTitleContainingOrContentContainingAndIsDeleteFalse(
-              titleKeyword, contentKeyword, pageable);
-    }
-  }
-
-  // 최신순 (작성일 기준, 삭제되지 않은 게시글만)
-  public Page<Post> getPostsSortedByCreatedAt(Pageable pageable) {
-    return postRepository.findAllByIsDeleteFalseOrderByCreatedAtDesc(pageable);
-  }
-
-  // 조회수 기준 내림차순 (삭제되지 않은 게시글만)
-  public Page<Post> getPostsSortedByViews(Pageable pageable) {
-    return postRepository.findAllByIsDeleteFalseOrderByViewsDesc(pageable);
-  }
-
-  // 가나다순 (제목 기준, 삭제되지 않은 게시글만)
-  public Page<Post> getPostsSortedByTitle(Pageable pageable) {
-    return postRepository.findAllByIsDeleteFalseOrderByTitleAsc(pageable);
-  }
-
-  // 게시글을 ID로 조회하는 메서드 (삭제되지 않은 포스트만)
-  public Post findPostId(Long postId) {
-    return postRepository.findByPostIdAndIsDeleteFalse(postId)
-            .orElseThrow(() -> new RuntimeException("해당 게시글 id가 없습니다. " + postId));
-  }
-
 }
