@@ -104,4 +104,7 @@ public class PostFacade {
 
         return getDetailPostService.getDetailPost(postId);  // DTO 반환
     }
+
+
+
 }
