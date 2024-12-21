@@ -126,8 +126,7 @@ public class PostController {
         }
     }
 
-
-    @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회를 할 수 있습니다.")
+    @Operation(summary = "게시글 목록 조회", description = "게시글 목록을 조회 할 수 있습니다.")
     @GetMapping("/posts")
     public ApiResponse<List<GetListPostRespDto>> getPosts(
             @RequestParam(required = false) Long boardId,
@@ -146,7 +145,12 @@ public class PostController {
             Pageable pageable = createPageable(sort, page, size);
 
             // 서비스 호출: 게시글 목록 조회
-            Page<GetListPostRespDto> posts = getListPostService.getPostList(boardId, keyword, sort, pageable);
+            // Sort.Order에 직접 정렬 방향을 지정합니다.
+            String sortField = pageable.getSort().iterator().next().getProperty();
+            String sortOrder = pageable.getSort().iterator().next().getDirection().name(); // 'ASC' 또는 'DESC'
+
+            // 게시글 목록 조회
+            Page<GetListPostRespDto> posts = getListPostService.getPostList(boardId, keyword, sortField, sortOrder, pageable);
 
             // 게시글 목록 조회 성공
             return ApiResponse.generateResp(Status.SUCCESS, "게시글 목록 조회 성공", posts.getContent());
@@ -160,10 +164,17 @@ public class PostController {
     }
 
     private Pageable createPageable(String sort, int page, int size) {
+        // sort 값이 필드명과 정렬 방향으로 이루어져 있기 때문에 split으로 분리
         String[] sortParams = sort.split(",");
-        String sortField = sortParams[0];
-        Sort.Direction direction = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("asc")
-                ? Sort.Direction.ASC : Sort.Direction.DESC;
-        return PageRequest.of(page, size, Sort.by(direction, sortField));
+        String sortField = sortParams[0];  // 정렬할 필드
+        String sortOrder = sortParams.length > 1 ? sortParams[1] : "desc";  // 정렬 방향 (default: desc)
+
+        // 정렬 방향 설정
+        Sort.Direction direction = sortOrder.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortBy = Sort.by(direction, sortField);
+
+        // Pageable 생성 (페이지, 크기, 정렬 포함)
+        return PageRequest.of(page, size, sortBy);
     }
+
 }

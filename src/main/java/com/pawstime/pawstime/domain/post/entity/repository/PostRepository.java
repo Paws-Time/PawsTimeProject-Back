@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 
-import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
@@ -16,16 +15,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "AND (:boardId IS NULL OR p.board.boardId = :boardId) " +
             "AND (:keyword IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-            "ORDER BY " +
-            "CASE " +
-            "   WHEN :sort = 'createdAt' THEN p.createdAt " +
-            "   WHEN :sort = 'views' THEN p.views " +
-            "   WHEN :sort = 'title' THEN p.title " +
-            "   ELSE p.createdAt " +
-            "END " +
-            "ASC")
-
+            "ORDER BY CASE " +
+            "WHEN :sort = 'createdAt' THEN p.createdAt " +
+            "WHEN :sort = 'views' THEN p.views " +
+            "WHEN :sort = 'title' THEN p.title " +
+            "ELSE p.createdAt END")
     Page<Post> findByBoardIdAndKeywordAndIsDeleted(Long boardId, String keyword, String sort, Pageable pageable);
+
 
 }
 
