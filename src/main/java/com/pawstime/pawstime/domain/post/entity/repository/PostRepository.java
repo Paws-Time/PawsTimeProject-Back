@@ -17,10 +17,14 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             "AND (:keyword IS NULL OR LOWER(p.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(p.content) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
             "ORDER BY " +
-            "CASE WHEN :sort = 'createdAt' THEN p.createdAt " +
-            "     WHEN :sort = 'views' THEN p.views " +
-            "     WHEN :sort = 'title' THEN p.title " +
-            "     ELSE p.createdAt END DESC")
+            "CASE " +
+            "   WHEN :sort = 'createdAt' THEN p.createdAt " +
+            "   WHEN :sort = 'views' THEN p.views " +
+            "   WHEN :sort = 'title' THEN p.title " +
+            "   ELSE p.createdAt " +
+            "END " +
+            "ASC")
+
     Page<Post> findByBoardIdAndKeywordAndIsDeleted(Long boardId, String keyword, String sort, Pageable pageable);
 
 }
