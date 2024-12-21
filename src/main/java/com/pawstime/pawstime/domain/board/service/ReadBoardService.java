@@ -27,4 +27,8 @@ public class ReadBoardService {
   public Page<Board> getBoardList(Pageable pageable) {
     return boardRepository.findAll(pageable);
   }
+
+  public boolean existsById(Long boardId) {
+    return boardRepository.existsById(boardId);
+  }
 }
