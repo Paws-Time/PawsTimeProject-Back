@@ -13,6 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,8 +35,7 @@ public class BoardController {
 
   @Operation(summary = "게시판 생성", description = "새로운 게시판을 생성할 수 있습니다.")
   @PostMapping("/boards")
-  @ResponseStatus(HttpStatus.CREATED)
-  public ApiResponse<Void> createBoard(@RequestBody CreateBoardReqDto req) {
+  public ResponseEntity<ApiResponse<Void>> createBoard(@RequestBody CreateBoardReqDto req) {
     try {
       boardFacade.createBoard(req);
 
@@ -67,8 +67,7 @@ public class BoardController {
   @Operation(summary = "게시판 상세 조회",
       description = "board_id를 입력하면 title, description을 조회할 수 있습니다.")
   @GetMapping("/{boardId}")
-  @ResponseStatus(HttpStatus.OK)
-  public ApiResponse<GetBoardRespDto> getBoard(@PathVariable Long boardId) {
+  public ResponseEntity<ApiResponse<GetBoardRespDto>> getBoard(@PathVariable Long boardId) {
     try {
       return ApiResponse.generateResp(Status.SUCCESS, null, boardFacade.getBoard(boardId));
     } catch (CustomException e) {
@@ -90,7 +89,7 @@ public class BoardController {
 
   @Operation(summary = "게시판 목록 조회", description = "생성되어있는 모든 게시판을 조회합니다.")
   @GetMapping("/list")
-  public ApiResponse<List<GetBoardRespDto>> getBoardList(
+  public ResponseEntity<ApiResponse<List<GetBoardRespDto>>> getBoardList(
       @RequestParam(defaultValue = "0") int pageNo,
       @RequestParam(defaultValue = "10") int pageSize,
       @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -123,7 +122,7 @@ public class BoardController {
 
   @Operation(summary = "게시판 삭제", description = "선택한 게시판을 삭제합니다.")
   @PutMapping("/delete/{boardId}")
-  public ApiResponse<Void> deleteBoard(@PathVariable Long boardId) {
+  public ResponseEntity<ApiResponse<Void>> deleteBoard(@PathVariable Long boardId) {
     try {
       boardFacade.deleteBoard(boardId);
 
@@ -152,7 +151,7 @@ public class BoardController {
 
   @Operation(summary = "게시판 수정", description = "선택한 게시판의 제목, 설명을 수정할 수 있습니다.")
   @PutMapping("/{boardId}")
-  public ApiResponse<Void> updateBoard(
+  public ResponseEntity<ApiResponse<Void>> updateBoard(
       @PathVariable Long boardId, @RequestBody UpdateBoardReqDto req) {
     try {
       boardFacade.updateBoard(boardId, req);
