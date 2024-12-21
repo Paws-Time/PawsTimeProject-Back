@@ -12,9 +12,8 @@ public class UpdatePostService {
 
   private final PostRepository postRepository;
 
-  public void updatePost(Post post, UpdatePostReqDto req){
-
-    //기존 게시글 엔티티에 새 값 적용
+  // 게시글 수정 및 저장
+  public void updatePost(Post post, UpdatePostReqDto req) {
     post.setTitle(req.title());
     post.setContent(req.content());
     post.setCategory(req.postCategory());
