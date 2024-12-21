@@ -13,7 +13,7 @@ public class GetDetailPostService {
 
     public GetDetailPostRespDto getDetailPost(Long postId){
         Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("해당 게시글이 존재하지 않습니다."));
+                .orElse(null);;
 
         return GetDetailPostRespDto.from(post);  // DTO 반환
 
