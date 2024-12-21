@@ -11,8 +11,6 @@ public record UpdatePostReqDto(
     String title,
     @Schema(description = "게시글 내용", example = "일상 내용")
     @NotBlank(message = "내용은 비어 있을 수 없습니다.")
-    String content,
-    @NotNull(message = "카테고리는 반드시 지정해야 합니다.")
-    PostCategory postCategory
+    String content
 ) {
 }
