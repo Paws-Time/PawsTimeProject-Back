@@ -41,7 +41,7 @@ public class CommentFacade {
   }
 
   @Transactional(readOnly = true)
-  public Page<?> getCommentAll(int pageNo, int pageSize, String sortBy, String direction) {
+  public Page<GetCommentRespDto> getCommentAll(int pageNo, int pageSize, String sortBy, String direction) {
     Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
     return readCommentService.getCommentAll(pageable).map(GetCommentRespDto::from);
   }
