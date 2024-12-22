@@ -24,7 +24,11 @@ public class ReadBoardService {
     return boardRepository.findById(boardId).orElse(null);
   }
 
+  public Board findByIdQuery(Long boardId) {
+    return boardRepository.findByIdQuery(boardId);
+  }
+
   public Page<Board> getBoardList(Pageable pageable) {
-    return boardRepository.findAll(pageable);
+    return boardRepository.findAllQuery(pageable);
   }
 }
