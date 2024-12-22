@@ -1,14 +1,17 @@
 package com.pawstime.pawstime.domain.post.service;
 
+import com.pawstime.pawstime.domain.board.entity.repository.BoardRepository;
 import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
+import com.pawstime.pawstime.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.JpaSort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
@@ -18,23 +21,19 @@ public class GetListPostService {
 
     private final PostRepository postRepository;
 
-    public Page<GetListPostRespDto> getPostList(Long boardId, String keyword, String sort, Pageable pageable) {
-        // 게시판 ID가 null일 경우 전체 게시글을 조회
-        if (boardId == null) {
-            // boardId가 null일 경우 false 값을 전달
-            return postRepository.findByBoardIdAndKeywordAndIsDeleted(null, keyword, false, pageable)
-                    .map(GetListPostRespDto::from);
-        }
 
-        // 게시판 ID가 있을 경우 해당 게시판의 게시글을 조회
-        return postRepository.findByBoardIdAndKeywordAndIsDeleted(boardId, keyword, false, pageable)
-                .map(GetListPostRespDto::from);
+    public Page<GetListPostRespDto> getPostList(Long boardId, String keyword, Pageable pageable) {
+        // 기본적으로 삭제되지 않은 게시글만 조회
+        Specification<Post> spec = Specification.where(PostSpecification.isNotDeleted())
+                .and(PostSpecification.hasKeyword(keyword))
+                .and(PostSpecification.belongsToBoard(boardId))
+                .and(PostSpecification.boardIsNotDeleted()); // 게시판이 삭제되지 않았는지 확인
+
+        // Pageable로 요청된 페이지와 정렬 조건에 맞게 조회
+        Page<Post> posts = postRepository.findAll(spec, pageable);
+
+        // 게시글을 DTO로 변환하여 반환
+        return posts.map(GetListPostRespDto::from);
     }
-
 }
-
-
-
-
-
 

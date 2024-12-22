@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.user.service.create;
 
-import com.pawstime.pawstime.domain.Role.entity.Role;
+
+import com.pawstime.pawstime.domain.role.entity.Role;
 import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.domain.user.entity.repository.UserRepository;
 import com.pawstime.pawstime.domain.userrole.entity.UserRole;

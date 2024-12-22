@@ -1,4 +1,5 @@
-package com.pawstime.pawstime.domain.Role.entity;
+package com.pawstime.pawstime.domain.role.entity;
+
 
 import com.pawstime.pawstime.domain.userrole.entity.UserRole;
 import jakarta.persistence.CascadeType;
@@ -22,17 +23,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Role {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false)
-  private String name;  // 역할 이름을 저장하는 필드
+    @Column(nullable = false)
+    private String name;  // 역할 이름을 저장하는 필드
 
-  @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<UserRole> userRoles = new HashSet<>();
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserRole> userRoles = new HashSet<>();
 
-  public String getName(){
-    return this.getName();
-  }
+    public String getName(){
+        return this.getName();
+    }
 }
