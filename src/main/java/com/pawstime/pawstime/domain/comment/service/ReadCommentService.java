@@ -26,4 +26,8 @@ public class ReadCommentService {
   public Page<Comment> getCommentByPost(Long postId, Pageable pageable) {
     return commentRepository.findAllByPostQuery(postId, pageable);
   }
+
+  public Comment findById(Long commentId) {
+    return commentRepository.findById(commentId).orElse(null);
+  }
 }

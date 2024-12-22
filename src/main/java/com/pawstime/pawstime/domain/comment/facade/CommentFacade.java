@@ -2,6 +2,7 @@ package com.pawstime.pawstime.domain.comment.facade;
 
 import com.pawstime.pawstime.domain.comment.dto.req.CreateCommentReqDto;
 import com.pawstime.pawstime.domain.comment.dto.resp.GetCommentRespDto;
+import com.pawstime.pawstime.domain.comment.entity.Comment;
 import com.pawstime.pawstime.domain.comment.service.CreateCommentService;
 import com.pawstime.pawstime.domain.comment.service.ReadCommentService;
 import com.pawstime.pawstime.domain.post.entity.Post;
@@ -65,5 +66,20 @@ public class CommentFacade {
         .of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
 
     return readCommentService.getCommentByPost(postId, pageable).map(GetCommentRespDto::from);
+  }
+
+  public void deleteComment(Long commentId) {
+    Comment comment = readCommentService.findById(commentId);
+
+    if (comment == null) {
+      throw new NotFoundException("존재하지 않는 댓글 ID입니다.");
+    }
+
+    if (comment.isDelete()) {
+      throw new NotFoundException("이미 삭제된 댓글입니다.");
+    }
+
+    comment.softDelete();
+    createCommentService.createComment(comment);
   }
 }
