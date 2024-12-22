@@ -17,7 +17,9 @@ public class ApiResponse<T> {
     this.data = data;
   }
 
-  public static <T> ResponseEntity<ApiResponse<T>> generateResp(Status status, String message, T data) {
+  public static <T> ResponseEntity<ApiResponse<T>> generateResp(
+      Status status, String message, T data
+  ) {
     ApiResponse<T> apiResponse =  new ApiResponse<>(status, message, data);
     return ResponseEntity.status(status.getHttpStatus()).body(apiResponse);
   }
