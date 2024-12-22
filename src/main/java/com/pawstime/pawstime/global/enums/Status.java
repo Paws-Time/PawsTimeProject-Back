@@ -10,7 +10,7 @@ public enum Status {
   SUCCESS("Success", "요청이 성공적으로 처리된 경우", HttpStatus.OK),
   CREATE("Create", "리소스가 성공적으로 생성된 경우", HttpStatus.CREATED),
   UPDATE("Update", "리소스가 성공적으로 수정된 경우", HttpStatus.OK),
-  DELETE("Delete", "리소스가 성공적으로 삭제된 경우", HttpStatus.NO_CONTENT),
+  DELETE("Delete", "리소스가 성공적으로 삭제된 경우", HttpStatus.OK),
 
   // 실패 상태
   INVALID("Invalid", "요청 데이터가 잘못된 경우", HttpStatus.BAD_REQUEST),
