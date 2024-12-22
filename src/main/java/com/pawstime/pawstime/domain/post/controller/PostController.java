@@ -1,12 +1,16 @@
 package com.pawstime.pawstime.domain.post.controller;
 
 import com.pawstime.pawstime.domain.board.service.ReadBoardService;
+import com.pawstime.pawstime.domain.like.facade.LikeFacade;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.resp.GetDetailPostRespDto;
 import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
+
+import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.facade.PostFacade;
 import com.pawstime.pawstime.domain.post.service.GetListPostService;
+import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.common.ApiResponse;
 import com.pawstime.pawstime.global.enums.Status;
 import com.pawstime.pawstime.global.exception.CustomException;
@@ -37,8 +41,7 @@ import java.util.stream.Collectors;
 public class PostController {
 
     private final PostFacade postFacade;
-    private final GetListPostService getListPostService;
-    private final ReadBoardService readBoardService;
+    private final LikeFacade likeFacade;
 
     @Operation(summary = "게시글 생성", description = "게시글을 생성 할 수 있습니다.")
     @PostMapping()
@@ -138,5 +141,18 @@ public class PostController {
 
         // Pageable 객체 생성
         return PageRequest.of(page, size, sortBy);
+    }
+
+    @PostMapping("/{postId}/like")
+    @Operation(summary = "좋아요", description = "게시글에 좋아요를 누를 수 있습니다.")
+
+    public ResponseEntity<ApiResponse<Integer>> toggleLike(@PathVariable Long postId) {
+        try {
+            Post post = postFacade.getPostId(postId);  // 게시글 가져오기
+            likeFacade.toggleLike(post);  // 좋아요 토글 처리
+            return ApiResponse.generateResp(Status.SUCCESS, null, post.getLikesCount());  // 좋아요 수 반환
+        } catch (NotFoundException e) {
+            return ApiResponse.generateResp(Status.NOTFOUND, e.getMessage(), null);
+        }
     }
 }
