@@ -30,7 +30,6 @@ public record CreatePostReqDto(
                 .content(this.content)
                 .board(board)
                 .category(this.category)
-                .likesCount(0)
                 .build();
     }
 }
