@@ -43,7 +43,7 @@ public class BoardFacade {
 
   @Transactional(readOnly = true)
   public GetBoardRespDto getBoard(Long boardId) {
-    Board board = readBoardService.findById(boardId);
+    Board board = readBoardService.findByIdQuery(boardId);
 
     if (board == null) {
       throw new NotFoundException("존재하지 않는 게시판 ID입니다.");
@@ -53,9 +53,12 @@ public class BoardFacade {
   }
 
   @Transactional(readOnly = true)
-  public Page<GetBoardRespDto> getBoardList(int pageNo, int pageSize, String sortBy, String direction) {
+  public Page<GetBoardRespDto> getBoardList(
+      int pageNo, int pageSize, String sortBy, String direction
+  ) {
 
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+    Pageable pageable = PageRequest
+        .of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
 
     return readBoardService.getBoardList(pageable).map(GetBoardRespDto::from);
   }
@@ -92,7 +95,7 @@ public class BoardFacade {
 
       // 이미 동일한 제목을 사용하는 게시판이 존재하는지 확인
       if (existingBoard != null && !existingBoard.getBoardId().equals(boardId)) {
-        throw new DuplicateException("이미 존재하는 게시판입니다.");
+        throw new DuplicateException("이미 존재하는 게시판 제목입니다.");
       }
 
       board.updateTitle(req.title());
