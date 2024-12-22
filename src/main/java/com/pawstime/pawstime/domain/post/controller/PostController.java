@@ -41,13 +41,9 @@ public class PostController {
     private final ReadBoardService readBoardService;
 
     @Operation(summary = "게시글 생성", description = "게시글을 생성 할 수 있습니다.")
-    @PostMapping("/posts")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ApiResponse<Void>> createPost(@RequestBody CreatePostReqDto req) {
-        // boardId 검증
-        if (req.boardId() == null || req.boardId().toString().trim().isEmpty()) {
-            return ApiResponse.generateResp(Status.INVALID, "게시판 ID는 빈 값일 수 없습니다.", null);
-        }
         try {
             postFacade.createPost(req);
             return ApiResponse.generateResp(Status.CREATE, "게시글 생성이 완료되었습니다.", null);
@@ -62,18 +58,9 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 수정", description = "게시글을 수정할 수 있습니다.")
-    @PutMapping("/posts/{postId}")
-    public ResponseEntity<ApiResponse<Void>> updatePost(@PathVariable Long postId,
-                                                        @RequestBody UpdatePostReqDto req,
-                                                        BindingResult bindingResult) {
-        // 유효성 검사 오류 처리
-        if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult.getFieldErrors().stream()
-                    .map(error -> error.getDefaultMessage())
-                    .findFirst()
-                    .orElse("유효하지 않은 입력입니다.");
-            return ApiResponse.generateResp(Status.INVALID, errorMessage, null);
-        }
+    @PutMapping("/{postId}")
+    public ResponseEntity<ApiResponse<Void>> updatePost(@Valid @PathVariable Long postId,
+                                                        @RequestBody UpdatePostReqDto req) {
         try {
             // Facade에서 예외를 던지도록 처리
             postFacade.updatePost(postId, req);
@@ -88,7 +75,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제할 수 있습니다.")
-    @DeleteMapping("/posts/{postId}")
+    @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long postId) {
         try {
             postFacade.deletePost(postId);
@@ -103,7 +90,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 상세 조회", description = "게시글 ID로 상세 조회를 할 수 있습니다.")
-    @GetMapping("/posts/{postId}")
+    @GetMapping("/{postId}")
     public ResponseEntity<ApiResponse<GetDetailPostRespDto>> getDetailPost(@PathVariable Long postId) {
         try {
             GetDetailPostRespDto postRespDto = postFacade.getDetailPost(postId);
@@ -117,7 +104,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회를 할 수 있습니다.")
-    @GetMapping("/posts")
+    @GetMapping()
     public ResponseEntity<ApiResponse<List<GetListPostRespDto>>> getPosts(
             @RequestParam(required = false) Long boardId,
             @RequestParam(required = false) String keyword,
@@ -152,6 +139,4 @@ public class PostController {
         // Pageable 객체 생성
         return PageRequest.of(page, size, sortBy);
     }
-
-
 }
