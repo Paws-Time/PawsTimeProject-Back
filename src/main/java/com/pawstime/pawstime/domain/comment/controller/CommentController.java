@@ -38,11 +38,17 @@ public class CommentController {
       commentFacade.createComment(postId, req);
 
       return ApiResponse.generateResp(Status.CREATE, "댓글 생성이 완료되었습니다.", null);
+
     } catch (CustomException e) {
-      Status status = Status.valueOf(e.getClass().getSimpleName().replace("Exception", "").toUpperCase());
+      Status status = Status.valueOf(e.getClass()
+          .getSimpleName()
+          .replace("Exception", "")
+          .toUpperCase());
       return ApiResponse.generateResp(status, e.getMessage(), null);
+
     } catch (Exception e) {
-      return ApiResponse.generateResp(Status.ERROR, "댓글 생성 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+      return ApiResponse.generateResp(
+          Status.ERROR, "댓글 생성 중 오류가 발생하였습니다 : " + e.getMessage(), null);
     }
   }
 
@@ -55,12 +61,45 @@ public class CommentController {
       @RequestParam(defaultValue = "DESC") String direction
   ) {
     try {
-      return ApiResponse.generateResp(Status.SUCCESS, null, commentFacade.getCommentAll(pageNo, pageSize, sortBy, direction).getContent());
+      return ApiResponse.generateResp(Status.SUCCESS, null,
+          commentFacade.getCommentAll(pageNo, pageSize, sortBy, direction).getContent());
+
     } catch (CustomException e) {
-      Status status = Status.valueOf(e.getClass().getSimpleName().replace("Exception", "").toUpperCase());
+      Status status = Status.valueOf(e.getClass()
+          .getSimpleName()
+          .replace("Exception", "")
+          .toUpperCase());
       return ApiResponse.generateResp(status, e.getMessage(), null);
+
     } catch (Exception e) {
-      return ApiResponse.generateResp(Status.ERROR, "전체 댓글 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+      return ApiResponse.generateResp(
+          Status.ERROR, "전체 댓글 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+    }
+  }
+
+  @Operation(summary = "특정 게시글 댓글 조회", description = "선택한 게시글에 달린 댓글 목록을 조회합니다.")
+  @GetMapping("/list/{postId}")
+  public ResponseEntity<ApiResponse<List<GetCommentRespDto>>> getCommentByPost(
+      @PathVariable Long postId,
+      @RequestParam(defaultValue = "0") int pageNo,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "DESC") String direction
+  ) {
+    try {
+      return ApiResponse.generateResp(Status.SUCCESS, null,
+          commentFacade.getCommentByPost(postId, pageNo, pageSize, sortBy, direction).getContent());
+
+    } catch (CustomException e) {
+      Status status = Status.valueOf(e.getClass()
+          .getSimpleName()
+          .replace("Exception", "")
+          .toUpperCase());
+      return ApiResponse.generateResp(status, e.getMessage(), null);
+
+    } catch (Exception e) {
+      return ApiResponse.generateResp(
+          Status.ERROR, "게시글 댓글 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
     }
   }
 }

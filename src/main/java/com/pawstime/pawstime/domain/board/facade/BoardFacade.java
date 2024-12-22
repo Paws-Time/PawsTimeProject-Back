@@ -53,9 +53,12 @@ public class BoardFacade {
   }
 
   @Transactional(readOnly = true)
-  public Page<GetBoardRespDto> getBoardList(int pageNo, int pageSize, String sortBy, String direction) {
+  public Page<GetBoardRespDto> getBoardList(
+      int pageNo, int pageSize, String sortBy, String direction
+  ) {
 
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+    Pageable pageable = PageRequest
+        .of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
 
     return readBoardService.getBoardList(pageable).map(GetBoardRespDto::from);
   }
