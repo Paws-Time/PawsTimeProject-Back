@@ -15,11 +15,15 @@ public class ReadCommentService {
 
   private final CommentRepository commentRepository;
 
-  public Post findByIdQuery(Long postId) {
-    return commentRepository.findByIdQuery(postId);
+  public Post getPostById(Long postId) {
+    return commentRepository.findPostByIdQuery(postId);
   }
 
   public Page<Comment> getCommentAll(Pageable pageable) {
     return commentRepository.findAllQuery(pageable);
+  }
+
+  public Page<Comment> getCommentByPost(Long postId, Pageable pageable) {
+    return commentRepository.findAllByPostQuery(postId, pageable);
   }
 }

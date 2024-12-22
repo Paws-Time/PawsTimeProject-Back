@@ -7,6 +7,7 @@ import com.pawstime.pawstime.domain.comment.service.ReadCommentService;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class CommentFacade {
   private final CreateCommentService createCommentService;
 
   public void createComment(Long postId, CreateCommentReqDto req) {
-    Post post = readCommentService.findByIdQuery(postId);
+    Post post = readCommentService.getPostById(postId);
 
     if (post == null) {
       throw new NotFoundException("존재하지 않는 게시글 ID입니다.");
@@ -41,8 +42,28 @@ public class CommentFacade {
   }
 
   @Transactional(readOnly = true)
-  public Page<GetCommentRespDto> getCommentAll(int pageNo, int pageSize, String sortBy, String direction) {
-    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+  public Page<GetCommentRespDto> getCommentAll(
+      int pageNo, int pageSize, String sortBy, String direction
+  ) {
+    Pageable pageable = PageRequest
+        .of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+
     return readCommentService.getCommentAll(pageable).map(GetCommentRespDto::from);
+  }
+
+  @Transactional(readOnly = true)
+  public Page<GetCommentRespDto> getCommentByPost(
+      Long postId, int pageNo, int pageSize, String sortBy, String direction
+  ) {
+    Post post = readCommentService.getPostById(postId);
+
+    if (post == null) {
+      throw new NotFoundException("존재하지 않는 게시글 ID입니다.");
+    }
+
+    Pageable pageable = PageRequest
+        .of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+
+    return readCommentService.getCommentByPost(postId, pageable).map(GetCommentRespDto::from);
   }
 }
