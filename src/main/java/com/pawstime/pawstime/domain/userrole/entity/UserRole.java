@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.userrole.entity;
 
-import com.pawstime.pawstime.domain.Role.entity.Role;
+
+import com.pawstime.pawstime.domain.role.entity.Role;
 import com.pawstime.pawstime.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

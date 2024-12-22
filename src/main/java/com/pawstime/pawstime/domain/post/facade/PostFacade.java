@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +34,8 @@ public class PostFacade {
     private final CreatePostService createPostService;
     private final UpdatePostService updatePostService;
     private final GetDetailPostService getDetailPostService;
+    private final GetListPostService getListPostService;
 
-    private final BoardRepository boardRepository;
-    private final PostRepository postRepository;
 
 
     public void createPost(CreatePostReqDto req) {
@@ -113,19 +113,10 @@ public class PostFacade {
 
         return getDetailPostService.getDetailPost(postId);  // DTO 반환
     }
-
+    // 게시글 목록 조회
     public Page<GetListPostRespDto> getPostList(Long boardId, String keyword, Pageable pageable) {
-
-
-        if (boardId == null) {
-            return postRepository.findByBoardIdAndKeywordAndIsDeleted(null, keyword, false, pageable)
-                    .map(GetListPostRespDto::from);  // Post를 GetListPostRespDto로 변환
-        }
-
-        // 게시판이 존재하면 해당 게시판의 게시글을 조회
-        return postRepository.findByBoardIdAndKeywordAndIsDeleted(null, keyword, false, pageable)
-
-                .map(GetListPostRespDto::from);  // Post를 GetListPostRespDto로 변환
+        return getListPostService.getPostList(boardId, keyword, pageable);
     }
+
 
 }
