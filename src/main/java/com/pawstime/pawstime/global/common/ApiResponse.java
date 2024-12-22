@@ -1,9 +1,8 @@
 package com.pawstime.pawstime.global.common;
 
 import com.pawstime.pawstime.global.enums.Status;
-import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import org.springframework.http.ResponseEntity;
 
 @Getter
 public class ApiResponse<T> {
@@ -18,7 +17,8 @@ public class ApiResponse<T> {
     this.data = data;
   }
 
-  public static <T> ApiResponse<T> generateResp(Status status, String message, T data) {
-    return new ApiResponse<>(status, message, data);
+  public static <T> ResponseEntity<ApiResponse<T>> generateResp(Status status, String message, T data) {
+    ApiResponse<T> apiResponse =  new ApiResponse<>(status, message, data);
+    return ResponseEntity.status(status.getHttpStatus()).body(apiResponse);
   }
 }

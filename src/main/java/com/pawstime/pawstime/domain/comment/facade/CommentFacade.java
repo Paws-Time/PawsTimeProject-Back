@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.comment.facade;
 
 import com.pawstime.pawstime.domain.comment.dto.req.CreateCommentReqDto;
+import com.pawstime.pawstime.domain.comment.dto.resp.GetCommentRespDto;
 import com.pawstime.pawstime.domain.comment.service.CreateCommentService;
 import com.pawstime.pawstime.domain.comment.service.ReadCommentService;
 import com.pawstime.pawstime.domain.post.entity.Post;
@@ -8,6 +9,10 @@ import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,5 +38,11 @@ public class CommentFacade {
     }
 
     createCommentService.createComment(req.of(post));
+  }
+
+  @Transactional(readOnly = true)
+  public Page<GetCommentRespDto> getCommentAll(int pageNo, int pageSize, String sortBy, String direction) {
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+    return readCommentService.getCommentAll(pageable).map(GetCommentRespDto::from);
   }
 }
