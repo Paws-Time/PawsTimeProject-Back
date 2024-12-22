@@ -28,7 +28,4 @@ public class ReadBoardService {
     return boardRepository.findAll(pageable);
   }
 
-  public boolean existsById(Long boardId) {
-    return boardRepository.existsById(boardId);
-  }
 }
