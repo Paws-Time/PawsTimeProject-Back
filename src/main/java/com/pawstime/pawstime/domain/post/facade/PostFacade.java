@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.post.facade;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
+import com.pawstime.pawstime.domain.board.entity.repository.BoardRepository;
 import com.pawstime.pawstime.domain.board.service.ReadBoardService;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
@@ -15,7 +16,9 @@ import com.pawstime.pawstime.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,9 @@ public class PostFacade {
     private final UpdatePostService updatePostService;
     private final GetDetailPostService getDetailPostService;
 
+    private final BoardRepository boardRepository;
+    private final PostRepository postRepository;
+
 
     public void createPost(CreatePostReqDto req) {
         if (req.boardId() == null || req.boardId().toString().isEmpty()) {
@@ -39,7 +45,7 @@ public class PostFacade {
 
         Board board = readPostService.findBoardById(req.boardId());
         if (board == null) {
-            throw new InvalidException("해당 Board ID는 존재하지 않습니다.");
+            throw new NotFoundException("해당 Board ID는 존재하지 않습니다.");
         }
 
         if (req.title() == null || req.title().isEmpty()) {
@@ -47,6 +53,9 @@ public class PostFacade {
         }
         if (req.content() == null || req.content().isEmpty()) {
             throw new InvalidException("게시글 내용은 필수 입력값입니다.");
+        }
+        if(board.isDelete()){
+            throw new NotFoundException("이미 삭제된 게시판입니다.");
         }
 
         // 게시글 생성 로직
@@ -105,6 +114,18 @@ public class PostFacade {
         return getDetailPostService.getDetailPost(postId);  // DTO 반환
     }
 
+    public Page<GetListPostRespDto> getPostList(Long boardId, String keyword, Pageable pageable) {
 
+
+        if (boardId == null) {
+            return postRepository.findByBoardIdAndKeywordAndIsDeleted(null, keyword, false, pageable)
+                    .map(GetListPostRespDto::from);  // Post를 GetListPostRespDto로 변환
+        }
+
+        // 게시판이 존재하면 해당 게시판의 게시글을 조회
+        return postRepository.findByBoardIdAndKeywordAndIsDeleted(null, keyword, false, pageable)
+
+                .map(GetListPostRespDto::from);  // Post를 GetListPostRespDto로 변환
+    }
 
 }
