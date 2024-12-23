@@ -3,6 +3,7 @@ package com.pawstime.pawstime.domain.post.facade;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.board.entity.repository.BoardRepository;
 import com.pawstime.pawstime.domain.board.service.ReadBoardService;
+import com.pawstime.pawstime.domain.like.service.LikeService;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.resp.GetDetailPostRespDto;
@@ -10,6 +11,7 @@ import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
 import com.pawstime.pawstime.domain.post.service.*;
+import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.exception.DuplicateException;
 import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
@@ -35,8 +37,7 @@ public class PostFacade {
     private final UpdatePostService updatePostService;
     private final GetDetailPostService getDetailPostService;
     private final GetListPostService getListPostService;
-
-
+    private final PostRepository postRepository;
 
     public void createPost(CreatePostReqDto req) {
         if (req.boardId() == null || req.boardId().toString().isEmpty()) {
@@ -117,6 +118,7 @@ public class PostFacade {
     public Page<GetListPostRespDto> getPostList(Long boardId, String keyword, Pageable pageable) {
         return getListPostService.getPostList(boardId, keyword, pageable);
     }
-
-
+    public Post getPostId(Long postId) {
+        return postRepository.findById(postId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+    }
 }

@@ -9,8 +9,6 @@ import org.springframework.data.jpa.domain.Specification;
 
 public class PostSpecification {
 
-
-
     public static Specification<Post> isNotDeleted() {
         return (root, query, criteriaBuilder) -> criteriaBuilder.isFalse(root.get("isDelete"));
     }
