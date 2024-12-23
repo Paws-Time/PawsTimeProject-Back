@@ -2,7 +2,6 @@ package com.pawstime.pawstime.domain.post.dto.req;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.post.entity.Post;
-import com.pawstime.pawstime.domain.post.entity.Post.PostCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,10 +17,6 @@ public record CreatePostReqDto(
 
         @NotNull(message = "게시판 ID는 필수 입력값입니다.")  // boardId가 null일 경우 예외 발생
         Long boardId,           // 게시판 ID
-
-        @NotNull(message = "카테고리는 필수 입력 값입니다.")
-        PostCategory category,  // 카테고리
-
         int likesCount          // 좋아요 수
 ) {
     public Post toEntity(Board board) {
@@ -29,7 +24,6 @@ public record CreatePostReqDto(
                 .title(this.title)
                 .content(this.content)
                 .board(board)
-                .category(this.category)
                 .build();
     }
 }

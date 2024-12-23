@@ -39,4 +39,22 @@ public class PostSpecification {
         };
     }
 
+    public static Specification<Post> orderBy(String sortBy, String direction) {
+        return (root, query, criteriaBuilder) -> {
+            if ("views".equalsIgnoreCase(sortBy)) {
+                query.orderBy(direction.equalsIgnoreCase("asc") ? criteriaBuilder.asc(root.get("views")) : criteriaBuilder.desc(root.get("views")));
+            } else if ("likesCount".equalsIgnoreCase(sortBy)) {  // likes_count -> likesCount로 변경
+                query.orderBy(direction.equalsIgnoreCase("asc") ? criteriaBuilder.asc(root.get("likesCount")) : criteriaBuilder.desc(root.get("likesCount")));
+            } else if ("title".equalsIgnoreCase(sortBy)) {
+                query.orderBy(direction.equalsIgnoreCase("asc") ? criteriaBuilder.asc(root.get("title")) : criteriaBuilder.desc(root.get("title")));
+            } else if ("createdAt".equalsIgnoreCase(sortBy)) {
+                query.orderBy(direction.equalsIgnoreCase("asc") ? criteriaBuilder.asc(root.get("createdAt")) : criteriaBuilder.desc(root.get("createdAt")));
+            } else {
+                query.orderBy(criteriaBuilder.desc(root.get("createdAt"))); // 기본값: createdAt 내림차순
+            }
+
+            return criteriaBuilder.conjunction(); // 기본적으로 조건이 없으면 항상 참을 반환
+        };
+    }
+
 }
