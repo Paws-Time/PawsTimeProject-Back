@@ -107,7 +107,7 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 목록 조회", description = "게시글 목록 조회를 할 수 있습니다.")
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<ApiResponse<List<GetListPostRespDto>>> getPosts(
             @RequestParam(required = false) Long boardId,
             @RequestParam(required = false) String keyword,
@@ -120,7 +120,7 @@ public class PostController {
             Pageable pageable = createPageable(sort, page, size);
 
             // Facade 호출: 게시글 목록 조회
-            Page<GetListPostRespDto> posts = postFacade.getPostList(boardId, keyword, pageable);
+            Page<GetListPostRespDto> posts = postFacade.getPostList(boardId, keyword, pageable, sort.split(",")[0], sort.split(",")[1]);
 
             // 성공 응답
             return ApiResponse.generateResp(Status.SUCCESS, "게시글 목록 조회 성공", posts.getContent());
@@ -133,16 +133,21 @@ public class PostController {
         }
     }
 
+
+    // Pageable 객체 생성 (정렬 처리)
     public Pageable createPageable(String sort, int page, int size) {
-        // sort 파라미터를 ','로 구분하여 정렬 조건을 설정
         String[] sortParams = sort.split(",");
-        Sort.Direction direction = sortParams[1].equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Sort sortBy = Sort.by(direction, sortParams[0]);
+
+        // 기본값 처리: sort 파라미터가 잘못된 경우 'createdAt'으로 기본 설정
+        String sortField = sortParams.length > 0 ? sortParams[0] : "createdAt";
+        String direction = sortParams.length > 1 ? sortParams[1] : "desc";
+
+        // Direction 설정
+        Sort.Direction sortDirection = direction.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
 
         // Pageable 객체 생성
-        return PageRequest.of(page, size, sortBy);
+        return PageRequest.of(page, size, Sort.by(sortDirection, sortField));
     }
-
     @PostMapping("/{postId}/like")
     @Operation(summary = "좋아요", description = "게시글에 좋아요를 누를 수 있습니다.")
 

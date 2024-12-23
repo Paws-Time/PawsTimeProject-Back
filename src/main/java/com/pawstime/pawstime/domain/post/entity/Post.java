@@ -49,14 +49,6 @@ public class Post extends BaseEntity {
   @Column(name = "views", nullable = false)
   private int views = 0; // 조회수 기본값을 0으로 설정
 
-  @Enumerated(EnumType.STRING)
-  @Column(name = "category", nullable = false)
-  private PostCategory category;
-
-  // 카테고리를 정의한 Enum
-  public enum PostCategory {
-    TECH, LIFESTYLE, EDUCATION, ENTERTAINMENT
-  }
 
   public void setTitle(String title) {
     this.title = title;
