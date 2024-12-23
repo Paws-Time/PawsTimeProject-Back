@@ -1,6 +1,6 @@
 package com.pawstime.pawstime.domain.post.dto.req;
 
-import com.pawstime.pawstime.domain.post.entity.Post.PostCategory;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

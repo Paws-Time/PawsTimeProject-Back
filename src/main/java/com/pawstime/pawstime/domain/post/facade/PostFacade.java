@@ -114,10 +114,12 @@ public class PostFacade {
 
         return getDetailPostService.getDetailPost(postId);  // DTO 반환
     }
-    // 게시글 목록 조회
-    public Page<GetListPostRespDto> getPostList(Long boardId, String keyword, Pageable pageable) {
-        return getListPostService.getPostList(boardId, keyword, pageable);
+    // 게시글 목록 조회 (정렬 기준 및 방향 추가)
+    public Page<GetListPostRespDto> getPostList(Long boardId, String keyword, Pageable pageable, String sortBy, String direction) {
+        // getListPostService에서 정렬 기준을 포함하여 서비스 호출
+        return getListPostService.getPostList(boardId, keyword, pageable, sortBy, direction);
     }
+    // 게시글 ID로 조회
     public Post getPostId(Long postId) {
         return postRepository.findById(postId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
     }

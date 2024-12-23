@@ -13,8 +13,7 @@ public record GetListPostRespDto(
         LocalDateTime createdAt, // 작성일
         LocalDateTime updatedAt, // 수정일
         int views,               // 조회수
-        int likesCount,          // 좋아요 수
-        String category          // 게시글 카테고리
+        int likesCount          // 좋아요 수
 ) {
     // Post 엔티티를 DTO로 변환하는 메서드
     public static GetListPostRespDto from(Post post) {
@@ -28,7 +27,6 @@ public record GetListPostRespDto(
                 .updatedAt(post.getUpdatedAt())              // 수정일
                 .views(post.getViews())                      // 조회수
                 .likesCount(post.getLikesCount())            // 좋아요 수
-                .category(post.getCategory() != null ? post.getCategory().name() : "") // 카테고리
                 .build();
     }
 }
