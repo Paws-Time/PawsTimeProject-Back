@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.post.entity;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
+import com.pawstime.pawstime.domain.image.entity.Image;
 import com.pawstime.pawstime.domain.like.entity.Like;
 import com.pawstime.pawstime.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -49,6 +50,10 @@ public class Post extends BaseEntity {
   @Column(name = "views", nullable = false)
   private int views = 0; // 조회수 기본값을 0으로 설정
 
+  //게시글 생성/삭제 시 연관된 이미지도 함께 처리.
+  @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Image> images = new ArrayList<>(); // 게시글과 연관된 이미지 리스트
+
 
   public void setTitle(String title) {
     this.title = title;
@@ -79,12 +84,23 @@ public class Post extends BaseEntity {
     this.likes.remove(like);
   }
 
-
   public void incrementLikesCount() {
     this.likesCount++;
   }
 
   public void decrementLikesCount() {
     this.likesCount--;
+  }
+
+  // 연관된 이미지 추가
+  public void addImage(Image image) {
+    images.add(image);
+    image.setPost(this);
+  }
+
+  // 연관된 이미지 제거
+  public void removeImage(Image image) {
+    images.remove(image);
+    image.setPost(null);
   }
 }
