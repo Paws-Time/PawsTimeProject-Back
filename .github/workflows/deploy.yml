@@ -48,17 +48,18 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.PRIVATE_KEY }}
-          envs: |
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            AWS_REGION=${{ secrets.AWS_REGION }}
-            AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
           script: |
             # 기존 Spring Boot 컨테이너 강제 중지 및 제거
             docker ps -q --filter "name=springboot_app" | grep -q . && docker rm -f springboot_app || true
 
             # Spring Boot 컨테이너 이미지 태그 업데이트
             sed -i "s|image: dgf0020/pawstime:.*|image: dgf0020/pawstime:${{ github.sha }}|" /home/ec2-user/app/docker-compose.yml
+
+            # 환경 변수 설정 (GitHub Secrets에서 전달된 값)
+            export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            export AWS_REGION=${{ secrets.AWS_REGION }}
+            export AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
 
             # Spring Boot 컨테이너 재시작
             docker-compose -f /home/ec2-user/app/docker-compose.yml up -d springboot
