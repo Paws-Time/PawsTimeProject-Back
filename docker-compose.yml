@@ -17,9 +17,9 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-    - mysql
+      - mysql
     networks:
-      - my_network
+      - pawstimeproject_my_network
 
   mysql:
     image: mysql:8.0
@@ -35,11 +35,11 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - my_network
+      - pawstimeproject_my_network
 
 volumes:
   mysql_data:
 
 networks:
-  my_network:
-    driver: bridge
+  pawstimeproject_my_network:
+    external: true
