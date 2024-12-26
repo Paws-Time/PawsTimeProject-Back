@@ -6,7 +6,7 @@ services:
     container_name: springboot_app
     restart: always
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://my_mysql:3306/pawsTime
+      SPRING_DATASOURCE_URL: jdbc:mysql://<your_mysql_host>:3306/pawsTime
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: 1234
       SPRING_PROFILES_ACTIVE: dev
