@@ -16,29 +16,8 @@ services:
       AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
     ports:
       - "8080:8080"
-    depends_on:
-      - mysql
     networks:
       - my_network
-
-  mysql:
-    image: mysql:8.0
-    container_name: my_mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: pawsTime
-      MYSQL_USER: myuser
-      MYSQL_PASSWORD: 1234
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - my_network
-
-volumes:
-  mysql_data:
 
 networks:
   my_network:
