@@ -4,7 +4,6 @@ import com.pawstime.pawstime.domain.like.entity.Like;
 import com.pawstime.pawstime.domain.like.entity.repository.LikeRepository;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
-import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
