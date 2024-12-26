@@ -20,12 +20,12 @@ spring:
     secret:
       key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
 
-  # ???? ???? ??? enable: false?? ????(gradle? ??? ????)
-  #security:
-  #  enable: false
-
 server:
   port: 8080
 
-#mybatis:
-#  mapper-locations: classpath:mapper/*.xml
+aws:
+  s3:
+    access-key-id: ${AWS_ACCESS_KEY_ID}        # GitHub Secrets로 전달
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY} # GitHub Secrets로 전달
+    region: ${AWS_REGION}                      # GitHub Secrets로 전달
+    bucket-name: ${AWS_BUCKET_NAME}            # GitHub Secrets로 전달
