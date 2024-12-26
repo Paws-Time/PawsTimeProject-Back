@@ -1,6 +1,26 @@
 version: "3.8"
 
 services:
+  springboot:
+    image: dgf0020/pawstime:latest  # 이 부분은 GitHub Actions에서 동적으로 업데이트
+    container_name: springboot_app
+    restart: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://my_mysql:3306/pawsTime
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_PROFILES_ACTIVE: dev
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_REGION: ${AWS_REGION}
+      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - my_network
+
   mysql:
     image: mysql:8.0
     container_name: my_mysql
@@ -14,26 +34,6 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - my_network
-
-  springboot:
-    image: dgf0020/pawstime:latest
-    container_name: springboot_app
-    restart: always
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://my_mysql:3306/pawsTime
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: 1234
-      SPRING_PROFILES_ACTIVE: dev
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}        # AWS Access Key
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY} # AWS Secret Key
-      AWS_REGION: ${AWS_REGION}                      # AWS Region
-      AWS_BUCKET_NAME: ${AWS_BUCKET_NAME}            # AWS Bucket Name
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mysql
     networks:
       - my_network
 

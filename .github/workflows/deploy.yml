@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. 코드 체크아웃
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -48,8 +49,8 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            # 도커 컴포즈 파일에서 이미지 태그 업데이트
+            # Spring Boot 컨테이너 이미지 태그 업데이트
             sed -i "s|image: dgf0020/pawstime:.*|image: dgf0020/pawstime:${{ github.sha }}|" /home/ec2-user/app/docker-compose.yml
-            
+
             # Spring Boot 서비스만 재시작
             docker-compose -f /home/ec2-user/app/docker-compose.yml up -d springboot
