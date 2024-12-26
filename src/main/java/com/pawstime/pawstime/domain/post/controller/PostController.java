@@ -10,7 +10,6 @@ import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.facade.PostFacade;
 import com.pawstime.pawstime.domain.post.service.GetListPostService;
-import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.common.ApiResponse;
 import com.pawstime.pawstime.global.enums.Status;
 import com.pawstime.pawstime.global.exception.CustomException;
