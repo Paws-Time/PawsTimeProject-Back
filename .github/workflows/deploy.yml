@@ -1,0 +1,52 @@
+name: CI/CD for Spring Boot on AWS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 코드 체크아웃
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Gradle 빌드
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      # 3. Docker 이미지 빌드 및 Docker Hub 푸시
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_TAG=dgf0020/pawstime:${{ github.sha }}
+          docker build -t $IMAGE_TAG .
+          docker push $IMAGE_TAG
+
+      # 4. EC2에 배포
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            # 도커 컴포즈 파일에서 이미지 태그 업데이트
+            sed -i "s|image: dgf0020/pawstime:.*|image: dgf0020/pawstime:${{ github.sha }}|" /home/ec2-user/app/docker-compose.yml
+            
+            # Spring Boot 서비스만 재시작
+            docker-compose -f /home/ec2-user/app/docker-compose.yml up -d springboot
