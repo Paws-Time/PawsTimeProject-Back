@@ -10,6 +10,8 @@ import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.facade.PostFacade;
 import com.pawstime.pawstime.domain.post.service.GetListPostService;
+import com.pawstime.pawstime.domain.post.service.S3Service;
+import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.common.ApiResponse;
 import com.pawstime.pawstime.global.enums.Status;
 import com.pawstime.pawstime.global.exception.CustomException;
@@ -24,12 +26,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.Collections;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 
 @Slf4j
@@ -41,23 +46,32 @@ public class PostController {
 
     private final PostFacade postFacade;
     private final LikeFacade likeFacade;
+    private final S3Service s3Service;
+
 
     @Operation(summary = "게시글 생성", description = "게시글을 생성 할 수 있습니다.")
-    @PostMapping()
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ApiResponse<Void>> createPost(@RequestBody CreatePostReqDto req) {
+    public ResponseEntity<ApiResponse<Void>> createPost(@RequestPart("data") CreatePostReqDto req, @RequestPart(value = "images", required = false) List<MultipartFile> images) {
         try {
-            postFacade.createPost(req);
+            // 이미지를 S3에 업로드하고, 업로드된 이미지 URL들을 리스트로 반환
+            List<String> imageUrls = images == null || images.isEmpty()
+                    ? Collections.emptyList()
+                    : s3Service.uploadImages(images);
+
+            // 업로드된 이미지 URL들을 포함해 게시글 생성
+            postFacade.createPost(req, imageUrls); // 이미지 URL을 포함하여 게시글 생성
+
             return ApiResponse.generateResp(Status.CREATE, "게시글 생성이 완료되었습니다.", null);
         } catch (CustomException e) {
             Status status = Status.valueOf(e.getClass().getSimpleName().replace("Exception", "").toUpperCase());
-            // 예외 이름을 이용해서 Enum타입의 Status를 가져옴. ex) InvalidException => INVALID
             log.info("** {} **", status);
             return ApiResponse.generateResp(status, e.getMessage(), null);
         } catch (Exception e) {
             return ApiResponse.generateResp(Status.ERROR, "게시글 생성 중 오류가 발생하였습니다 : " + e.getMessage(), null);
         }
     }
+
 
     @Operation(summary = "게시글 수정", description = "게시글을 수정할 수 있습니다.")
     @PutMapping("/{postId}")

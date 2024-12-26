@@ -3,6 +3,7 @@ package com.pawstime.pawstime.domain.post.facade;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.board.entity.repository.BoardRepository;
 import com.pawstime.pawstime.domain.board.service.ReadBoardService;
+import com.pawstime.pawstime.domain.image.entity.Image;
 import com.pawstime.pawstime.domain.like.service.LikeService;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
@@ -23,6 +24,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 @Slf4j
@@ -37,29 +41,25 @@ public class PostFacade {
     private final GetDetailPostService getDetailPostService;
     private final GetListPostService getListPostService;
     private final PostRepository postRepository;
+    private final S3Service s3Service;
 
-    public void createPost(CreatePostReqDto req) {
-        if (req.boardId() == null || req.boardId().toString().isEmpty()) {
-            throw new InvalidException("게시판 ID는 필수 입력값입니다.");
+    public void createPost(CreatePostReqDto req, List<String> imageUrls) {
+        if (req.boardId() == null || req.title() == null || req.content() == null) {
+            throw new InvalidException("필수 입력값이 누락되었습니다.");
         }
 
         Board board = readPostService.findBoardById(req.boardId());
-        if (board == null) {
-            throw new NotFoundException("해당 Board ID는 존재하지 않습니다.");
+        if (board == null || board.isDelete()) {
+            throw new NotFoundException("유효하지 않은 게시판입니다.");
         }
 
-        if (req.title() == null || req.title().isEmpty()) {
-            throw new InvalidException("게시글 제목은 필수 입력값입니다.");
-        }
-        if (req.content() == null || req.content().isEmpty()) {
-            throw new InvalidException("게시글 내용은 필수 입력값입니다.");
-        }
-        if(board.isDelete()){
-            throw new NotFoundException("이미 삭제된 게시판입니다.");
-        }
-
-        // 게시글 생성 로직
         Post post = req.toEntity(board);
+        for (String imageUrl : imageUrls) {
+            Image img = new Image();
+            img.setImageUrl(imageUrl);
+            img.setPost(post);
+            post.addImage(img);
+        }
         createPostService.createPost(post);
     }
 
