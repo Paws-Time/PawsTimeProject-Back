@@ -92,6 +92,7 @@ public class Post extends BaseEntity {
     this.likesCount--;
   }
 
+
   // 연관된 이미지 추가
   public void addImage(Image image) {
     images.add(image);

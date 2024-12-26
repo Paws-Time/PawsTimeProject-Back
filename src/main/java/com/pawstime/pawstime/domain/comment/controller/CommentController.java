@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.comment.controller;
 
 import com.pawstime.pawstime.domain.comment.dto.req.CreateCommentReqDto;
+import com.pawstime.pawstime.domain.comment.dto.req.UpdateCommentReqDto;
 import com.pawstime.pawstime.domain.comment.dto.resp.GetCommentRespDto;
 import com.pawstime.pawstime.domain.comment.facade.CommentFacade;
 import com.pawstime.pawstime.global.common.ApiResponse;
@@ -124,5 +125,25 @@ public class CommentController {
       return ApiResponse.generateResp(
           Status.ERROR, "댓글 삭제 중 오류가 발생하였습니다 : " + e.getMessage(), null);
     }
+  }
+  @Operation(summary = "댓글 수정", description = "선택한 댓글을 수정합니다.")
+  @PutMapping("/{commentId}")
+  public ResponseEntity<ApiResponse<Void>> updateComment( @PathVariable Long commentId, @RequestBody UpdateCommentReqDto req){
+   try{
+     commentFacade.updateComment(commentId, req);
+     return ApiResponse.generateResp(
+             Status.UPDATE, "댓글 수정이 완료되었습니다.", null);
+   }
+   catch (CustomException e){
+     Status status = Status.valueOf(e.getClass()
+             .getSimpleName()
+             .replace("Exception", "")
+             .toUpperCase());
+     return ApiResponse.generateResp(status, e.getMessage(), null);
+   } catch (Exception e) {
+     return ApiResponse.generateResp(
+             Status.ERROR, "댓글 수정 중 오류가 발생했습니다. : " + e.getMessage(), null);
+
+   }
   }
 }

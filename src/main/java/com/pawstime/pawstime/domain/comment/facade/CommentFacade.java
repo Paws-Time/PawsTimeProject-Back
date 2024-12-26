@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.comment.facade;
 
 import com.pawstime.pawstime.domain.comment.dto.req.CreateCommentReqDto;
+import com.pawstime.pawstime.domain.comment.dto.req.UpdateCommentReqDto;
 import com.pawstime.pawstime.domain.comment.dto.resp.GetCommentRespDto;
 import com.pawstime.pawstime.domain.comment.entity.Comment;
 import com.pawstime.pawstime.domain.comment.service.CreateCommentService;
@@ -80,6 +81,22 @@ public class CommentFacade {
     }
 
     comment.softDelete();
+    createCommentService.createComment(comment);
+  }
+  public void updateComment(Long commentId, UpdateCommentReqDto req ){
+    //입력받은 commentId로 해당 댓글 조회
+    Comment comment = readCommentService.findById(commentId);
+    if (comment == null) {
+      throw new NotFoundException("존재하지 않는 댓글입니다.");
+    }
+    // 댓글이 삭제 상태인지 확인
+    if(comment.isDelete()){
+      throw new NotFoundException("이미 삭제된 댓글입니다.");
+    }
+    //수정된 내용 반영
+    comment = req.update(comment);
+
+    //변경된 댓글 저장
     createCommentService.createComment(comment);
   }
 }
