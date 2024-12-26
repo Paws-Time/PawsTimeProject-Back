@@ -22,7 +22,7 @@ public class Image extends BaseEntity {
     private Long imageId;
 
     @Column(nullable = false)
-    private String url; //s3에 저장된 이미지 url
+    private String imageUrl; //s3에 저장된 이미지 url
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="post_id")
@@ -30,5 +30,9 @@ public class Image extends BaseEntity {
 
     public void setPost(Post post){
         this.post = post;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
