@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   springboot:
-    image: dgf0020/pawstime:latest  # 이 부분은 GitHub Actions에서 동적으로 업데이트
+    image: dgf0020/pawstime:latest
     container_name: springboot_app
     restart: always
     environment:
