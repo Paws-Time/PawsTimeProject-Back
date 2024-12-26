@@ -17,8 +17,8 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - my_network
+      - pawstimeproject_my_network
 
 networks:
-  my_network:
+  pawstimeproject_my_network:
     driver: bridge
