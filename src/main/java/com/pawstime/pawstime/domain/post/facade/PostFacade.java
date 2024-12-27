@@ -12,7 +12,6 @@ import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
 import com.pawstime.pawstime.domain.post.service.*;
-import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.exception.DuplicateException;
 import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
