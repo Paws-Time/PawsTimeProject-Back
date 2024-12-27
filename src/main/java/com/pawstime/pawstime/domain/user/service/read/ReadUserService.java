@@ -11,11 +11,7 @@ public class ReadUserService {
 
   private final UserRepository userRepository;
 
-  public User findUserByEmail(String email){
-    return userRepository.findByEmail(email);
-  }
-
-  public boolean existsByEmail(String email){
-    return userRepository.existsByEmail(email);
+  public User findUserByEmail(String email) {
+    return userRepository.findUserByEmail(email);
   }
 }

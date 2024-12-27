@@ -3,7 +3,6 @@ package com.pawstime.pawstime.domain.like.entity.repository;
 
 import com.pawstime.pawstime.domain.like.entity.Like;
 import com.pawstime.pawstime.domain.post.entity.Post;
-import com.pawstime.pawstime.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

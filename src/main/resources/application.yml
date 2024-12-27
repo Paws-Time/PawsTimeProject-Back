@@ -2,3 +2,5 @@ spring:
   profiles:
     active: local
 
+springdoc:
+  override-with-generic-response: false
