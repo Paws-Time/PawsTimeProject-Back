@@ -36,6 +36,11 @@ public class CommentFacade {
       // isDelete = true로 삭제된 게시글도 여기에 걸림.
     }
 
+    // 게시판의 댓글 및 신고 기능 허용 여부 확인
+    if (!post.getBoard().getBoardType().isAllowComments() || !post.getBoard().isAllowReports()) {
+      throw new InvalidException("이 게시판에서는 댓글을 작성할 수 없습니다.");
+    }
+
     if (req.content() == null) {
       throw new InvalidException("댓글 내용은 필수 입력값입니다.");
     }
