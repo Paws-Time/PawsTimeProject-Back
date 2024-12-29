@@ -40,6 +40,7 @@ public class Board extends BaseEntity {
     this.allowReports = boardType.isAllowReports();   // BoardType에 따른 신고 허용 여부 설정
   }
 
+
   public void updateTitle(String title) {
     this.title = title;
   }

@@ -11,10 +11,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 
-
 @ControllerAdvice
 public class CustomExceptionHandler {
-
 
   @ExceptionHandler(Exception.class)
   public final ResponseEntity<Response<String>> handleAllExceptions(Exception e, WebRequest request) {

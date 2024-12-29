@@ -5,7 +5,6 @@ public enum ResponseCode {
   SIGNUP_SUCCESS("회원가입 성공"),
   GENERAL_ERROR("에러 발생");
 
-
   private final String message;
 
   ResponseCode(String message) {

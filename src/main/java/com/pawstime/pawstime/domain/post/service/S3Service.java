@@ -1,6 +1,8 @@
 package com.pawstime.pawstime.domain.post.service;
 
+
 import com.amazonaws.AmazonServiceException;
+
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -8,6 +10,9 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,6 +28,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class S3Service {
 
+
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB 제한
+
+
     @Value("${aws.s3.access-key-id}")
     private String accessKeyId;
 
@@ -35,12 +44,13 @@ public class S3Service {
     @Value("${aws.s3.bucket-name}")
     private String bucketName;
 
+
     @Value("${aws.s3.max-file-size}")
     private long maxFileSize; // application.yml에서 파일 크기 제한 값을 읽어옵니다.
 
     private AmazonS3 amazonS3;
 
-    @PostConstruct
+ @PostConstruct
     public void init() {
 
         System.out.println("Access Key: " + accessKeyId); // 값이 제대로 주입되었는지 확인

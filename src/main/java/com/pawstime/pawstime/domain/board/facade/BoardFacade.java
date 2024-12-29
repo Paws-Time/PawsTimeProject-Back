@@ -30,7 +30,7 @@ public class BoardFacade {
   public void createBoard(CreateBoardReqDto req) {
     if (req.title() == null) {
       throw new InvalidException("게시판 제목은 필수 입력값입니다.");
-    }
+
 
     Board existingBoard = readBoardService.findByTitle(req.title());
 
@@ -76,6 +76,8 @@ public class BoardFacade {
 
     board.softDelete();
     createBoardService.createBoard(board, board.getBoardType());
+
+
   }
 
   public void updateBoard(Long boardId, UpdateBoardReqDto req) {
@@ -110,5 +112,6 @@ public class BoardFacade {
     }
 
     createBoardService.createBoard(board, board.getBoardType());
+
   }
 }

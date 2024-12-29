@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://43.200.46.13:3306/pawsTime?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 1234
+  application:
+    name: basic
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database: mysql
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  jwt:
+    expiration_time: 86400000
+    # 단위: 밀리초 => 만료시간 하루
+    secret:
+      key: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
+
+server:
+  port: 8080
+
+#mybatis:
+#  mapper-locations: classpath:mapper/*.xml

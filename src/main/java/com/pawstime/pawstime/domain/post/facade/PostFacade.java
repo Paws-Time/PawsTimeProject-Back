@@ -42,6 +42,9 @@ public class PostFacade {
     private final GetListPostService getListPostService;
     private final PostRepository postRepository;
 
+    private final S3Service s3Service;
+
+
     public void createPost(CreatePostReqDto req, List<String> imageUrls) {
         if (req.boardId() == null || req.title() == null || req.content() == null) {
             throw new InvalidException("필수 입력값이 누락되었습니다.");
