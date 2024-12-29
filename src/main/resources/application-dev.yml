@@ -29,3 +29,4 @@ aws:
     secret-access-key: ${AWS_SECRET_ACCESS_KEY} # GitHub Secrets로 전달
     region: ${AWS_REGION}                      # GitHub Secrets로 전달
     bucket-name: ${AWS_BUCKET_NAME}            # GitHub Secrets로 전달
+    max-file-size: 100
