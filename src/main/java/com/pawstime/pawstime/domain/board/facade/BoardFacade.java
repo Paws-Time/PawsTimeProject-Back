@@ -30,15 +30,16 @@ public class BoardFacade {
   public void createBoard(CreateBoardReqDto req) {
     if (req.title() == null) {
       throw new InvalidException("게시판 제목은 필수 입력값입니다.");
-    }
+
 
     Board existingBoard = readBoardService.findByTitle(req.title());
 
     if (existingBoard != null) {
       throw new DuplicateException("이미 존재하는 게시판입니다.");
     }
-
-    createBoardService.createBoard(req.of());
+    //새 게시판 생성
+    Board board = req.of();
+    createBoardService.createBoard(board, req.boardType());
   }
 
   @Transactional(readOnly = true)
@@ -74,7 +75,9 @@ public class BoardFacade {
     }
 
     board.softDelete();
-    createBoardService.createBoard(board);
+    createBoardService.createBoard(board, board.getBoardType());
+
+
   }
 
   public void updateBoard(Long boardId, UpdateBoardReqDto req) {
@@ -108,6 +111,7 @@ public class BoardFacade {
       board.updateDescription(req.description());
     }
 
-    createBoardService.createBoard(board);
+    createBoardService.createBoard(board, board.getBoardType());
+
   }
 }

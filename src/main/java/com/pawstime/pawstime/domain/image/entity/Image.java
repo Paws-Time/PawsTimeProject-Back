@@ -25,7 +25,9 @@ public class Image extends BaseEntity {
     private String imageUrl; //s3에 저장된 이미지 url
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="post_id")
+
+    @JoinColumn(name = "post_id", nullable = false)
+
     private Post post;
 
     public void setPost(Post post){
