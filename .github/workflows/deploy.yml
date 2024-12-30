@@ -63,6 +63,7 @@ jobs:
             export AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
             export AWS_REGION=${{ secrets.AWS_REGION }}
             export AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
+            export KAKAO_MAP_API_KEY=${{ secrets.KAKAO_MAP_API_KEY }}
       
             # 컨테이너 재시작
             docker-compose -f /home/***/app/docker-compose.yml up -d springboot react
