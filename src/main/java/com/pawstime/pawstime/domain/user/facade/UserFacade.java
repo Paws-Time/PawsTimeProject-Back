@@ -5,6 +5,8 @@ import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.domain.user.service.create.CreateUserService;
 import com.pawstime.pawstime.domain.user.service.dto.CustomUserInfoDto;
 import com.pawstime.pawstime.domain.user.service.read.ReadUserService;
+import com.pawstime.pawstime.global.exception.DuplicateException;
+import com.pawstime.pawstime.global.exception.NotFoundException;
 import com.pawstime.pawstime.global.exception.UnauthorizedException;
 import com.pawstime.pawstime.global.jwt.util.JwtUtil;
 import com.pawstime.pawstime.web.api.user.dto.req.LoginUserReqDto;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Transactional
 public class UserFacade {
 
   private final CreateUserService createUserService;
@@ -33,7 +36,6 @@ public class UserFacade {
   private final JwtUtil jwtUtil;
   private final TokenBlacklistService tokenBlacklistService;
 
-  @Transactional
   public void createUser(UserCreateReqDto req) {
     try {
       User user = readUserService.findUserByEmail(req.email());
@@ -42,10 +44,10 @@ public class UserFacade {
         User newUser = req.of(encoder.encode(req.password()));
         createUserService.createUser(newUser);
       } else {
-        throw new BadCredentialsException("존재하는 이메일 입니다.");
+        throw new DuplicateException("존재하는 이메일 입니다.");
       }
     } catch (Exception e) {
-      throw new BadCredentialsException("존재하는 이메일 입니다.");
+      throw new DuplicateException("존재하는 이메일 입니다.");
     }
   }
 
@@ -53,11 +55,11 @@ public class UserFacade {
     User user = readUserService.findUserByEmail(req.email());
 
     if (user == null) {
-      throw new UsernameNotFoundException("존재하지 않는 이메일 입니다.");
+      throw new NotFoundException("존재하지 않는 이메일 입니다.");
     }
 
     if (!encoder.matches(req.password(), user.getPassword())) {
-      throw new BadCredentialsException("비밀번호가 일치하지 않습니다.");
+      throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
     }
 
     CustomUserInfoDto customUserInfoDto = CustomUserInfoDto.of(user);
