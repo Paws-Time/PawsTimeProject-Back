@@ -55,22 +55,13 @@ jobs:
             # 기존 React 컨테이너 강제 중지 및 제거
             docker ps -q --filter "name=react_app" | grep -q . && docker rm -f react_app || true
       
-            # docker-compose.yml 파일에 프론트엔드 서비스 추가
-            if ! grep -q "react:" /home/ec2-user/app/docker-compose.yml; then
-            echo "
-            react:
-              image: jaewon4834/paws-time-front:latest
-              container_name: react_app
-              restart: always
-              ports:
-                - \"3000:3000\"
-              networks:
-                - pawstimeproject_my_network
-            " >> /home/ec2-user/app/docker-compose.yml
+            # docker-compose.yml 파일에 react 서비스 추가
+            if ! grep -q "react:" /home/***/app/docker-compose.yml; then
+              sed -i '/services:/a\ \ react:\n\ \ \ \ image: jaewon4834/paws-time-front:latest\n\ \ \ \ container_name: react_app\n\ \ \ \ restart: always\n\ \ \ \ ports:\n\ \ \ \ \ \ - "3000:3000"\n\ \ \ \ networks:\n\ \ \ \ \ \ - pawstimeproject_my_network' /home/***/app/docker-compose.yml
             fi
       
             # Spring Boot 컨테이너 이미지 태그 업데이트
-            sed -i "s|image: dgf0020/pawstime:.*|image: dgf0020/pawstime:${{ github.sha }}|" /home/ec2-user/app/docker-compose.yml
+            sed -i "s|image: dgf0020/pawstime:.*|image: dgf0020/pawstime:${{ github.sha }}|" /home/***/app/docker-compose.yml
       
             # 환경 변수 설정 (GitHub Secrets에서 전달된 값)
             export AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -79,4 +70,4 @@ jobs:
             export AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
       
             # 컨테이너 재시작
-            docker-compose -f /home/ec2-user/app/docker-compose.yml up -d springboot react
+            docker-compose -f /home/***/app/docker-compose.yml up -d springboot react
