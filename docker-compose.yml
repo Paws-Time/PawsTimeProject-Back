@@ -18,6 +18,14 @@ services:
       - "8080:8080"
     networks:
       - pawstimeproject_my_network
+  react:
+    image: jaewon4834/paws-time-front:latest
+    container_name: react_app
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - pawstimeproject_my_network
 
 networks:
   pawstimeproject_my_network:
