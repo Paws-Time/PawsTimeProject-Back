@@ -22,6 +22,8 @@ services:
     image: jaewon4834/paws-time-front:latest
     container_name: react_app
     restart: always
+    environment:
+      NEXT_PUBLIC_KAKAO_MAP_API_JAVASCRIPT: ${KAKAO_MAP_API_KEY}
     ports:
       - "3000:3000"
     networks:
