@@ -55,11 +55,6 @@ jobs:
             # 기존 React 컨테이너 강제 중지 및 제거
             docker ps -q --filter "name=react_app" | grep -q . && docker rm -f react_app || true
       
-            # docker-compose.yml 파일에 react 서비스 추가
-            if ! grep -q "react:" /home/***/app/docker-compose.yml; then
-              sed -i '/services:/a\ \ react:\n\ \ \ \ image: jaewon4834/paws-time-front:latest\n\ \ \ \ container_name: react_app\n\ \ \ \ restart: always\n\ \ \ \ ports:\n\ \ \ \ \ \ - "3000:3000"\n\ \ \ \ networks:\n\ \ \ \ \ \ - pawstimeproject_my_network' /home/***/app/docker-compose.yml
-            fi
-      
             # Spring Boot 컨테이너 이미지 태그 업데이트
             sed -i "s|image: dgf0020/pawstime:.*|image: dgf0020/pawstime:${{ github.sha }}|" /home/***/app/docker-compose.yml
       
