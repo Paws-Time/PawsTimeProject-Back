@@ -1,32 +1,28 @@
 package com.pawstime.pawstime.domain.post.facade;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
-import com.pawstime.pawstime.domain.board.entity.repository.BoardRepository;
-import com.pawstime.pawstime.domain.board.service.ReadBoardService;
 import com.pawstime.pawstime.domain.image.entity.Image;
-import com.pawstime.pawstime.domain.like.service.LikeService;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.resp.GetDetailPostRespDto;
 import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
-import com.pawstime.pawstime.domain.post.service.*;
-import com.pawstime.pawstime.global.exception.DuplicateException;
+import com.pawstime.pawstime.domain.post.service.CreatePostService;
+import com.pawstime.pawstime.domain.post.service.GetDetailPostService;
+import com.pawstime.pawstime.domain.post.service.GetListPostService;
+import com.pawstime.pawstime.domain.post.service.ReadPostService;
+import com.pawstime.pawstime.domain.post.service.S3Service;
+import com.pawstime.pawstime.domain.post.service.UpdatePostService;
 import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 
 @Slf4j

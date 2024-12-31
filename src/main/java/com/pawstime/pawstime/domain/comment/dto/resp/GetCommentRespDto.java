@@ -1,6 +1,5 @@
 package com.pawstime.pawstime.domain.comment.dto.resp;
 
-import com.pawstime.pawstime.domain.board.dto.resp.GetBoardRespDto;
 import com.pawstime.pawstime.domain.comment.entity.Comment;
 import java.time.LocalDateTime;
 import lombok.Builder;
