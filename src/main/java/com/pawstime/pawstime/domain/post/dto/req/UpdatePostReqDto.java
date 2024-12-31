@@ -3,7 +3,6 @@ package com.pawstime.pawstime.domain.post.dto.req;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 public record UpdatePostReqDto(
     @Schema(description = "게시글 제목", example = "우리 집 구리 보러오세요")

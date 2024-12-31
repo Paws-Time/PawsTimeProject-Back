@@ -5,9 +5,6 @@ import com.pawstime.pawstime.domain.post.entity.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public record CreatePostReqDto(
         @Schema(description = "게시글 제목", example = "우리 집 구리 보러오세요")

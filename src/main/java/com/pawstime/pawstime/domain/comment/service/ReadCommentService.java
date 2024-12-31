@@ -3,7 +3,6 @@ package com.pawstime.pawstime.domain.comment.service;
 import com.pawstime.pawstime.domain.comment.entity.Comment;
 import com.pawstime.pawstime.domain.comment.entity.repository.CommentRepository;
 import com.pawstime.pawstime.domain.post.entity.Post;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

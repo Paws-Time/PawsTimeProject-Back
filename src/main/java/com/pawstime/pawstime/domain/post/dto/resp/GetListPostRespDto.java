@@ -1,9 +1,8 @@
 package com.pawstime.pawstime.domain.post.dto.resp;
 
 import com.pawstime.pawstime.domain.post.entity.Post;
-import lombok.Builder;
-
 import java.time.LocalDateTime;
+import lombok.Builder;
 
 @Builder
 public record GetListPostRespDto(

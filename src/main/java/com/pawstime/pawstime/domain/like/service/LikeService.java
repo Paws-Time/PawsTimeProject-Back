@@ -5,13 +5,9 @@ import com.pawstime.pawstime.domain.like.entity.repository.LikeRepository;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
 import com.pawstime.pawstime.global.exception.NotFoundException;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.NotFound;
-import org.springframework.stereotype.Service;
-
-import java.io.NotActiveException;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

@@ -3,7 +3,6 @@ package com.pawstime.pawstime.domain.board.dto.req;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.board.enums.BoardType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 
 public record CreateBoardReqDto(
         @Schema(description = "게시판 제목", example = "일상 게시판")

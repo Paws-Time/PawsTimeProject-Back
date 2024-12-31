@@ -1,10 +1,6 @@
 package com.pawstime.pawstime.domain.post.service;
 
-import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
-import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 public class PostSpecification {
