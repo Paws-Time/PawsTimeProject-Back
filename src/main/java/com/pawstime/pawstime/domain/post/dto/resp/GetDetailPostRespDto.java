@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Builder
 public record GetDetailPostRespDto(
-        Long bordId,
+        Long boardId,
         Long postId,
         String title,
         String content,
@@ -23,7 +23,7 @@ public record GetDetailPostRespDto(
 
 
         return GetDetailPostRespDto.builder()
-                .bordId(post.getBoard().getBoardId())
+                .boardId(post.getBoard().getBoardId())
                 .postId(post.getPostId())
                 .title(post.getTitle())
                 .content(post.getContent())
