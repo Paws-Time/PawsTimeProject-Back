@@ -66,12 +66,11 @@ public class S3Service {
         }
         return fileUrlList;
     }
+
     // 파일 이름 난수화
     public String createFileName(String fileName) {
         System.out.println("파일 이름 난수화");
         return UUID.randomUUID().toString().concat(getFileExtension(fileName));
-
-
     }
 
     // 파일 이름 정리
@@ -98,12 +97,8 @@ public class S3Service {
 
     }
 
-    /**
-     * 파일 삭제 메서드
-     *
-     * @param fileName S3 버킷에 저장된 파일 이름
-     */
     public void deleteFile(String fileName) {
-        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
+        // S3에서 파일 삭제
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, String.valueOf(fileName)));
     }
 }

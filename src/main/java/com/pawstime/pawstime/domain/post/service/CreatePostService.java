@@ -13,7 +13,6 @@ public class CreatePostService {
 
   public void createPost(Post post){
 
-    post.getFormattedCreatedAt();
     postRepository.save(post);
 
   }
