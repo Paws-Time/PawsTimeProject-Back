@@ -1,6 +1,12 @@
 spring:
+  servlet:
+    multipart:
+      enabled: true          # multipart 처리 활성화
+      max-file-size: 10MB    # 최대 파일 크기 설정
+      max-request-size: 10MB # 최대 요청 크기 설정
+
   profiles:
-    active: local
+    active: local           # 현재 활성화된 프로파일은 'local'임을 지정
 
 springdoc:
-  override-with-generic-response: false
+  override-with-generic-response: false   # Swagger와 관련된 설정

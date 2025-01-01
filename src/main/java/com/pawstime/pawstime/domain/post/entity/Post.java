@@ -106,12 +106,15 @@ public class Post extends BaseEntity {
   // 연관된 이미지 추가
   public void addImage(Image image) {
     images.add(image);
-    image.setPost(this);
   }
 
   // 연관된 이미지 제거
   public void removeImage(Image image) {
     images.remove(image);
     image.setPost(null);
+  }
+
+  public void setImages(List<Image> images) {
+    this.images = images;
   }
 }

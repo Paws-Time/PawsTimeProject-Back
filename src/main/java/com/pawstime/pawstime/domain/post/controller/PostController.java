@@ -1,5 +1,6 @@
 package com.pawstime.pawstime.domain.post.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pawstime.pawstime.domain.like.facade.LikeFacade;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
@@ -11,12 +12,16 @@ import com.pawstime.pawstime.domain.post.service.S3Service;
 import com.pawstime.pawstime.global.common.ApiResponse;
 import com.pawstime.pawstime.global.enums.Status;
 import com.pawstime.pawstime.global.exception.CustomException;
+import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,19 +31,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 
 
 @Slf4j
@@ -52,30 +46,64 @@ public class PostController {
     private final LikeFacade likeFacade;
     private final S3Service s3Service;
 
-
-    @Operation(summary = "게시글 생성", description = "게시글을 생성 할 수 있습니다.")
-    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Operation(summary = "게시글 생성", description = "게시글을 생성할 수 있습니다.")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ApiResponse<Void>> createPost(@RequestPart("data") CreatePostReqDto req, @RequestPart(value = "images", required = false) List<MultipartFile> images) {
+    public ResponseEntity<ApiResponse<Void>> createPost(
+            @RequestBody CreatePostReqDto req) {  // JSON 데이터를 DTO로 바로 받기
+
         try {
-            // 이미지를 S3에 업로드하고, 업로드된 이미지 URL들을 리스트로 반환
-            List<String> imageUrls = images == null || images.isEmpty()
-                    ? Collections.emptyList()
-                    : s3Service.uploadImages(images);
+            // 게시글 생성 (이미지 URL은 아직 없음)
+            postFacade.createPost(req, new ArrayList<>());  // 이미지가 없으면 빈 리스트 전달
 
-            // 업로드된 이미지 URL들을 포함해 게시글 생성
-            postFacade.createPost(req, imageUrls); // 이미지 URL을 포함하여 게시글 생성
-
+            // 성공 응답 반환
             return ApiResponse.generateResp(Status.CREATE, "게시글 생성이 완료되었습니다.", null);
         } catch (CustomException e) {
+            // 커스텀 예외 처리
             Status status = Status.valueOf(e.getClass().getSimpleName().replace("Exception", "").toUpperCase());
-            log.info("** {} **", status);
+            log.error("Custom exception occurred: {}", status);
             return ApiResponse.generateResp(status, e.getMessage(), null);
         } catch (Exception e) {
-            return ApiResponse.generateResp(Status.ERROR, "게시글 생성 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+            // 일반 예외 처리
+            log.error("Unexpected error: {}", e.getMessage());
+            return ApiResponse.generateResp(Status.ERROR, "게시글 생성 중 오류가 발생하였습니다: " + e.getMessage(), null);
         }
     }
 
+    @Operation(summary = "게시글 이미지 업로드", description = "이미지 업로드 후 게시글과 연결합니다.")
+    @PostMapping(value = "/posts/{postId}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Void>> uploadImages(
+            @PathVariable Long postId,
+            @RequestPart("images") List<MultipartFile> images) {
+        // 파일 유효성 검사
+        if (images == null || images.isEmpty()) {
+            return ApiResponse.generateResp(Status.ERROR, "이미지 파일을 업로드해주세요.", null);
+        }
+
+        for (MultipartFile file : images) {
+            if (file.isEmpty() || file.getOriginalFilename() == null) {
+                return ApiResponse.generateResp(Status.ERROR, "유효하지 않은 파일입니다.", null);
+            }
+        }
+
+        try {
+            // 게시글 상태 체크 - 소프트 딜리트된 상태라면 예외 발생
+            Post post = postFacade.getPostId(postId);
+            if (post.isDelete()) {
+                throw new InvalidException("삭제된 게시글에는 이미지를 추가할 수 없습니다.");
+            }
+            // S3에 업로드 후 이미지 URL 리스트 받기
+            List<String> imageUrls = s3Service.uploadFile(images);
+
+            // 게시글에 이미지 추가
+            postFacade.addImagesToPost(postId, imageUrls);
+
+            return ApiResponse.generateResp(Status.CREATE, "게시글과 이미지가 성공적으로 업로드되었습니다.", null);
+        } catch (Exception e) {
+            log.error("이미지 업로드 중 오류 발생: {}", e.getMessage(), e);
+            return ApiResponse.generateResp(Status.ERROR, "이미지 업로드 실패: " + e.getMessage(), null);
+        }
+    }
 
     @Operation(summary = "게시글 수정", description = "게시글을 수정할 수 있습니다.")
     @PutMapping("/{postId}")
@@ -165,6 +193,7 @@ public class PostController {
         // Pageable 객체 생성
         return PageRequest.of(page, size, Sort.by(sortDirection, sortField));
     }
+
     @PostMapping("/{postId}/like")
     @Operation(summary = "좋아요", description = "게시글에 좋아요를 누를 수 있습니다.")
 

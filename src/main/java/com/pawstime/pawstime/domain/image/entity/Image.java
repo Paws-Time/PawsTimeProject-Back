@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "Image")
-public class Image extends BaseEntity {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,15 +30,17 @@ public class Image extends BaseEntity {
     private Long imageId;
 
     @Column(nullable = false)
-    private String imageUrl; //s3에 저장된 이미지 url
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-
     @JoinColumn(name = "post_id", nullable = false)
-
     private Post post;
 
-    public void setPost(Post post){
+    // 다른 필드와 메서드들
+
+    // 이미지를 Post에 추가하는 메서드
+    public void setPost(Post post) {
+        System.out.println("*******************");
         this.post = post;
     }
 
