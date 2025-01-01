@@ -2,8 +2,10 @@ package com.pawstime.pawstime.domain.comment.facade;
 
 import com.pawstime.pawstime.domain.comment.dto.req.CreateCommentReqDto;
 import com.pawstime.pawstime.domain.comment.dto.req.UpdateCommentReqDto;
+import com.pawstime.pawstime.domain.comment.dto.resp.CreateCommentRespDto;
 import com.pawstime.pawstime.domain.comment.dto.resp.GetCommentRespDto;
 import com.pawstime.pawstime.domain.comment.entity.Comment;
+import com.pawstime.pawstime.domain.comment.entity.repository.CommentRepository;
 import com.pawstime.pawstime.domain.comment.service.CreateCommentService;
 import com.pawstime.pawstime.domain.comment.service.ReadCommentService;
 import com.pawstime.pawstime.domain.post.entity.Post;
@@ -26,13 +28,13 @@ public class CommentFacade {
 
   private final ReadCommentService readCommentService;
   private final CreateCommentService createCommentService;
+  private final CommentRepository commentRepository;
 
-  public void createComment(Long postId, CreateCommentReqDto req) {
+  public CreateCommentRespDto createComment(Long postId, CreateCommentReqDto req) {
     Post post = readCommentService.getPostById(postId);
 
     if (post == null) {
       throw new NotFoundException("존재하지 않는 게시글 ID입니다.");
-      // isDelete = true로 삭제된 게시글도 여기에 걸림.
     }
 
     // 게시판의 댓글 및 신고 기능 허용 여부 확인
@@ -44,7 +46,18 @@ public class CommentFacade {
       throw new InvalidException("댓글 내용은 필수 입력값입니다.");
     }
 
-    createCommentService.createComment(req.of(post));
+    // CreateCommentReqDto에서 Comment 객체로 변환
+    Comment comment = req.of(post); // req.of(post)는 CreateCommentReqDto에서 Comment 엔티티로 변환하는 로직
+
+
+    // 새로운 댓글 생성
+    Comment createdComment = createCommentService.createComment(comment);
+    // 댓글을 데이터베이스에서 다시 조회
+    createdComment = commentRepository.findByPostAndContent(post, req.content())
+            .orElseThrow(() -> new NotFoundException("댓글 생성 후 조회 실패"));
+
+    // 생성된 댓글을 기반으로 응답 DTO 생성
+    return CreateCommentRespDto.from(createdComment); // 응답 DTO 반환
   }
 
   @Transactional(readOnly = true)

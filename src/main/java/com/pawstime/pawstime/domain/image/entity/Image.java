@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Image")
+@Table(name = "image")
 public class Image {
 
     @Id
@@ -40,7 +40,6 @@ public class Image {
 
     // 이미지를 Post에 추가하는 메서드
     public void setPost(Post post) {
-        System.out.println("*******************");
         this.post = post;
     }
 

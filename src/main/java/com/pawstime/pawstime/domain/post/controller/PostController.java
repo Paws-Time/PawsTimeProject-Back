@@ -71,7 +71,8 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 이미지 업로드", description = "이미지 업로드 후 게시글과 연결합니다.")
-    @PostMapping(value = "/posts/{postId}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    // 게시글 이미지 업로드
     public ResponseEntity<ApiResponse<Void>> uploadImages(
             @PathVariable Long postId,
             @RequestPart("images") List<MultipartFile> images) {
@@ -80,22 +81,17 @@ public class PostController {
             return ApiResponse.generateResp(Status.ERROR, "이미지 파일을 업로드해주세요.", null);
         }
 
-        for (MultipartFile file : images) {
-            if (file.isEmpty() || file.getOriginalFilename() == null) {
-                return ApiResponse.generateResp(Status.ERROR, "유효하지 않은 파일입니다.", null);
-            }
-        }
-
         try {
-            // 게시글 상태 체크 - 소프트 딜리트된 상태라면 예외 발생
+            // 게시글 상태 체크
             Post post = postFacade.getPostId(postId);
             if (post.isDelete()) {
                 throw new InvalidException("삭제된 게시글에는 이미지를 추가할 수 없습니다.");
             }
+
             // S3에 업로드 후 이미지 URL 리스트 받기
             List<String> imageUrls = s3Service.uploadFile(images);
 
-            // 게시글에 이미지 추가
+            // 게시글에 이미지 추가 (DB에 이미지 정보 저장)
             postFacade.addImagesToPost(postId, imageUrls);
 
             return ApiResponse.generateResp(Status.CREATE, "게시글과 이미지가 성공적으로 업로드되었습니다.", null);
@@ -194,7 +190,7 @@ public class PostController {
         return PageRequest.of(page, size, Sort.by(sortDirection, sortField));
     }
 
-    @PostMapping("/{postId}/like")
+    @PostMapping("/{postId}")
     @Operation(summary = "좋아요", description = "게시글에 좋아요를 누를 수 있습니다.")
 
     public ResponseEntity<ApiResponse<Integer>> toggleLike(@PathVariable Long postId) {

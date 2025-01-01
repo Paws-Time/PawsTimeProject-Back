@@ -14,6 +14,7 @@ public class CreateBoardService {
 
   public void createBoard(Board board, BoardType boardType) {
     board.setBoardType(boardType);
+
     boardRepository.save(board);
   }
 }

@@ -2,6 +2,7 @@ package com.pawstime.pawstime.domain.post.facade;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.image.entity.Image;
+import com.pawstime.pawstime.domain.image.entity.repository.ImageRepository;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.resp.GetDetailPostRespDto;
@@ -42,6 +43,7 @@ public class PostFacade {
     private final GetListPostService getListPostService;
     private final PostRepository postRepository;
     private final S3Service s3Service;
+    private final ImageRepository imageRepository;
 
     public void createPost(CreatePostReqDto req, List<String> imageUrls) {
         // 입력값 검증
@@ -84,27 +86,25 @@ public class PostFacade {
         // 게시글 조회
         Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
 
-        // 게시글이 삭제된 상태인 경우 예외 처리
         if (post.isDelete()) {
             throw new InvalidException("삭제된 게시글에는 이미지를 추가할 수 없습니다.");
         }
 
-        // 이미 이미지 리스트가 null이라면 빈 리스트로 초기화
         if (post.getImages() == null) {
             post.setImages(new ArrayList<>());
         }
 
-        // 이미지 URL 리스트를 하나씩 추가
+        // 이미지 URL을 기준으로 Image 엔티티 생성
         for (String imageUrl : imageUrls) {
             Image img = new Image();
             img.setImageUrl(imageUrl);
-            img.setPost(post);  // 해당 이미지가 이 게시글에 속하게 설정
-            post.addImage(img);  // 게시글에 이미지 추가
+            img.setPost(post); // 해당 이미지가 게시글에 속하도록 설정
+            post.addImage(img); // 게시글에 이미지 추가
         }
 
-        // 이미지 추가 후에 변경된 게시글을 저장
+        // 이미지 추가 후 게시글 저장
         postRepository.save(post);
-    }
+        }
 
     // 게시글 수정
     public void updatePost(Long postId, UpdatePostReqDto req) {
@@ -129,32 +129,36 @@ public class PostFacade {
         // 게시글 조회
         Post post = readPostService.findPostById(postId);
 
-        // 예외 처리
         if (post == null) {
             throw new NotFoundException("존재하지 않는 게시글 ID입니다.");
         }
         if (post.isDelete()) {
             throw new NotFoundException("이미 삭제된 게시글입니다.");
         }
-        // 게시글에 연결된 이미지 URL 리스트 가져오기
+
+        // 게시글에 연결된 이미지들
         List<Image> images = post.getImages();
 
-        // 이미지 URL 추출하여 삭제
+        // 이미지 URL을 추출하여 S3에서 삭제하고, DB에서도 삭제
         if (images != null && !images.isEmpty()) {
             List<String> imageUrls = images.stream()
-                    .map(Image::getImageUrl) // 이미지 URL 추출
+                    .map(Image::getImageUrl)
                     .collect(Collectors.toList());
 
-            // 각 이미지 URL을 기반으로 파일 이름을 추출하고 S3에서 삭제
+            // 각 이미지 URL을 S3에서 삭제
             for (String imageUrl : imageUrls) {
                 String fileName = extractFileNameFromUrl(imageUrl); // URL에서 파일 이름 추출
                 s3Service.deleteFile(fileName); // S3에서 파일 삭제
+
+                // DB에서 이미지 엔티티 삭제
+                imageRepository.deleteByImageUrl(imageUrl); // 이미지 URL로 삭제
             }
         }
-        // 소프트 삭제 처리
+
+        // 게시글 소프트 삭제 처리
         post.softDelete();
 
-        // 상태 저장
+        // 소프트 삭제된 게시글 상태 저장
         createPostService.createPost(post);
     }
 
