@@ -190,7 +190,7 @@ public class PostController {
         return PageRequest.of(page, size, Sort.by(sortDirection, sortField));
     }
 
-    @PostMapping("/{postId}")
+    @PostMapping("/{postId}/likes")
     @Operation(summary = "좋아요", description = "게시글에 좋아요를 누를 수 있습니다.")
 
     public ResponseEntity<ApiResponse<Integer>> toggleLike(@PathVariable Long postId) {
