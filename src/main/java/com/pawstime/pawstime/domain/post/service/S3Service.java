@@ -1,98 +1,109 @@
 package com.pawstime.pawstime.domain.post.service;
-
-
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import jakarta.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import java.io.InputStream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Service {
 
-
-    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;  // 10MB 제한
-
-
-    @Value("${aws.s3.access-key-id}")
-    private String accessKeyId;
-
-    @Value("${aws.s3.secret-access-key}")
-    private String secretAccessKey;
-
-    @Value("${aws.s3.region}")
-    private String region;
-
     @Value("${aws.s3.bucket-name}")
-    private String bucketName;
+    private String bucket;
 
+    private final AmazonS3 amazonS3;
 
-    @Value("${aws.s3.max-file-size}")
-    private long maxFileSize; // application.yml에서 파일 크기 제한 값을 읽어옵니다.
-
-    private AmazonS3 amazonS3;
-
- @PostConstruct
-    public void init() {
-
-        System.out.println("Access Key: " + accessKeyId); // 값이 제대로 주입되었는지 확인
-        System.out.println("Region: " + region);  // 값이 제대로 주입되었는지 확인
-        BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
-        this.amazonS3 = AmazonS3ClientBuilder.standard()
-                .withRegion(region)
-                .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
-                .build();
-    }
-    public List<String> uploadImages(List<MultipartFile> files) {
-        List<String> imageUrls = new ArrayList<>();
-
-        for (MultipartFile file : files) {
-            long actualSize = file.getSize();
-
-            if (actualSize > maxFileSize) {
-                throw new RuntimeException("파일 크기가 너무 큽니다. 최대 크기는 " + maxFileSize / 1024 / 1024 + "MB입니다.");
-            }
-            String uniqueFileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            File tempFile = convertMultipartFileToFile(file);
+    /**
+     * 다중 파일 업로드 메서드
+     *
+     * @param multipartFiles 업로드할 파일 리스트
+     * @return 업로드된 파일 이름 리스트
+     */
+    public List<String> uploadFile(List<MultipartFile> multipartFiles) {
+        List<String> fileUrlList = new ArrayList<>();
+        for (MultipartFile file : multipartFiles) {
             try {
-                imageUrls.add(uploadFile(tempFile, "images/" + uniqueFileName));
-            } finally {
-                tempFile.delete(); // 업로드 후 임시 파일 삭제
+                // 파일 이름 정리
+                String originalFileName = sanitizeFileName(file.getOriginalFilename());
+                String fileName = createFileName(originalFileName);
+                System.out.println("파일 이름 정리");
+
+                // 메타데이터 설정
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentLength(file.getSize());
+                objectMetadata.setContentType(file.getContentType() != null ? file.getContentType() : "application/octet-stream");
+                System.out.println("메타데이터 설정");
+
+                // S3 업로드
+                try (InputStream inputStream = file.getInputStream()) {
+                    amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, objectMetadata)
+                            .withCannedAcl(CannedAccessControlList.PublicRead));
+                    System.out.println("s3upload");
+                }
+
+                // 업로드된 파일 URL 저장
+                String fileUrl = amazonS3.getUrl(bucket, fileName).toString();
+                fileUrlList.add(fileUrl);
+
+                log.info("Image uploaded to S3*************************: " + fileUrl);
+            } catch (IOException e) {
+                System.err.println("파일 업로드 실패: " + file.getOriginalFilename());
             }
         }
-        return imageUrls;
+        return fileUrlList;
     }
-    private String uploadFile(File file, String key) {
+    // 파일 이름 난수화
+    public String createFileName(String fileName) {
+        System.out.println("파일 이름 난수화");
+        return UUID.randomUUID().toString().concat(getFileExtension(fileName));
+
+
+    }
+
+    // 파일 이름 정리
+    private String sanitizeFileName(String fileName) {
+        if (fileName.contains(";type=")) {
+            fileName = fileName.split(";type=")[0]; // ';type=' 이전만 남김
+            System.out.println("파일 이름 파일 이름 정리");
+        }
+        System.out.println("파일 이름 파일 이름 정리22");
+        return fileName.replaceAll("[^a-zA-Z0-9._-]", ""); // 허용되지 않은 문자 제거
+
+    }
+
+    // 파일 확장자 추출
+    private String getFileExtension(String fileName) {
         try {
-            amazonS3.putObject(new PutObjectRequest(bucketName, key, file));
-            return amazonS3.getUrl(bucketName, key).toString();
-        } catch (AmazonServiceException e) {
-            throw new RuntimeException("업로드 실패: " + e.getErrorMessage(), e);
+            System.out.println("파일 이름 확장자추출");
+            return fileName.substring(fileName.lastIndexOf("."));
+
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 파일 형식: " + fileName);
         }
+
+
     }
-    private File convertMultipartFileToFile(MultipartFile file) {
-        File convertedFile = new File(file.getOriginalFilename());
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-            fos.write(file.getBytes());
-        } catch (IOException e) {
-            throw new RuntimeException("파일 변환 오류: " + e.getMessage(), e);
-        }
-        if (!convertedFile.exists()) {
-            throw new RuntimeException("임시 파일 생성에 실패했습니다.");
-        }
-        return convertedFile;
+
+    /**
+     * 파일 삭제 메서드
+     *
+     * @param fileName S3 버킷에 저장된 파일 이름
+     */
+    public void deleteFile(String fileName) {
+        amazonS3.deleteObject(new DeleteObjectRequest(bucket, fileName));
     }
 }

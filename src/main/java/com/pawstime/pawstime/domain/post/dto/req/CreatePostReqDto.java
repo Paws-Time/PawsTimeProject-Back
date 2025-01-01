@@ -17,17 +17,16 @@ public record CreatePostReqDto(
 
         @NotNull(message = "게시판 ID는 필수 입력값입니다.")  // boardId가 null일 경우 예외 발생
         Long boardId,           // 게시판 ID
-        int likesCount// 좋아요 수
 
+        int likesCount          // 좋아요 수
 ) {
     public Post toEntity(Board board) {
         return Post.builder()
                 .title(this.title)
                 .content(this.content)
                 .board(board)
+                .likesCount(likesCount)  // likesCount 설정
+                .views(0)  // 기본 조회수 설정
                 .build();
     }
 }
-
-
-

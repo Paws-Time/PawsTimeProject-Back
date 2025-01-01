@@ -16,7 +16,11 @@ import com.pawstime.pawstime.domain.post.service.S3Service;
 import com.pawstime.pawstime.domain.post.service.UpdatePostService;
 import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,30 +41,70 @@ public class PostFacade {
     private final GetDetailPostService getDetailPostService;
     private final GetListPostService getListPostService;
     private final PostRepository postRepository;
-
     private final S3Service s3Service;
 
-
     public void createPost(CreatePostReqDto req, List<String> imageUrls) {
-        if (req.boardId() == null || req.title() == null || req.content() == null) {
-            throw new InvalidException("필수 입력값이 누락되었습니다.");
+        // 입력값 검증
+        validateCreatePostRequest(req);
+
+        // 게시판 검증
+        Board board = validateBoard(req.boardId());
+
+        // 게시글 생성
+        Post post = createPostEntity(req, board);
+
+        // 이미지 추가
+        if (imageUrls != null && !imageUrls.isEmpty()) {
+            addImagesToPost(post.getPostId(), imageUrls);
         }
 
-        Board board = readPostService.findBoardById(req.boardId());
-        if (board == null || board.isDelete()) {
-            throw new NotFoundException("유효하지 않은 게시판입니다.");
-        }
-
-        Post post = req.toEntity(board);
-        for (String imageUrl : imageUrls) {
-            Image img = new Image();
-            img.setImageUrl(imageUrl);
-            img.setPost(post);
-            post.addImage(img);
-        }
+        // 게시글 저장
         createPostService.createPost(post);
     }
 
+    private void validateCreatePostRequest(CreatePostReqDto req) {
+        if (req.boardId() == null || req.title() == null || req.content() == null) {
+            throw new InvalidException("필수 입력값이 누락되었습니다.");
+        }
+    }
+
+    private Board validateBoard(Long boardId) {
+        Board board = readPostService.findBoardById(boardId);
+        if (board == null || board.isDelete()) {
+            throw new NotFoundException("유효하지 않은 게시판입니다.");
+        }
+        return board;
+    }
+
+    private Post createPostEntity(CreatePostReqDto req, Board board) {
+        return req.toEntity(board);
+    }
+
+    public void addImagesToPost(Long postId, List<String> imageUrls) {
+        // 게시글 조회
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+
+        // 게시글이 삭제된 상태인 경우 예외 처리
+        if (post.isDelete()) {
+            throw new InvalidException("삭제된 게시글에는 이미지를 추가할 수 없습니다.");
+        }
+
+        // 이미 이미지 리스트가 null이라면 빈 리스트로 초기화
+        if (post.getImages() == null) {
+            post.setImages(new ArrayList<>());
+        }
+
+        // 이미지 URL 리스트를 하나씩 추가
+        for (String imageUrl : imageUrls) {
+            Image img = new Image();
+            img.setImageUrl(imageUrl);
+            img.setPost(post);  // 해당 이미지가 이 게시글에 속하게 설정
+            post.addImage(img);  // 게시글에 이미지 추가
+        }
+
+        // 이미지 추가 후에 변경된 게시글을 저장
+        postRepository.save(post);
+    }
 
     // 게시글 수정
     public void updatePost(Long postId, UpdatePostReqDto req) {
@@ -92,7 +136,21 @@ public class PostFacade {
         if (post.isDelete()) {
             throw new NotFoundException("이미 삭제된 게시글입니다.");
         }
+        // 게시글에 연결된 이미지 URL 리스트 가져오기
+        List<Image> images = post.getImages();
 
+        // 이미지 URL 추출하여 삭제
+        if (images != null && !images.isEmpty()) {
+            List<String> imageUrls = images.stream()
+                    .map(Image::getImageUrl) // 이미지 URL 추출
+                    .collect(Collectors.toList());
+
+            // 각 이미지 URL을 기반으로 파일 이름을 추출하고 S3에서 삭제
+            for (String imageUrl : imageUrls) {
+                String fileName = extractFileNameFromUrl(imageUrl); // URL에서 파일 이름 추출
+                s3Service.deleteFile(fileName); // S3에서 파일 삭제
+            }
+        }
         // 소프트 삭제 처리
         post.softDelete();
 
@@ -111,13 +169,22 @@ public class PostFacade {
 
         return getDetailPostService.getDetailPost(postId);  // DTO 반환
     }
+
     // 게시글 목록 조회 (정렬 기준 및 방향 추가)
     public Page<GetListPostRespDto> getPostList(Long boardId, String keyword, Pageable pageable, String sortBy, String direction) {
         // getListPostService에서 정렬 기준을 포함하여 서비스 호출
         return getListPostService.getPostList(boardId, keyword, pageable, sortBy, direction);
     }
+
     // 게시글 ID로 조회
     public Post getPostId(Long postId) {
         return postRepository.findById(postId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+    }
+
+    // URL에서 파일 이름을 추출하는 유틸리티 메서드
+    private String extractFileNameFromUrl(String imageUrl) {
+        // URL에서 파일 이름 추출 로직
+        // 예: https://s3.amazonaws.com/bucket_name/filename.jpg -> filename.jpg 추출
+        return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
     }
 }
