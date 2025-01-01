@@ -10,6 +10,7 @@ public record CreateCommentReqDto(
 ) {
 
   public Comment of(Post post) {
+
     return Comment.builder()
         .post(post)
         .content(this.content)

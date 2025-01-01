@@ -16,7 +16,6 @@ public class UpdatePostService {
   public void updatePost(Post post, UpdatePostReqDto req) {
     post.setTitle(req.title());
     post.setContent(req.content());
-
     postRepository.save(post);
   }
 }

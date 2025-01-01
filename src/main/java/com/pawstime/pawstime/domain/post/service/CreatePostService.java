@@ -13,7 +13,7 @@ public class CreatePostService {
 
   public void createPost(Post post){
 
-    //1.게시글 저장
+    post.getFormattedCreatedAt();
     postRepository.save(post);
 
   }

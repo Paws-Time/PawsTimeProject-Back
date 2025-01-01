@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
     List<Image> findByPost_PostId(Long postId);
+    void deleteByImageUrl(String imageUrl);  // 이미지 URL로 삭제
 }
