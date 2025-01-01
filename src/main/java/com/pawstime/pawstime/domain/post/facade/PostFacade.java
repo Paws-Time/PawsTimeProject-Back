@@ -19,6 +19,7 @@ import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -104,7 +105,15 @@ public class PostFacade {
 
         // 이미지 추가 후 게시글 저장
         postRepository.save(post);
+    }
+
+    public void deleteImagesToPost(Long postId, List<String> imageUrls) {
+        // 게시글 조회
+        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        if (post.isDelete()) {
+            throw new InvalidException("삭제된 게시글에는 이미지를 삭제할 수 없습니다.");
         }
+    }
 
     // 게시글 수정
     public void updatePost(Long postId, UpdatePostReqDto req) {
@@ -123,8 +132,6 @@ public class PostFacade {
         updatePostService.updatePost(post, req);
     }
 
-
-    //게시글 삭제
     public void deletePost(Long postId) {
         // 게시글 조회
         Post post = readPostService.findPostById(postId);
@@ -136,30 +143,30 @@ public class PostFacade {
             throw new NotFoundException("이미 삭제된 게시글입니다.");
         }
 
-        // 게시글에 연결된 이미지들
+        // 게시글에 연관된 이미지들 조회
         List<Image> images = post.getImages();
 
-        // 이미지 URL을 추출하여 S3에서 삭제하고, DB에서도 삭제
+        // 이미지 URL 추출하여 삭제
         if (images != null && !images.isEmpty()) {
             List<String> imageUrls = images.stream()
-                    .map(Image::getImageUrl)
+                    .map(Image::getImageUrl) // 이미지 URL 추출
                     .collect(Collectors.toList());
 
-            // 각 이미지 URL을 S3에서 삭제
+            // 각 이미지 URL을 기반으로 파일 이름을 추출하고 S3에서 삭제
             for (String imageUrl : imageUrls) {
                 String fileName = extractFileNameFromUrl(imageUrl); // URL에서 파일 이름 추출
                 s3Service.deleteFile(fileName); // S3에서 파일 삭제
-
-                // DB에서 이미지 엔티티 삭제
-                imageRepository.deleteByImageUrl(imageUrl); // 이미지 URL로 삭제
             }
+
+            // 이미지 목록을 비워서 orphan removal이 자동으로 처리하도록 합니다.
+            post.getImages().clear(); // 이미지를 삭제한 후, 게시글에서 이미지 목록을 비웁니다.
         }
 
-        // 게시글 소프트 삭제 처리
+        // 소프트 삭제 처리
         post.softDelete();
 
-        // 소프트 삭제된 게시글 상태 저장
-        createPostService.createPost(post);
+        // 게시글 상태 저장
+        postRepository.save(post);  // 게시글만 저장
     }
 
     public GetDetailPostRespDto getDetailPost(Long postId) {
@@ -191,4 +198,5 @@ public class PostFacade {
         // 예: https://s3.amazonaws.com/bucket_name/filename.jpg -> filename.jpg 추출
         return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
     }
+
 }

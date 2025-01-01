@@ -14,7 +14,6 @@ public class CreateCommentService {
 
     public Comment createComment(Comment comment) {
         comment.getFormattedCreatedAt();
-
         return commentRepository.save(comment);
     }
 }
