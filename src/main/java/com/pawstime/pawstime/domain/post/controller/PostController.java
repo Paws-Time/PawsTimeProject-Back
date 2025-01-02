@@ -189,7 +189,25 @@ public class PostController {
 
         } catch (Exception e) {
             return ApiResponse.generateResp(
-                Status.ERROR, "게시판 상세조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+                Status.ERROR, "썸네일 이미지 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+        }
+    }
+
+    @Operation(summary = "게시글별 이미지 전체 조회")
+    @GetMapping("/{postId}/images")
+    public ResponseEntity<ApiResponse<List<GetImageRespDto>>> getImages(@PathVariable Long postId) {
+        try {
+            return ApiResponse.generateResp(Status.SUCCESS, null, postFacade.getImages(postId));
+        } catch (CustomException e) {
+            Status status = Status.valueOf(e.getClass()
+                .getSimpleName()
+                .replace("Exception", "")
+                .toUpperCase());
+            return ApiResponse.generateResp(status, e.getMessage(), null);
+
+        } catch (Exception e) {
+            return ApiResponse.generateResp(
+                Status.ERROR, "게시글별 이미지 전체 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
         }
     }
 

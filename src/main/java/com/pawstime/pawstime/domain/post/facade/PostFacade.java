@@ -223,4 +223,21 @@ public class PostFacade {
 
       return thumbnail;
   }
+
+    public List<GetImageRespDto> getImages(Long postId) {
+        Post post = readPostService.findPostId(postId);
+
+        if (post == null || post.isDelete()) {
+            throw new NotFoundException("존재하지 않거나 삭제된 게시글입니다.");
+        }
+
+        List<Image> images = readImageService.getImages(postId);
+
+        if (images.isEmpty()) {
+            GetImageRespDto defaultImage = new GetImageRespDto(null, "https://paws-time-bucket.s3.ap-northeast-2.amazonaws.com/a6666d57-bcc5-4a30-93b7-81d58ae4d5fd.jpg", postId);
+            return List.of(defaultImage);
+        }
+
+        return images.stream().map(GetImageRespDto::from).toList();
+    }
 }

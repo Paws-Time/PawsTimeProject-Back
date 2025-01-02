@@ -16,4 +16,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
   @Query("SELECT i FROM Image i WHERE i.post.postId = :postId")
   Page<Image> getThumbnail(Long postId, Pageable pageable);
+
+  @Query("SELECT i FROM Image i WHERE i.post.postId = :postId")
+  List<Image> getImages(Long postId);
 }
