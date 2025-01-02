@@ -18,4 +18,8 @@ public class ReadImageService {
   public Page<Image> getThumbnail(Long postId, Pageable pageable) {
     return imageRepository.getThumbnail(postId, pageable);
   }
+
+  public List<Image> getImages(Long postId) {
+    return imageRepository.getImages(postId);
+  }
 }
