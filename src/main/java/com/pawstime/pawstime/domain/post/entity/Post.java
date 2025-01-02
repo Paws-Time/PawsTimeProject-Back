@@ -113,13 +113,5 @@ public class Post extends BaseEntity {
   }
 
 
-  public Post updateContent(String title, String content) {
-    if (title != null) {
-      this.title = title;
-    }
-    if (content != null) {
-      this.content = content;
-    }
-    return this; // 업데이트된 엔티티를 반환
-  }
+
 }
