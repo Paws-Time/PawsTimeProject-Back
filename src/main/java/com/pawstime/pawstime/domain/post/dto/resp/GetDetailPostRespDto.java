@@ -18,7 +18,6 @@ public record GetDetailPostRespDto(
 
 ) {
 
-
     public static GetDetailPostRespDto from(Post post,  long commentCount) {
 
 

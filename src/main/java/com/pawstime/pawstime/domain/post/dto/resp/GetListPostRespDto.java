@@ -12,7 +12,8 @@ public record GetListPostRespDto(
         LocalDateTime createdAt, // 작성일
         LocalDateTime updatedAt, // 수정일
         int views,               // 조회수
-        int likesCount          // 좋아요 수
+        int likesCount,// 좋아요 수
+        Long boardId // 게시판 아이디
 ) {
     // Post 엔티티를 DTO로 변환하는 메서드
     public static GetListPostRespDto from(Post post) {
@@ -25,7 +26,8 @@ public record GetListPostRespDto(
                 .createdAt(post.getCreatedAt())              // 작성일
                 .updatedAt(post.getUpdatedAt())              // 수정일
                 .views(post.getViews())                      // 조회수
-                .likesCount(post.getLikesCount())            // 좋아요 수
+                .likesCount(post.getLikesCount())
+                .boardId(post.getBoard().getBoardId())
                 .build();
     }
 }

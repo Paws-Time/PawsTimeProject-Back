@@ -105,7 +105,7 @@ public class PostController {
     @PutMapping( "/{postId}")
     public ResponseEntity<ApiResponse<Void>> updatePost(
             @PathVariable Long postId,
-            @Valid @ModelAttribute UpdatePostReqDto req
+            @RequestBody UpdatePostReqDto req
     ) {
         try {
             postFacade.updatePost(postId, req);

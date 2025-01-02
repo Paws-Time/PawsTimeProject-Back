@@ -20,7 +20,6 @@ public class GetDetailPostService {
         post.increaseViews();
         postRepository.save(post); // 조회수가 증가된 게시글 저장
 
-
         long commentCount = commentRepository.countByPost(post);
 
         // DTO 반환 시 댓글 수 포함

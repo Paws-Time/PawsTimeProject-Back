@@ -42,10 +42,6 @@ public class Post extends BaseEntity {
   @Column(nullable = false)
   private String content;
 
-  //@ManyToOne
-  //@JoinColumn(name = "user_id", nullable = false)
-  //private User user; // User 엔티티와 관계 설정
-
   @ManyToOne
   @JoinColumn(name = "board_id", nullable = false)
   private Board board; // Board 엔티티와 관계 설정
@@ -63,7 +59,6 @@ public class Post extends BaseEntity {
   //게시글 생성/삭제 시 연관된 이미지도 함께 처리.
   @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Image> images = new ArrayList<>(); // 게시글과 연관된 이미지 리스트
-
 
   public void setTitle(String title) {
     this.title = title;

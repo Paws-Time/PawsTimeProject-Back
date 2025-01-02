@@ -13,13 +13,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReadImageService {
 
-  private final ImageRepository imageRepository;
+    private final ImageRepository imageRepository;
 
-  public Page<Image> getThumbnail(Long postId, Pageable pageable) {
-    return imageRepository.getThumbnail(postId, pageable);
-  }
+    public Page<Image> getThumbnail(Long postId, Pageable pageable) {
+        return imageRepository.getThumbnail(postId, pageable);
+    }
 
-  public List<Image> getImages(Long postId) {
-    return imageRepository.getImages(postId);
-  }
+    public List<Image> getImages(Long postId) {
+        return imageRepository.getImages(postId);
+    }
+
+    public Page<Image> getRandomImages(Pageable pageable) {
+        return imageRepository.getRandomImages(pageable);
+    }
 }
