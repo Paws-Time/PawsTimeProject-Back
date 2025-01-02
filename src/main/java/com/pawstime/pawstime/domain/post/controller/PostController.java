@@ -211,6 +211,24 @@ public class PostController {
         }
     }
 
+    @Operation(summary = "메인페이지에서 사용할 랜덤 이미지 조회")
+    @GetMapping("/images/random")
+    public ResponseEntity<ApiResponse<List<GetImageRespDto>>> getRandomImages() {
+        try {
+            return ApiResponse.generateResp(Status.SUCCESS, null, postFacade.getRandomImages().getContent());
+        } catch (CustomException e) {
+            Status status = Status.valueOf(e.getClass()
+                .getSimpleName()
+                .replace("Exception", "")
+                .toUpperCase());
+            return ApiResponse.generateResp(status, e.getMessage(), null);
+
+        } catch (Exception e) {
+            return ApiResponse.generateResp(
+                Status.ERROR, "랜덤 이미지 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+        }
+    }
+
     // Pageable 객체 생성 (정렬 처리)
     public Pageable createPageable(String sort, int page, int size) {
         String[] sortParams = sort.split(",");

@@ -22,4 +22,8 @@ public class ReadImageService {
   public List<Image> getImages(Long postId) {
     return imageRepository.getImages(postId);
   }
+
+  public Page<Image> getRandomImages(Pageable pageable) {
+    return imageRepository.getRandomImages(pageable);
+  }
 }
