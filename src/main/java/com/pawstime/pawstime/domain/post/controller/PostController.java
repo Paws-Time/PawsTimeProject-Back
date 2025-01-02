@@ -49,15 +49,15 @@ public class PostController {
     @Operation(summary = "게시글 생성", description = "게시글을 생성할 수 있습니다.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<ApiResponse<Void>> createPost(
+    public ResponseEntity<ApiResponse<Long>> createPost(
             @RequestBody CreatePostReqDto req) {  // JSON 데이터를 DTO로 바로 받기
 
         try {
             // 게시글 생성 (이미지 URL은 아직 없음)
-            postFacade.createPost(req, new ArrayList<>());  // 이미지가 없으면 빈 리스트 전달
+            Long postId = postFacade.createPost(req, new ArrayList<>());  // 이미지가 없으면 빈 리스트 전달
 
             // 성공 응답 반환
-            return ApiResponse.generateResp(Status.CREATE, "게시글 생성이 완료되었습니다.", null);
+            return ApiResponse.generateResp(Status.CREATE, "게시글 생성이 완료되었습니다. ", postId);
         } catch (CustomException e) {
             // 커스텀 예외 처리
             Status status = Status.valueOf(e.getClass().getSimpleName().replace("Exception", "").toUpperCase());
@@ -72,7 +72,6 @@ public class PostController {
 
     @Operation(summary = "게시글 이미지 업로드", description = "이미지 업로드 후 게시글과 연결합니다.")
     @PostMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    // 게시글 이미지 업로드
     public ResponseEntity<ApiResponse<Void>> uploadImages(
             @PathVariable Long postId,
             @RequestPart("images") List<MultipartFile> images) {

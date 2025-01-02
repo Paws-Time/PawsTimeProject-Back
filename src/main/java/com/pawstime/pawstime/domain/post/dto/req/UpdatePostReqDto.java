@@ -3,6 +3,7 @@ package com.pawstime.pawstime.domain.post.dto.req;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -12,7 +13,11 @@ public record UpdatePostReqDto(
         String title,
         @Schema(description = "게시글 내용", example = "일상 내용")
         @NotBlank(message = "내용은 비어 있을 수 없습니다.")
-        String content
+        String content,
+        @Schema(description = "삭제할 이미지 ID 목록", example = "[1, 2, 3]")
+        List<Long> deletedImageIds, // 삭제할 이미지 ID 목록
+        @Schema(description = "추가할 이미지 파일", example = "image1.jpg, image2.jpg")
+        List<MultipartFile> newImages // 새로 추가할 이미지 파일
 
 ) {
 }

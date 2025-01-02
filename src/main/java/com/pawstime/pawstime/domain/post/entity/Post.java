@@ -108,12 +108,18 @@ public class Post extends BaseEntity {
     images.add(image);
   }
 
-  // 연관된 이미지 제거
-  public void removeImage(Image image) {
-    images.remove(image);
-  }
-
   public void setImages(List<Image> images) {
     this.images = images;
+  }
+
+
+  public Post updateContent(String title, String content) {
+    if (title != null) {
+      this.title = title;
+    }
+    if (content != null) {
+      this.content = content;
+    }
+    return this; // 업데이트된 엔티티를 반환
   }
 }

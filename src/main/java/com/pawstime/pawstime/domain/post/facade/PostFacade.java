@@ -29,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Slf4j
@@ -46,7 +47,8 @@ public class PostFacade {
     private final S3Service s3Service;
     private final ImageRepository imageRepository;
 
-    public void createPost(CreatePostReqDto req, List<String> imageUrls) {
+
+    public Long createPost(CreatePostReqDto req, List<String> imageUrls) {
         // 입력값 검증
         validateCreatePostRequest(req);
 
@@ -56,13 +58,14 @@ public class PostFacade {
         // 게시글 생성
         Post post = createPostEntity(req, board);
 
-        // 이미지 추가
+        // 게시글 저장
+        Post savedPost = createPostService.createPost(post);
+
+        // 이미지 추가 (선택 사항)
         if (imageUrls != null && !imageUrls.isEmpty()) {
             addImagesToPost(post.getPostId(), imageUrls);
         }
-
-        // 게시글 저장
-        createPostService.createPost(post);
+        return savedPost.getPostId();
     }
 
     private void validateCreatePostRequest(CreatePostReqDto req) {
@@ -99,20 +102,12 @@ public class PostFacade {
         for (String imageUrl : imageUrls) {
             Image img = new Image();
             img.setImageUrl(imageUrl);
-            img.setPost(post); // 해당 이미지가 게시글에 속하도록 설정
+            img.setPost(post); // 이미지가 게시글에 속하도록 설정
             post.addImage(img); // 게시글에 이미지 추가
         }
 
-        // 이미지 추가 후 게시글 저장
+        // 변경된 게시글 저장
         postRepository.save(post);
-    }
-
-    public void deleteImagesToPost(Long postId, List<String> imageUrls) {
-        // 게시글 조회
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
-        if (post.isDelete()) {
-            throw new InvalidException("삭제된 게시글에는 이미지를 삭제할 수 없습니다.");
-        }
     }
 
     // 게시글 수정
@@ -128,8 +123,43 @@ public class PostFacade {
             throw new NotFoundException("이미 삭제된 게시글입니다.");
         }
 
-        // 게시글 수정
+        // 1. 기존 이미지 삭제 처리
+        if (req.deletedImageIds() != null) {
+            for (Long imageId : req.deletedImageIds()) {
+                Image image = imageRepository.findById(imageId)
+                        .orElseThrow(() -> new NotFoundException("존재하지 않는 이미지 ID입니다."));
+
+                String imageUrl = image.getImageUrl();
+                String fileName = extractFileNameFromUrl(imageUrl);
+                s3Service.deleteFile(fileName); // S3에서 파일 삭제
+
+                post.getImages().remove(image); // 게시글에서 이미지 제거
+                imageRepository.delete(image); // 데이터베이스에서 이미지 삭제
+            }
+        }
+
+        // 2. 새 이미지 추가 처리
+        if (req.newImages() != null && !req.newImages().isEmpty()) {
+            for (MultipartFile newImage : req.newImages()) {
+                // 단일 파일을 업로드하기 위해 리스트로 감싸서 URL 추출
+                String uploadedUrl = s3Service.uploadFile(Collections.singletonList(newImage)).get(0);
+
+                // 빌더 패턴을 사용하여 Image 객체 생성
+                Image image = Image.builder()
+                        .imageUrl(uploadedUrl)
+                        .post(post)
+                        .build();
+
+                // 데이터베이스에 저장
+                imageRepository.save(image);
+
+                // 게시글과 연결 (이미지 리스트에 추가)
+                post.getImages().add(image);
+            }
+        }
         updatePostService.updatePost(post, req);
+
+        postRepository.save(post); // 게시글 저장
     }
 
     public void deletePost(Long postId) {
