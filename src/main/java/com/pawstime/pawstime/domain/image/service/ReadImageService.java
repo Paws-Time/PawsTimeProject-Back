@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ReadImageService {
-
     private final ImageRepository imageRepository;
 
     public Page<Image> getThumbnail(Long postId, Pageable pageable) {
