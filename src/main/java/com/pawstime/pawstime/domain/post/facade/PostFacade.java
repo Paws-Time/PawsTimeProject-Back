@@ -1,7 +1,9 @@
 package com.pawstime.pawstime.domain.post.facade;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
+import com.pawstime.pawstime.domain.image.dto.resp.GetImageRespDto;
 import com.pawstime.pawstime.domain.image.entity.Image;
+import com.pawstime.pawstime.domain.image.service.ReadImageService;
 import com.pawstime.pawstime.domain.image.service.UpdateImageService;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
@@ -48,6 +50,7 @@ private final ReadPostService readPostService;
     private final PostRepository postRepository;
     private final S3Service s3Service;
     private final UpdateImageService updateImageService;
+    private final ReadImageService readImageService;
 
 
 
