@@ -2,7 +2,7 @@ package com.pawstime.pawstime.domain.post.facade;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.image.entity.Image;
-import com.pawstime.pawstime.domain.image.entity.repository.ImageRepository;
+import com.pawstime.pawstime.domain.image.service.UpdateImageService;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.resp.GetDetailPostRespDto;
@@ -19,8 +19,8 @@ import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class PostFacade {
     private final GetListPostService getListPostService;
     private final PostRepository postRepository;
     private final S3Service s3Service;
-    private final ImageRepository imageRepository;
+    private final UpdateImageService updateImageService;
 
 
     public Long createPost(CreatePostReqDto req, List<String> imageUrls) {
@@ -122,45 +122,34 @@ public class PostFacade {
         if (post.isDelete()) {
             throw new NotFoundException("이미 삭제된 게시글입니다.");
         }
-
-        // 1. 기존 이미지 삭제 처리
-        if (req.deletedImageIds() != null) {
-            for (Long imageId : req.deletedImageIds()) {
-                Image image = imageRepository.findById(imageId)
-                        .orElseThrow(() -> new NotFoundException("존재하지 않는 이미지 ID입니다."));
-
-                String imageUrl = image.getImageUrl();
-                String fileName = extractFileNameFromUrl(imageUrl);
-                s3Service.deleteFile(fileName); // S3에서 파일 삭제
-
-                post.getImages().remove(image); // 게시글에서 이미지 제거
-                imageRepository.delete(image); // 데이터베이스에서 이미지 삭제
-            }
-        }
-
-        // 2. 새 이미지 추가 처리
-        if (req.newImages() != null && !req.newImages().isEmpty()) {
-            for (MultipartFile newImage : req.newImages()) {
-                // 단일 파일을 업로드하기 위해 리스트로 감싸서 URL 추출
-                String uploadedUrl = s3Service.uploadFile(Collections.singletonList(newImage)).get(0);
-
-                // 빌더 패턴을 사용하여 Image 객체 생성
-                Image image = Image.builder()
-                        .imageUrl(uploadedUrl)
-                        .post(post)
-                        .build();
-
-                // 데이터베이스에 저장
-                imageRepository.save(image);
-
-                // 게시글과 연결 (이미지 리스트에 추가)
-                post.getImages().add(image);
-            }
-        }
         updatePostService.updatePost(post, req);
 
         postRepository.save(post); // 게시글 저장
     }
+
+    @Transactional
+    public void updatePostImages(Long postId, List<Long> deletedImageIds, List<MultipartFile> newImages) {
+        // 게시글 조회
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("게시글이 존재하지 않습니다."));
+
+        // 삭제할 이미지 처리
+        if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
+            List<Long> deletedImageIdsList = updateImageService.deleteImagesFromPost(deletedImageIds, post);
+
+            // 삭제된 이미지 리스트 반환 (필요에 따라 로깅하거나 처리 가능)
+            log.info("삭제된 이미지 ID 목록: {}", deletedImageIdsList);
+        }
+
+        // 새로 추가할 이미지 처리
+        if (newImages != null && !newImages.isEmpty()) {
+            List<Map<String, Object>> newImagesInfo = updateImageService.addNewImagesToPost(newImages, post);
+
+            // 추가된 이미지 정보 반환 (필요에 따라 로깅하거나 처리 가능)
+            log.info("추가된 이미지 정보: {}", newImagesInfo);
+        }
+    }
+
 
     public void deletePost(Long postId) {
         // 게시글 조회

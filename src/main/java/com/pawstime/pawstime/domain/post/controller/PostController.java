@@ -101,11 +101,12 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 수정", description = "게시글을 수정할 수 있습니다.")
-    @PutMapping("/{postId}")
-    public ResponseEntity<ApiResponse<Void>> updatePost(@Valid @PathVariable Long postId,
-                                                        @RequestBody UpdatePostReqDto req) {
+    @PutMapping( "/{postId}")
+    public ResponseEntity<ApiResponse<Void>> updatePost(
+            @PathVariable Long postId,
+            @Valid @ModelAttribute UpdatePostReqDto req
+    ) {
         try {
-            // Facade에서 예외를 던지도록 처리
             postFacade.updatePost(postId, req);
             return ApiResponse.generateResp(Status.UPDATE, "게시글 수정이 완료되었습니다.", null);
         } catch (CustomException e) {
@@ -116,6 +117,26 @@ public class PostController {
             return ApiResponse.generateResp(Status.ERROR, "게시글 수정 중 오류가 발생하였습니다: " + e.getMessage(), null);
         }
     }
+
+    @Operation(summary = "게시글 이미지 수정", description = "기존 이미지를 삭제하거나 새로운 이미지를 추가합니다.")
+    @PutMapping(value = "/{postId}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<Void>> updatePostImages(
+            @PathVariable Long postId,
+            @RequestParam(value = "deletedImageIds", required = false) List<Long> deletedImageIds,
+            @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages) {
+
+        try {
+            // 이미지 수정 요청 처리
+            postFacade.updatePostImages(postId, deletedImageIds, newImages);
+
+            return ApiResponse.generateResp(Status.UPDATE, "게시글 이미지가 수정되었습니다.", null);
+        } catch (Exception e) {
+            log.error("게시글 이미지 수정 중 오류 발생: {}", e.getMessage(), e);
+            return ApiResponse.generateResp(Status.ERROR, "이미지 수정 실패: " + e.getMessage(), null);
+        }
+    }
+
+
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제할 수 있습니다.")
     @DeleteMapping("/{postId}")
