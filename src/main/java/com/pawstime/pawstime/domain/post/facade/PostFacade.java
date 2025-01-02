@@ -257,4 +257,11 @@ private final ReadPostService readPostService;
 
         return images.stream().map(GetImageRespDto::from).toList();
     }
+
+    public Page<GetImageRespDto> getRandomImages() {
+        Pageable pageable = PageRequest.of(0, 5);
+        // 전체 이미지 중 5개의 이미지만 가져오도록 Pageable사용 (repository에서 랜덤으로 정렬한 후 5개만 가져옴)
+
+        return readImageService.getRandomImages(pageable).map(GetImageRespDto::from);
+    }
 }

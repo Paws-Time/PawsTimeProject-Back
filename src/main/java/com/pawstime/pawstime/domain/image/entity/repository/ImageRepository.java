@@ -19,4 +19,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
   @Query("SELECT i FROM Image i WHERE i.post.postId = :postId")
   List<Image> getImages(Long postId);
+
+  @Query("SELECT i FROM Image i ORDER BY RAND()")
+  Page<Image> getRandomImages(Pageable pageable);
 }
