@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PostFacade {
 
-    private final ReadPostService readPostService;
+private final ReadPostService readPostService;
     private final CreatePostService createPostService;
     private final UpdatePostService updatePostService;
     private final GetDetailPostService getDetailPostService;
@@ -46,6 +48,7 @@ public class PostFacade {
     private final PostRepository postRepository;
     private final S3Service s3Service;
     private final UpdateImageService updateImageService;
+
 
 
     public Long createPost(CreatePostReqDto req, List<String> imageUrls) {
@@ -218,4 +221,40 @@ public class PostFacade {
         return imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
     }
 
+  public Page<GetImageRespDto> getThumbnail(Long postId) {
+      Post post = readPostService.findPostId(postId);
+
+      if (post == null || post.isDelete()) {
+          throw new NotFoundException("존재하지 않거나 삭제된 게시글입니다.");
+      }
+
+      Pageable pageable = PageRequest.of(0, 1);
+      // 게시글에 있는 이미지 중 제일 첫번째 이미지만 가져오도록 Pageable사용
+
+      Page<GetImageRespDto> thumbnail = readImageService.getThumbnail(postId, pageable).map(GetImageRespDto::from);
+
+      if (thumbnail.isEmpty()) {
+          GetImageRespDto defaultImage = new GetImageRespDto(null, "https://paws-time-bucket.s3.ap-northeast-2.amazonaws.com/a6666d57-bcc5-4a30-93b7-81d58ae4d5fd.jpg", postId);
+          return new PageImpl<>(List.of(defaultImage), pageable, 1);
+      }
+
+      return thumbnail;
+  }
+
+    public List<GetImageRespDto> getImages(Long postId) {
+        Post post = readPostService.findPostId(postId);
+
+        if (post == null || post.isDelete()) {
+            throw new NotFoundException("존재하지 않거나 삭제된 게시글입니다.");
+        }
+
+        List<Image> images = readImageService.getImages(postId);
+
+        if (images.isEmpty()) {
+            GetImageRespDto defaultImage = new GetImageRespDto(null, "https://paws-time-bucket.s3.ap-northeast-2.amazonaws.com/a6666d57-bcc5-4a30-93b7-81d58ae4d5fd.jpg", postId);
+            return List.of(defaultImage);
+        }
+
+        return images.stream().map(GetImageRespDto::from).toList();
+    }
 }

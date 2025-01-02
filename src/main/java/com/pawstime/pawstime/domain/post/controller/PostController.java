@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.post.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pawstime.pawstime.domain.image.dto.resp.GetImageRespDto;
 import com.pawstime.pawstime.domain.like.facade.LikeFacade;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
 import com.pawstime.pawstime.domain.post.dto.req.UpdatePostReqDto;
@@ -194,6 +195,41 @@ public class PostController {
         }
     }
 
+    @Operation(summary = "게시글별 대표 이미지 조회")
+    @GetMapping("/{postId}/thumbnail")
+    public ResponseEntity<ApiResponse<List<GetImageRespDto>>> getThumbnail(@PathVariable Long postId) {
+        try {
+            return ApiResponse.generateResp(Status.SUCCESS, null, postFacade.getThumbnail(postId).getContent());
+        } catch (CustomException e) {
+            Status status = Status.valueOf(e.getClass()
+                .getSimpleName()
+                .replace("Exception", "")
+                .toUpperCase());
+            return ApiResponse.generateResp(status, e.getMessage(), null);
+
+        } catch (Exception e) {
+            return ApiResponse.generateResp(
+                Status.ERROR, "썸네일 이미지 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+        }
+    }
+
+    @Operation(summary = "게시글별 이미지 전체 조회")
+    @GetMapping("/{postId}/images")
+    public ResponseEntity<ApiResponse<List<GetImageRespDto>>> getImages(@PathVariable Long postId) {
+        try {
+            return ApiResponse.generateResp(Status.SUCCESS, null, postFacade.getImages(postId));
+        } catch (CustomException e) {
+            Status status = Status.valueOf(e.getClass()
+                .getSimpleName()
+                .replace("Exception", "")
+                .toUpperCase());
+            return ApiResponse.generateResp(status, e.getMessage(), null);
+
+        } catch (Exception e) {
+            return ApiResponse.generateResp(
+                Status.ERROR, "게시글별 이미지 전체 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+        }
+    }
 
     // Pageable 객체 생성 (정렬 처리)
     public Pageable createPageable(String sort, int page, int size) {
