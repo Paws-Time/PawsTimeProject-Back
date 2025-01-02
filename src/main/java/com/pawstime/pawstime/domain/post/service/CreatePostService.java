@@ -11,9 +11,9 @@ public class CreatePostService {
 
   private final PostRepository postRepository;
 
-  public void createPost(Post post){
+  public Post createPost(Post post){
 
-    postRepository.save(post);
+    return postRepository.save(post);
 
   }
 }
