@@ -237,7 +237,7 @@ private final ReadPostService readPostService;
       Page<GetImageRespDto> thumbnail = readImageService.getThumbnail(postId, pageable).map(GetImageRespDto::from);
 
       if (thumbnail.isEmpty()) {
-          GetImageRespDto defaultImage = new GetImageRespDto(null, "https://paws-time-bucket.s3.ap-northeast-2.amazonaws.com/a6666d57-bcc5-4a30-93b7-81d58ae4d5fd.jpg", postId);
+          GetImageRespDto defaultImage = new GetImageRespDto(null, null, postId);
           return new PageImpl<>(List.of(defaultImage), pageable, 1);
       }
 
@@ -254,7 +254,7 @@ private final ReadPostService readPostService;
         List<Image> images = readImageService.getImages(postId);
 
         if (images.isEmpty()) {
-            GetImageRespDto defaultImage = new GetImageRespDto(null, "https://paws-time-bucket.s3.ap-northeast-2.amazonaws.com/a6666d57-bcc5-4a30-93b7-81d58ae4d5fd.jpg", postId);
+            GetImageRespDto defaultImage = new GetImageRespDto(null, null, postId);
             return List.of(defaultImage);
         }
 
