@@ -11,8 +11,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 
 public interface ImageRepository extends JpaRepository<Image, Long> {
-    List<Image> findByPost_PostId(Long postId);
-    void deleteByImageUrl(String imageUrl);  // 이미지 URL로 삭제
 
     @Query("SELECT i FROM Image i WHERE i.post.postId = :postId")
     Page<Image> getThumbnail(Long postId, Pageable pageable);

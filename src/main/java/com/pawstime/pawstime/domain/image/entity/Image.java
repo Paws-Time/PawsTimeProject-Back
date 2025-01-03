@@ -32,11 +32,12 @@ public class Image {
     @Column(nullable = false)
     private String imageUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @Column(name = "is_default", nullable = false)
+    private boolean isDefault = false; // 기본 이미지 여부
 
-    // 다른 필드와 메서드들
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = true)// 기본 이미지는 특정 Post와 관계없을 수 있음
+    private Post post;
 
     // 이미지를 Post에 추가하는 메서드
     public void setPost(Post post) {
@@ -45,5 +46,9 @@ public class Image {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public void setIsDefault(boolean isDefault) {
+        this.isDefault = isDefault;
     }
 }

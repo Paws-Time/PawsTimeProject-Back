@@ -55,7 +55,7 @@ public class PostController {
 
         try {
             // 게시글 생성 (이미지 URL은 아직 없음)
-            Long postId = postFacade.createPost(req, new ArrayList<>());  // 이미지가 없으면 빈 리스트 전달
+            Long postId = postFacade.createPost(req);  // 이미지가 없으면 빈 리스트 전달
 
             // 성공 응답 반환
             return ApiResponse.generateResp(Status.CREATE, "게시글 생성이 완료되었습니다. ", postId);
@@ -76,33 +76,22 @@ public class PostController {
     public ResponseEntity<ApiResponse<Void>> uploadImages(
             @PathVariable Long postId,
             @RequestPart("images") List<MultipartFile> images) {
-        // 파일 유효성 검사
-        if (images == null || images.isEmpty()) {
-            return ApiResponse.generateResp(Status.ERROR, "이미지 파일을 업로드해주세요.", null);
-        }
 
         try {
-            // 게시글 상태 체크
-            Post post = postFacade.getPostId(postId);
-            if (post.isDelete()) {
-                throw new InvalidException("삭제된 게시글에는 이미지를 추가할 수 없습니다.");
-            }
 
             // S3에 업로드 후 이미지 URL 리스트 받기
             List<String> imageUrls = s3Service.uploadFile(images);
-
             // 게시글에 이미지 추가 (DB에 이미지 정보 저장)
             postFacade.addImagesToPost(postId, imageUrls);
 
             return ApiResponse.generateResp(Status.CREATE, "게시글과 이미지가 성공적으로 업로드되었습니다.", null);
         } catch (Exception e) {
-            log.error("이미지 업로드 중 오류 발생: {}", e.getMessage(), e);
             return ApiResponse.generateResp(Status.ERROR, "이미지 업로드 실패: " + e.getMessage(), null);
         }
     }
 
     @Operation(summary = "게시글 수정", description = "게시글을 수정할 수 있습니다.")
-    @PutMapping( "/{postId}")
+    @PutMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> updatePost(
             @PathVariable Long postId,
             @RequestBody UpdatePostReqDto req
@@ -132,11 +121,9 @@ public class PostController {
 
             return ApiResponse.generateResp(Status.UPDATE, "게시글 이미지가 수정되었습니다.", null);
         } catch (Exception e) {
-            log.error("게시글 이미지 수정 중 오류 발생: {}", e.getMessage(), e);
             return ApiResponse.generateResp(Status.ERROR, "이미지 수정 실패: " + e.getMessage(), null);
         }
     }
-
 
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제할 수 있습니다.")
@@ -202,14 +189,14 @@ public class PostController {
             return ApiResponse.generateResp(Status.SUCCESS, null, postFacade.getThumbnail(postId).getContent());
         } catch (CustomException e) {
             Status status = Status.valueOf(e.getClass()
-                .getSimpleName()
-                .replace("Exception", "")
-                .toUpperCase());
+                    .getSimpleName()
+                    .replace("Exception", "")
+                    .toUpperCase());
             return ApiResponse.generateResp(status, e.getMessage(), null);
 
         } catch (Exception e) {
             return ApiResponse.generateResp(
-                Status.ERROR, "썸네일 이미지 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+                    Status.ERROR, "썸네일 이미지 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
         }
     }
 
@@ -220,14 +207,14 @@ public class PostController {
             return ApiResponse.generateResp(Status.SUCCESS, null, postFacade.getImages(postId));
         } catch (CustomException e) {
             Status status = Status.valueOf(e.getClass()
-                .getSimpleName()
-                .replace("Exception", "")
-                .toUpperCase());
+                    .getSimpleName()
+                    .replace("Exception", "")
+                    .toUpperCase());
             return ApiResponse.generateResp(status, e.getMessage(), null);
 
         } catch (Exception e) {
             return ApiResponse.generateResp(
-                Status.ERROR, "게시글별 이미지 전체 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+                    Status.ERROR, "게시글별 이미지 전체 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
         }
     }
 
@@ -238,14 +225,14 @@ public class PostController {
             return ApiResponse.generateResp(Status.SUCCESS, null, postFacade.getRandomImages().getContent());
         } catch (CustomException e) {
             Status status = Status.valueOf(e.getClass()
-                .getSimpleName()
-                .replace("Exception", "")
-                .toUpperCase());
+                    .getSimpleName()
+                    .replace("Exception", "")
+                    .toUpperCase());
             return ApiResponse.generateResp(status, e.getMessage(), null);
 
         } catch (Exception e) {
             return ApiResponse.generateResp(
-                Status.ERROR, "랜덤 이미지 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
+                    Status.ERROR, "랜덤 이미지 조회 중 오류가 발생하였습니다 : " + e.getMessage(), null);
         }
     }
 

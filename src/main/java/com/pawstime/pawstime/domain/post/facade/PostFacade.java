@@ -3,6 +3,7 @@ package com.pawstime.pawstime.domain.post.facade;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.image.dto.resp.GetImageRespDto;
 import com.pawstime.pawstime.domain.image.entity.Image;
+import com.pawstime.pawstime.domain.image.entity.repository.ImageRepository;
 import com.pawstime.pawstime.domain.image.service.ReadImageService;
 import com.pawstime.pawstime.domain.image.service.UpdateImageService;
 import com.pawstime.pawstime.domain.post.dto.req.CreatePostReqDto;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -51,10 +53,14 @@ private final ReadPostService readPostService;
     private final S3Service s3Service;
     private final UpdateImageService updateImageService;
     private final ReadImageService readImageService;
+    private final ImageRepository imageRepository;
 
+    @Value("${default.img-url}")
+    private String defaultImageUrl;
 
+    //게시글 생성
 
-    public Long createPost(CreatePostReqDto req, List<String> imageUrls) {
+    public Long createPost(CreatePostReqDto req) {
         // 입력값 검증
         validateCreatePostRequest(req);
 
@@ -67,52 +73,60 @@ private final ReadPostService readPostService;
         // 게시글 저장
         Post savedPost = createPostService.createPost(post);
 
-        // 이미지 추가 (선택 사항)
-        if (imageUrls != null && !imageUrls.isEmpty()) {
-            addImagesToPost(post.getPostId(), imageUrls);
-        }
         return savedPost.getPostId();
     }
 
     private void validateCreatePostRequest(CreatePostReqDto req) {
-        if (req.boardId() == null || req.title() == null || req.content() == null) {
+        if (req == null || req.boardId() == null || req.title() == null || req.content() == null) {
             throw new InvalidException("필수 입력값이 누락되었습니다.");
         }
     }
 
     private Board validateBoard(Long boardId) {
+        // 게시판 조회
         Board board = readPostService.findBoardById(boardId);
-        if (board == null || board.isDelete()) {
+
+        // 게시판이 존재하지 않거나 삭제된 게시판인 경우 예외 처리
+        if (board == null ||board.isDelete()) {
             throw new NotFoundException("유효하지 않은 게시판입니다.");
         }
+
         return board;
     }
 
     private Post createPostEntity(CreatePostReqDto req, Board board) {
-        return req.toEntity(board);
+        return req.toEntity(board);  // req를 통해 Post 엔티티 생성
     }
 
+    /// //////////////////////////////////////////
+    @Transactional
     public void addImagesToPost(Long postId, List<String> imageUrls) {
-        // 게시글 조회
-        Post post = postRepository.findById(postId).orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NotFoundException("게시글을 추가할 수 없습니다."));
 
+        //삭제된 게시글에는 이미지를 추가할 수 없도록 처리
         if (post.isDelete()) {
-            throw new InvalidException("삭제된 게시글에는 이미지를 추가할 수 없습니다.");
+            throw new NotFoundException("삭제된 게시글에는 이미지를 추가할 수 없습니다.");
         }
 
-        if (post.getImages() == null) {
-            post.setImages(new ArrayList<>());
-        }
+        //이미지 리스트가 비어있거나 null인 경우
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            //이미지가 없는 경우만 기본 이미지 추가
+            if (post.getImages().isEmpty()) {
+                List<Image> defaultImageList = post.getImagesWithDefault(defaultImageUrl);
+                post.setImages(defaultImageList); //기본 이미지 설정
+            } else {
+                //이미지 url 리스트를 순회하며 이미지를  생성하고 추가
+                for (String imageUrl : imageUrls) {
+                    Image image = Image.builder()
+                            .imageUrl(imageUrl)
+                            .isDefault(false)
+                            .build();
+                    post.addImage(image);
+                }
+            }
 
-        // 이미지 URL을 기준으로 Image 엔티티 생성
-        for (String imageUrl : imageUrls) {
-            Image img = new Image();
-            img.setImageUrl(imageUrl);
-            img.setPost(post); // 이미지가 게시글에 속하도록 설정
-            post.addImage(img); // 게시글에 이미지 추가
         }
-
-        // 변경된 게시글 저장
         postRepository.save(post);
     }
 
@@ -151,8 +165,6 @@ private final ReadPostService readPostService;
         if (newImages != null && !newImages.isEmpty()) {
             List<Map<String, Object>> newImagesInfo = updateImageService.addNewImagesToPost(newImages, post);
 
-            // 추가된 이미지 정보 반환 (필요에 따라 로깅하거나 처리 가능)
-            log.info("추가된 이미지 정보: {}", newImagesInfo);
         }
     }
 

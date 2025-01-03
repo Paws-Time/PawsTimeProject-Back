@@ -28,8 +28,7 @@ aws:
     access-key-id: ${AWS_ACCESS_KEY_ID}        # GitHub Secrets로 전달
     secret-access-key: ${AWS_SECRET_ACCESS_KEY} # GitHub Secrets로 전달
     region: ${AWS_REGION}                      # GitHub Secrets로 전달
-    bucket-name: ${AWS_BUCKET_NAME}            # GitHub Secrets로 전달
-
+    bucket-name: ${AWS_BUCKET_NAME}    # GitHub Secrets로 전달
 
   spring:
     servlet:
