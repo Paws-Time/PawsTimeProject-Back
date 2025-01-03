@@ -28,7 +28,6 @@ public class CommentFacade {
 
   private final ReadCommentService readCommentService;
   private final CreateCommentService createCommentService;
-  private final CommentRepository commentRepository;
 
   public CreateCommentRespDto createComment(Long postId, CreateCommentReqDto req) {
     Post post = readCommentService.getPostById(postId);
@@ -52,9 +51,6 @@ public class CommentFacade {
 
     // 새로운 댓글 생성
     Comment createdComment = createCommentService.createComment(comment);
-    // 댓글을 데이터베이스에서 다시 조회
-    createdComment = commentRepository.findByPostAndContent(post, req.content())
-            .orElseThrow(() -> new NotFoundException("댓글 생성 후 조회 실패"));
 
     // 생성된 댓글을 기반으로 응답 DTO 생성
     return CreateCommentRespDto.from(createdComment); // 응답 DTO 반환
