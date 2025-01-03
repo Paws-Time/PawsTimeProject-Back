@@ -22,7 +22,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
   @Query("SELECT c FROM Comment c WHERE c.post.postId = :postId AND c.isDelete = false")
   Page<Comment> findAllByPostQuery(Long postId, Pageable pageable);
 
-  Optional<Comment> findByPostAndContent(Post post, String content);
-
   long countByPost(Post post);
 }
