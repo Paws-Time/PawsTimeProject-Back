@@ -30,6 +30,9 @@ aws:
     region: ${AWS_REGION}                      # GitHub Secrets로 전달
     bucket-name: ${AWS_BUCKET_NAME}    # GitHub Secrets로 전달
 
+default:
+  img-url: "/static/default-img.jpg"
+
   spring:
     servlet:
       multipart:

@@ -44,7 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class PostFacade {
 
-private final ReadPostService readPostService;
+    private final ReadPostService readPostService;
     private final CreatePostService createPostService;
     private final UpdatePostService updatePostService;
     private final GetDetailPostService getDetailPostService;
@@ -87,7 +87,7 @@ private final ReadPostService readPostService;
         Board board = readPostService.findBoardById(boardId);
 
         // 게시판이 존재하지 않거나 삭제된 게시판인 경우 예외 처리
-        if (board == null ||board.isDelete()) {
+        if (board == null || board.isDelete()) {
             throw new NotFoundException("유효하지 않은 게시판입니다.");
         }
 
@@ -101,34 +101,36 @@ private final ReadPostService readPostService;
     /// //////////////////////////////////////////
     @Transactional
     public void addImagesToPost(Long postId, List<String> imageUrls) {
+        // 포스트 엔티티 조회
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("게시글을 추가할 수 없습니다."));
 
-        //삭제된 게시글에는 이미지를 추가할 수 없도록 처리
+        // 삭제된 게시글에는 이미지를 추가할 수 없도록 처리
         if (post.isDelete()) {
             throw new NotFoundException("삭제된 게시글에는 이미지를 추가할 수 없습니다.");
         }
 
-        //이미지 리스트가 비어있거나 null인 경우
+        // 이미지 리스트가 비어있거나 null인 경우
         if (imageUrls == null || imageUrls.isEmpty()) {
-            //이미지가 없는 경우만 기본 이미지 추가
+            // 이미지가 없으면 기본 이미지 추가
             if (post.getImages().isEmpty()) {
                 List<Image> defaultImageList = post.getImagesWithDefault(defaultImageUrl);
-                post.setImages(defaultImageList); //기본 이미지 설정
-            } else {
-                //이미지 url 리스트를 순회하며 이미지를  생성하고 추가
-                for (String imageUrl : imageUrls) {
-                    Image image = Image.builder()
-                            .imageUrl(imageUrl)
-                            .isDefault(false)
-                            .build();
-                    post.addImage(image);
-                }
+                post.setImages(defaultImageList); // 기본 이미지 설정
             }
-
+        } else {
+            // 이미지 URL 리스트가 비어 있지 않으면 사용자가 추가한 이미지 처리
+            for (String imageUrl : imageUrls) {
+                Image image = Image.builder()
+                        .imageUrl(imageUrl)
+                        .isDefault(false)
+                        .build();
+                post.addImage(image); // 포스트에 이미지 추가 (이미 setPost() 메서드가 호출됨)
+            }
         }
-        postRepository.save(post);
+
+        postRepository.save(post); // 포스트 저장
     }
+
 
     // 게시글 수정
     public void updatePost(Long postId, UpdatePostReqDto req) {
