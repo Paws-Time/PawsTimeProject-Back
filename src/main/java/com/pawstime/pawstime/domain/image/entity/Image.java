@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 
 @Getter
 @Builder
@@ -50,5 +51,13 @@ public class Image {
 
     public void setIsDefault(boolean isDefault) {
         this.isDefault = isDefault;
+    }
+
+    // 기본 이미지를 생성하는 메서드
+    public static Image createDefaultImage(String defaultImageUrl) {
+        return Image.builder()
+                .imageUrl(defaultImageUrl)
+                .isDefault(true)
+                .build();
     }
 }

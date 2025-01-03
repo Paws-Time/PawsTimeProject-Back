@@ -53,10 +53,8 @@ public class PostFacade {
     private final S3Service s3Service;
     private final UpdateImageService updateImageService;
     private final ReadImageService readImageService;
-    private final ImageRepository imageRepository;
 
-    @Value("${default.img-url}")
-    private String defaultImageUrl;
+
 
     //게시글 생성
 
@@ -99,8 +97,12 @@ public class PostFacade {
     }
 
     /// //////////////////////////////////////////
+    @Value("${default.img-url}")
+    private String defaultImageUrl;
+
     @Transactional
     public void addImagesToPost(Long postId, List<String> imageUrls) {
+
         // 포스트 엔티티 조회
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("게시글을 추가할 수 없습니다."));
@@ -114,10 +116,20 @@ public class PostFacade {
         if (imageUrls == null || imageUrls.isEmpty()) {
             // 이미지가 없으면 기본 이미지 추가
             if (post.getImages().isEmpty()) {
-                List<Image> defaultImageList = post.getImagesWithDefault(defaultImageUrl);
-                post.setImages(defaultImageList); // 기본 이미지 설정
+                try {
+                    // 기본 이미지 업로드
+                    String uploadedImageUrl = s3Service.uploadDefaultImageToS3("static/default-img.jpg"); // 기본 이미지 업로드
+                    Image defaultImage = new Image();
+                    defaultImage.setImageUrl(uploadedImageUrl); // 업로드된 이미지 URL 사용
+                    defaultImage.setPost(post);
+                    post.addImage(defaultImage);
+                } catch (Exception e) {
+                    // 기본 이미지 업로드 실패 시 로그 기록
+                    log.error("기본 이미지 업로드 실패ss: {}", e.getMessage());
+                    throw new RuntimeException("이미지 업로드 실패sss: " + e.getMessage());
+                }
             }
-        } else {
+        }  else {
             // 이미지 URL 리스트가 비어 있지 않으면 사용자가 추가한 이미지 처리
             for (String imageUrl : imageUrls) {
                 Image image = Image.builder()
@@ -129,6 +141,7 @@ public class PostFacade {
         }
 
         postRepository.save(post); // 포스트 저장
+
     }
 
 

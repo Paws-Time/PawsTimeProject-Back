@@ -75,13 +75,17 @@ public class PostController {
     @PostMapping(value = "/{postId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<Void>> uploadImages(
             @PathVariable Long postId,
-            @RequestPart("images") List<MultipartFile> images) {
+            @RequestPart(value = "images", required = false) List<MultipartFile> images) {
 
         try {
+            List<String> imageUrls = new ArrayList<>();
 
-            // S3에 업로드 후 이미지 URL 리스트 받기
-            List<String> imageUrls = s3Service.uploadFile(images);
-            // 게시글에 이미지 추가 (DB에 이미지 정보 저장)
+            // 이미지가 존재하면 S3에 업로드 후 URL 리스트 받기
+            if (images != null && !images.isEmpty()) {
+                imageUrls = s3Service.uploadFile(images);
+            }
+
+            // 게시글에 이미지 추가 (기본 이미지 처리 포함)
             postFacade.addImagesToPost(postId, imageUrls);
 
             return ApiResponse.generateResp(Status.CREATE, "게시글과 이미지가 성공적으로 업로드되었습니다.", null);
