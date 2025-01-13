@@ -19,6 +19,7 @@ public enum Status {
   UNAUTHORIZED("Unauthorized", "인증되지 않은 사용자가 접근하려는 경우", HttpStatus.UNAUTHORIZED),
   FORBIDDEN("Forbidden", "인증은 되었지만 권한이 없는 경우", HttpStatus.FORBIDDEN),
 
+
   // 에러 상태
   ERROR("Error", "예상치 못한 예외가 발생한 경우", HttpStatus.INTERNAL_SERVER_ERROR);
 
