@@ -12,7 +12,6 @@ public record GetBoardRespDto(
         Long boardId,
         String title,
         String description,
-        boolean isDelete,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         BoardType boardType
@@ -24,7 +23,6 @@ public record GetBoardRespDto(
                 .boardId(board.getBoardId())
                 .title(board.getTitle())
                 .description(board.getDescription())
-                .isDelete(board.isDelete())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
                 .boardType(board.getBoardType())
