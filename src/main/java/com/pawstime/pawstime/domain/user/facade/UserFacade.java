@@ -45,7 +45,7 @@ public class UserFacade {
         throw new DuplicateException("존재하는 이메일 입니다.");
       }
     } catch (Exception e) {
-      throw new DuplicateException("존재하는 이메일 입니다.");
+      throw new DuplicateException("존재하는 이메일 입니다123.");
     }
   }
 

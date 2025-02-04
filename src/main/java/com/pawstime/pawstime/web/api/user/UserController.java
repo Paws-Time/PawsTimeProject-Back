@@ -22,53 +22,37 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "USER API", description = "유저 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
-public class UserApiController {
+@RequestMapping("/users")
+public class UserController {
 
   private final UserFacade userFacade;
 
   @Operation(summary = "회원 가입")
-  @PostMapping("/user")
+  @PostMapping
   public ResponseEntity<ApiResponse<Void>> createUser(@Valid @RequestBody UserCreateReqDto req) {
+
       userFacade.createUser(req);
+
       return ApiResponse.generateResp(Status.CREATE, "회원가입이 완료되었습니다.", null);
   }
 
   @Operation(summary = "로그인")
   @PostMapping("/login")
   public ResponseEntity<ApiResponse<String>> loginUser(@Valid @RequestBody LoginUserReqDto req) {
-    try {
-      String token = userFacade.login(req);
-      return ApiResponse.generateResp(Status.SUCCESS, null, token);
-    } catch (CustomException e) {
-      Status status = Status.valueOf(e.getClass()
-          .getSimpleName()
-          .replace("Exception", "")
-          .toUpperCase());
-      return ApiResponse.generateResp(status, e.getMessage(), null);
 
-    } catch (Exception e) {
-      return ApiResponse.generateResp(
-          Status.ERROR, "로그인 중 오류가 발생하였습니다 : " + e.getMessage(), null);
-    }
+      String token = userFacade.login(req);
+
+      return ApiResponse.generateResp(Status.SUCCESS, null, token);
   }
 
   @Operation(summary = "로그아웃", security = @SecurityRequirement(name = "bearerAuth"))
   @PostMapping("/logout")
-  public ResponseEntity<ApiResponse<Void>> logoutUser(Authentication authentication, HttpServletRequest request) {
-    try {
-      userFacade.logout(authentication, request);
-      return ApiResponse.generateResp(Status.SUCCESS, "로그아웃 되었습니다.", null);
-    } catch (CustomException e) {
-      Status status = Status.valueOf(e.getClass()
-          .getSimpleName()
-          .replace("Exception", "")
-          .toUpperCase());
-      return ApiResponse.generateResp(status, e.getMessage(), null);
+  public ResponseEntity<ApiResponse<Void>> logoutUser(
+      Authentication authentication, HttpServletRequest request
+  ) {
 
-    } catch (Exception e) {
-      return ApiResponse.generateResp(
-          Status.ERROR, "로그아웃 중 오류가 발생하였습니다 : " + e.getMessage(), null);
-    }
+      userFacade.logout(authentication, request);
+
+      return ApiResponse.generateResp(Status.SUCCESS, "로그아웃 되었습니다.", null);
   }
 }

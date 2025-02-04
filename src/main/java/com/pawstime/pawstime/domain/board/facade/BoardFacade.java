@@ -28,14 +28,12 @@ public class BoardFacade {
   private final CreateBoardService createBoardService;
 
   public void createBoard(CreateBoardReqDto req) {
-    if (req.title() == null) {
-      throw new InvalidException("게시판 제목은 필수 입력값입니다.");
-    }
     Board existingBoard = readBoardService.findByTitle(req.title());
 
     if (existingBoard != null) {
       throw new DuplicateException("이미 존재하는 게시판입니다.");
     }
+
     //새 게시판 생성
     Board board = req.of();
     createBoardService.createBoard(board, req.boardType());
