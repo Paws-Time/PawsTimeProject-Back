@@ -28,22 +28,10 @@ public class UserApiController {
   private final UserFacade userFacade;
 
   @Operation(summary = "회원 가입")
-  @PostMapping("/member")
+  @PostMapping("/user")
   public ResponseEntity<ApiResponse<Void>> createUser(@Valid @RequestBody UserCreateReqDto req) {
-    try {
       userFacade.createUser(req);
       return ApiResponse.generateResp(Status.CREATE, "회원가입이 완료되었습니다.", null);
-    } catch (CustomException e) {
-      Status status = Status.valueOf(e.getClass()
-          .getSimpleName()
-          .replace("Exception", "")
-          .toUpperCase());
-      return ApiResponse.generateResp(status, e.getMessage(), null);
-
-    } catch (Exception e) {
-      return ApiResponse.generateResp(
-          Status.ERROR, "회원가입 중 오류가 발생하였습니다 : " + e.getMessage(), null);
-    }
   }
 
   @Operation(summary = "로그인")
