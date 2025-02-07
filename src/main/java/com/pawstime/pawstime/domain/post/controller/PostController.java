@@ -39,7 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 @Tag(name = "Post", description = "게시글 API")
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/posts")
 @RequiredArgsConstructor
 public class PostController {
 

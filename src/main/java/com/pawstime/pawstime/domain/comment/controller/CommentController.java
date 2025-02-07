@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @Tag(name = "Comment", description = "댓글 API")
 @RestController
-@RequestMapping("/comments")
 @RequiredArgsConstructor
 public class CommentController {
 
@@ -37,7 +36,7 @@ public class CommentController {
 
 
   @Operation(summary = "댓글 생성", description = "특정 게시글에 댓글을 생성하는 기능입니다.")
-  @PostMapping("/{postId}")
+  @PostMapping("/posts/{postId}/comments")
   public ResponseEntity<ApiResponse<CreateCommentRespDto>> createComment(
           @PathVariable Long postId, @RequestBody CreateCommentReqDto req) {
     try {
@@ -61,7 +60,7 @@ public class CommentController {
 
 
   @Operation(summary = "댓글 전체 목록 조회", description = "모든 게시글에 달린 댓글을 조회합니다.")
-  @GetMapping("/listAll")
+  @GetMapping("/comments")
   public ResponseEntity<ApiResponse<List<GetCommentRespDto>>> getCommentAll(
       @RequestParam(defaultValue = "0") int pageNo,
       @RequestParam(defaultValue = "10") int pageSize,
@@ -86,7 +85,7 @@ public class CommentController {
   }
 
   @Operation(summary = "특정 게시글 댓글 조회", description = "선택한 게시글에 달린 댓글 목록을 조회합니다.")
-  @GetMapping("/list/{postId}")
+  @GetMapping("/posts/{postId}/comments")
   public ResponseEntity<ApiResponse<List<GetCommentRespDto>>> getCommentByPost(
       @PathVariable Long postId,
       @RequestParam(defaultValue = "0") int pageNo,
@@ -112,10 +111,10 @@ public class CommentController {
   }
 
   @Operation(summary = "댓글 삭제", description = "선택한 댓글을 삭제합니다.")
-
-  @DeleteMapping("/{commentId}")
-
-  public ResponseEntity<ApiResponse<Void>> deleteComment(@PathVariable Long commentId) {
+  @DeleteMapping("/posts/{postId}/comments/{commentId}")
+  public ResponseEntity<ApiResponse<Void>> deleteComment(
+      @PathVariable Long postId, @PathVariable Long commentId
+  ) {
     try {
 
       commentFacade.deleteComment(commentId);
@@ -134,9 +133,12 @@ public class CommentController {
           Status.ERROR, "댓글 삭제 중 오류가 발생하였습니다 : " + e.getMessage(), null);
     }
   }
+
   @Operation(summary = "댓글 수정", description = "선택한 댓글을 수정합니다.")
-  @PutMapping("/{commentId}")
-  public ResponseEntity<ApiResponse<Void>> updateComment( @PathVariable Long commentId, @RequestBody UpdateCommentReqDto req){
+  @PutMapping("/posts/{postId}/comments/{commentId}")
+  public ResponseEntity<ApiResponse<Void>> updateComment(
+      @PathVariable Long postId, @PathVariable Long commentId, @RequestBody UpdateCommentReqDto req
+  ){
    try{
      commentFacade.updateComment(commentId, req);
      return ApiResponse.generateResp(
@@ -151,7 +153,6 @@ public class CommentController {
    } catch (Exception e) {
      return ApiResponse.generateResp(
              Status.ERROR, "댓글 수정 중 오류가 발생했습니다. : " + e.getMessage(), null);
-
    }
   }
 }
