@@ -40,12 +40,12 @@ public class SecurityConfig {
 
   // 로그인 한 사용자(관리자 + 일반유저)만 접근을 허용하는 경로
   private static final String[] ADMIN_USER_ONLY = {
-    "/users/logout"//, "/post/**/likes"
+    "/users/logout", "/post/{postId}/likes"
   };
 
   // 모든 사용자에게 접근을 허용하는 경로
   private static final String[] PUBLIC_ALL = {
-    "/users", "/users/login"//, "/post/**/thumbnail", "/post/images/random"
+    "/users", "/users/login", "/post/{postId}/thumbnail", "/post/images/random"
   };
 
   @Bean
@@ -70,17 +70,17 @@ public class SecurityConfig {
             .requestMatchers(PUBLIC_ALL).permitAll()
 
             .requestMatchers(HttpMethod.POST, "/boards").hasRole("ADMIN")   // 게시판 생성 => 관리자만 가능하도록 함
-            .requestMatchers(HttpMethod.DELETE, "/boards/**").hasRole("ADMIN")   // 게시판 삭제 => 관리자만 가능하도록 함
-            .requestMatchers(HttpMethod.PUT, "/boards/**").hasRole("ADMIN")   // 게시판 수정 => 관리자만 가능하도록 함
-            .requestMatchers(HttpMethod.GET, "/boards", "/boards/**").permitAll()   // 게시판 목록조회,상세조회 => 모두 접근 가능
+            .requestMatchers(HttpMethod.DELETE, "/boards/{boardId}").hasRole("ADMIN")   // 게시판 삭제 => 관리자만 가능하도록 함
+            .requestMatchers(HttpMethod.PUT, "/boards/{boardId}").hasRole("ADMIN")   // 게시판 수정 => 관리자만 가능하도록 함
+            .requestMatchers(HttpMethod.GET, "/boards", "/boards/{boardId}").permitAll()   // 게시판 목록조회,상세조회 => 모두 접근 가능
 
-            //.requestMatchers(HttpMethod.POST, "/post", "/post/**").hasAnyRole("ADMIN", "USER")
-            //.requestMatchers(HttpMethod.PUT, "/post/**", "/post/**/images").hasAnyRole("ADMIN", "USER")
-            //.requestMatchers(HttpMethod.DELETE, "/post/**").hasAnyRole("ADMIN", "USER")
-            //.requestMatchers(HttpMethod.GET, "/post", "/post/**", "/post/**/images").permitAll()
+            .requestMatchers(HttpMethod.POST, "/post", "/post/{postId}").hasAnyRole("ADMIN", "USER")  // 게시글 생성, 게시글 이미지 업로드(생성) => 관리자,일반유저만 접근 가능
+            .requestMatchers(HttpMethod.PUT, "/post/{postId}", "/post/{postId}/images").hasAnyRole("ADMIN", "USER")   // 게시글 수정, 게시글 이미지 수정 => 관리자,일반유저만 접근 가능
+            .requestMatchers(HttpMethod.DELETE, "/post/{postId}").hasAnyRole("ADMIN", "USER")   // 게시글 삭제 => 관리자,일반유저만 접근 가능
+            .requestMatchers(HttpMethod.GET, "/post", "/post/{postId}", "/post/{postId}/images").permitAll()  // 게시글 전체 목록 조회, 게시글 상세 조회, 게시글 이미지 조회 => 모두 접근 가능
 
-            .anyRequest().authenticated())  // 그 외 요청은 로그인된 사용자만 접근 가능
-            //.anyRequest().permitAll())   // 그 외 요청 모두 접근 가능 (로그인을 하지 않아도 모든 요청을 허용 => 보안을 위해 하지 않는 것이 좋다)
+            //.anyRequest().authenticated())  // 그 외 요청은 로그인된 사용자만 접근 가능
+            .anyRequest().permitAll())   // 그 외 요청 모두 접근 가능 (로그인을 하지 않아도 모든 요청을 허용 => 보안을 위해 하지 않는 것이 좋다)
         .build();
   }
 }

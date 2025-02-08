@@ -150,6 +150,9 @@ public class PostFacade {
         // 게시글 조회
         Post post = readPostService.findPostById(postId);
 
+        // ******** 게시글 작성자 확인 후 게시글 수정을 요청한 유저가 해당 게시글을 작성한 유저와 일치하는지
+        // 아니면 관리자 권한을 가지고 있는지 확인하는 로직 추가 필요 ********
+
         // 게시글 존재 여부 및 삭제 상태 확인
         if (post == null) {
             throw new NotFoundException("존재하지 않는 게시글 ID입니다.");

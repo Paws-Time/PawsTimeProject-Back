@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
-@Tag(name = "Board", description = "게사판 API")
+@Tag(name = "Board", description = "게시판 API")
 @RestController
 @RequestMapping("/boards")
 @RequiredArgsConstructor
