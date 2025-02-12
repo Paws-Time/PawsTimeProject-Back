@@ -96,7 +96,7 @@ public class CommentFacade {
     comment.softDelete();
     createCommentService.createComment(comment);
   }
-  public void updateComment(Long commentId, UpdateCommentReqDto req ){
+  public void updateComment(Long commentId, UpdateCommentReqDto req){
     //입력받은 commentId로 해당 댓글 조회
     Comment comment = readCommentService.findById(commentId);
     if (comment == null) {
@@ -107,7 +107,7 @@ public class CommentFacade {
       throw new NotFoundException("이미 삭제된 댓글입니다.");
     }
     //수정된 내용 반영
-    comment = req.update(comment);
+    comment.updateComment(req.content());
 
     //변경된 댓글 저장
     createCommentService.createComment(comment);

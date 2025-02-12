@@ -1,6 +1,6 @@
 package com.pawstime.pawstime.domain.info.dto.resp;
 
-import com.pawstime.pawstime.domain.info.entity.Info;
+import com.pawstime.pawstime.domain.info.entity.HospitalInfo;
 import lombok.Builder;
 
 @Builder
@@ -16,7 +16,7 @@ public record GetHospitalInfoRespDto(
     Double y
 ) {
 
-  public static GetHospitalInfoRespDto from(Info info) {
+  public static GetHospitalInfoRespDto from(HospitalInfo info) {
     return GetHospitalInfoRespDto.builder()
         .id(info.getId())
         .tel(info.getTel())

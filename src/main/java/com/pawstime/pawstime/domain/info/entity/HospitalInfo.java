@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "hospitals")
-public class Info {
+public class HospitalInfo {
 
   @Id
   private Long id; // PK 매핑

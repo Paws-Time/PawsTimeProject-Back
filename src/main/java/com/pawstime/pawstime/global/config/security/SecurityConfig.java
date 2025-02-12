@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -35,17 +36,17 @@ public class SecurityConfig {
 
   // 관리자만 접근을 허용하는 경로
   private static final String[] ADMIN_ONLY = {
-
+    "/comments"
   };
 
   // 로그인 한 사용자(관리자 + 일반유저)만 접근을 허용하는 경로
   private static final String[] ADMIN_USER_ONLY = {
-    "/users/logout", "/post/{postId}/likes"
+    "/users/logout", "/post/{postId}/likes", "/posts/{postId}/comments/{commentId}"
   };
 
   // 모든 사용자에게 접근을 허용하는 경로
   private static final String[] PUBLIC_ALL = {
-    "/users", "/users/login", "/post/{postId}/thumbnail", "/post/images/random"
+    "/users", "/users/login", "/post/{postId}/thumbnail", "/post/images/random", "/info/**"
   };
 
   @Bean
@@ -56,7 +57,8 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     return http.csrf(AbstractHttpConfigurer::disable)
-        .cors(AbstractHttpConfigurer::disable)
+        //.cors(AbstractHttpConfigurer::disable)    // cors 비활성화
+        .cors(Customizer.withDefaults())            // spring security가 cors 설정을 반영하게 함
         .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
@@ -78,6 +80,9 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.PUT, "/post/{postId}", "/post/{postId}/images").hasAnyRole("ADMIN", "USER")   // 게시글 수정, 게시글 이미지 수정 => 관리자,일반유저만 접근 가능
             .requestMatchers(HttpMethod.DELETE, "/post/{postId}").hasAnyRole("ADMIN", "USER")   // 게시글 삭제 => 관리자,일반유저만 접근 가능
             .requestMatchers(HttpMethod.GET, "/post", "/post/{postId}", "/post/{postId}/images").permitAll()  // 게시글 전체 목록 조회, 게시글 상세 조회, 게시글 이미지 조회 => 모두 접근 가능
+
+            .requestMatchers(HttpMethod.POST, "/posts/{postId}/comments").hasAnyRole("ADMIN", "USER")
+            .requestMatchers(HttpMethod.GET, "/posts/{postId}/comments").permitAll()
 
             //.anyRequest().authenticated())  // 그 외 요청은 로그인된 사용자만 접근 가능
             .anyRequest().permitAll())   // 그 외 요청 모두 접근 가능 (로그인을 하지 않아도 모든 요청을 허용 => 보안을 위해 하지 않는 것이 좋다)
