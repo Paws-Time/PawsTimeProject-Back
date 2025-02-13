@@ -28,8 +28,8 @@ public class InfoController {
 
   private final InfoFacade infoFacade;
 
-  @Operation(summary = "동물병원 정보 목록 조회")
-  @GetMapping("/{addNum}")
+  @Operation(summary = "지역별 동물병원 정보 목록 조회")
+  @GetMapping("/hospitals/{addNum}")
   public ResponseEntity<ApiResponse<List<GetHospitalInfoRespDto>>> getHospitalInfo(
       @RequestParam(defaultValue = "0") int pageNo,
       @RequestParam(defaultValue = "10") int pageSize,
