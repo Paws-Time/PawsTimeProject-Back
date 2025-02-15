@@ -18,9 +18,14 @@ import com.pawstime.pawstime.domain.post.service.GetListPostService;
 import com.pawstime.pawstime.domain.post.service.ReadPostService;
 import com.pawstime.pawstime.domain.post.service.S3Service;
 import com.pawstime.pawstime.domain.post.service.UpdatePostService;
+import com.pawstime.pawstime.domain.user.entity.User;
+import com.pawstime.pawstime.domain.user.service.read.ReadUserService;
 import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 
+import com.pawstime.pawstime.global.exception.UnauthorizedException;
+import com.pawstime.pawstime.global.jwt.util.JwtUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,12 +58,21 @@ public class PostFacade {
     private final S3Service s3Service;
     private final UpdateImageService updateImageService;
     private final ReadImageService readImageService;
-
-
+    private final JwtUtil jwtUtil;
+    private final ReadUserService readUserService;
 
     //게시글 생성
+    public Long createPost(CreatePostReqDto req, HttpServletRequest request) {
+        // 토큰을 이용해서 userId값을 가져옴
+        Long userId = jwtUtil.getUserIdFromToken(request);
 
-    public Long createPost(CreatePostReqDto req) {
+        if (userId == null) {
+            throw new UnauthorizedException("로그인해주세요.");
+        }
+
+        // 가져온 userId를 이용해 user 조회
+        User user = readUserService.findUserByUserIdQuery(userId);
+
         // 입력값 검증
         validateCreatePostRequest(req);
 
@@ -66,7 +80,7 @@ public class PostFacade {
         Board board = validateBoard(req.boardId());
 
         // 게시글 생성
-        Post post = createPostEntity(req, board);
+        Post post = createPostEntity(req, board, user);
 
         // 게시글 저장
         Post savedPost = createPostService.createPost(post);
@@ -92,8 +106,8 @@ public class PostFacade {
         return board;
     }
 
-    private Post createPostEntity(CreatePostReqDto req, Board board) {
-        return req.toEntity(board);  // req를 통해 Post 엔티티 생성
+    private Post createPostEntity(CreatePostReqDto req, Board board, User user) {
+        return req.toEntity(board, user);  // req를 통해 Post 엔티티 생성
     }
 
     /// //////////////////////////////////////////

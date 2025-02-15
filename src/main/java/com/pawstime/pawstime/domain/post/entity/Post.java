@@ -3,6 +3,7 @@ package com.pawstime.pawstime.domain.post.entity;
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.image.entity.Image;
 import com.pawstime.pawstime.domain.like.entity.Like;
+import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.entity.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -47,6 +48,10 @@ public class Post extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "board_id", nullable = false)
     private Board board; // Board 엔티티와 관계 설정
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     // 좋아요 관계 추가 (Post와 Like의 1:N 관계 설정)
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)

@@ -17,6 +17,7 @@ import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import java.util.ArrayList;
@@ -51,8 +52,9 @@ public class PostController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public ResponseEntity<ApiResponse<Long>> createPost(
-      @RequestBody CreatePostReqDto req) {
-    Long postId = postFacade.createPost(req);
+      @RequestBody CreatePostReqDto req,
+      HttpServletRequest request) {
+    Long postId = postFacade.createPost(req, request);
     return ApiResponse.generateResp(Status.CREATE, "게시글 생성이 완료되었습니다. ", postId);
   }
 

@@ -1,11 +1,13 @@
 package com.pawstime.pawstime.web.api.user;
 
+import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.domain.user.facade.UserFacade;
 import com.pawstime.pawstime.global.common.ApiResponse;
 import com.pawstime.pawstime.global.enums.Status;
 import com.pawstime.pawstime.global.exception.CustomException;
 import com.pawstime.pawstime.web.api.user.dto.req.LoginUserReqDto;
 import com.pawstime.pawstime.web.api.user.dto.req.UserCreateReqDto;
+import com.pawstime.pawstime.web.api.user.dto.resp.GetUserRespDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,6 +16,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,5 +58,12 @@ public class UserController {
       userFacade.logout(authentication, request);
 
       return ApiResponse.generateResp(Status.SUCCESS, "로그아웃 되었습니다.", null);
+  }
+
+  @Operation(summary = "userId를 통해 유저 정보 조회")
+  @GetMapping("/{userId}")
+  public ResponseEntity<ApiResponse<GetUserRespDto>> getUserFromUserId(@PathVariable Long userId) {
+
+    return ApiResponse.generateResp(Status.SUCCESS, null, userFacade.getUserFromUserId(userId));
   }
 }

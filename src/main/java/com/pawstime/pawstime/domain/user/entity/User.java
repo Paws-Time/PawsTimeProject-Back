@@ -1,5 +1,6 @@
 package com.pawstime.pawstime.domain.user.entity;
 
+import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.user.enums.Role;
 import com.pawstime.pawstime.global.entity.BaseEntity;
 import jakarta.persistence.Column;
@@ -9,7 +10,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,4 +39,7 @@ public class User extends BaseEntity {
 
   @Enumerated(value = EnumType.STRING)
   private Role role;
+
+  @OneToMany(mappedBy = "user")
+  private List<Post> posts;
 }
