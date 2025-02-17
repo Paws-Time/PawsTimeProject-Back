@@ -11,6 +11,7 @@ import com.pawstime.pawstime.global.exception.UnauthorizedException;
 import com.pawstime.pawstime.global.jwt.util.JwtUtil;
 import com.pawstime.pawstime.web.api.user.dto.req.LoginUserReqDto;
 import com.pawstime.pawstime.web.api.user.dto.req.UserCreateReqDto;
+import com.pawstime.pawstime.web.api.user.dto.resp.GetUserRespDto;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -90,5 +91,13 @@ public class UserFacade {
 
     tokenBlacklistService.createTokenBlacklist(token, expTime);
     request.getSession().removeAttribute("cart");
+  }
+
+  public GetUserRespDto getUserFromUserId(Long userId) {
+    User user = readUserService.findUserByUserIdQuery(userId);
+    if (user == null) {
+      throw new NotFoundException("존재하지 않는 사용자입니다.");
+    }
+    return GetUserRespDto.from(user);
   }
 }

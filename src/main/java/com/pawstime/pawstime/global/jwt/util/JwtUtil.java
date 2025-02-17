@@ -9,6 +9,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -40,7 +41,8 @@ public class JwtUtil {
   private String createToken(CustomUserInfoDto user, long expireTime) {
     Claims claims = Jwts.claims();
     claims.put("userId", user.userId());
-    claims.put("email", user.email());
+    // claims.put("email", user.email());
+    // 보안을 위해 토큰에서 email을 제거
     claims.put("role", user.role());
 
     ZonedDateTime now = ZonedDateTime.now();
@@ -55,8 +57,13 @@ public class JwtUtil {
         .compact();
   }
 
-  public String getUserId(String token) {
-    return parseClaims(token).get("email", String.class);
+//  public String getUserId(String token) {
+//    return parseClaims(token).get("email", String.class);
+//  }
+//  userId를 email로 찾는 방법 대신 userid로 보내주기
+
+  public Long getUserId(String token) {
+    return parseClaims(token).get("userId", Long.class);
   }
 
   public boolean validateToken(String token) {
@@ -82,4 +89,21 @@ public class JwtUtil {
       return e.getClaims();
     }
   }
+
+  // 헤더에 담긴 토큰을 이용해서 로그인한 사용자의 userId를 가져옴
+  public Long getUserIdFromToken(HttpServletRequest request) {
+    String authorization = request.getHeader("Authorization");
+    String token = null;
+
+    if (authorization != null && authorization.startsWith("Bearer ")) {
+      token = authorization.substring(7);
+    }
+
+    if (token != null && validateToken(token)) {
+      return getUserId(token);
+    }
+
+    return null;
+  }
+
 }
