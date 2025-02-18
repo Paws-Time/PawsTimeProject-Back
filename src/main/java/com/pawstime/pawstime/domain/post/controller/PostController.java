@@ -79,9 +79,10 @@ public class PostController {
   @PutMapping("/{postId}")
   public ResponseEntity<ApiResponse<Void>> updatePost(
       @PathVariable Long postId,
-      @RequestBody UpdatePostReqDto req
+      @RequestBody UpdatePostReqDto req,
+      HttpServletRequest httpServletRequest
   ) {
-    postFacade.updatePost(postId, req);
+    postFacade.updatePost(postId, req, httpServletRequest);
     return ApiResponse.generateResp(Status.UPDATE, "게시글 수정이 완료되었습니다.", null);
   }
 
@@ -90,16 +91,17 @@ public class PostController {
   public ResponseEntity<ApiResponse<Void>> updatePostImages(
       @PathVariable Long postId,
       @RequestParam(value = "deletedImageIds", required = false) List<Long> deletedImageIds,
-      @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages) {
+      @RequestPart(value = "newImages", required = false) List<MultipartFile> newImages,
+      HttpServletRequest httpServletRequest) {
 
-    postFacade.updatePostImages(postId, deletedImageIds, newImages);
+    postFacade.updatePostImages(postId, deletedImageIds, newImages, httpServletRequest);
     return ApiResponse.generateResp(Status.UPDATE, "게시글 이미지가 수정되었습니다.", null);
   }
 
   @Operation(summary = "게시글 삭제", description = "게시글을 삭제할 수 있습니다.")
   @DeleteMapping("/{postId}")
-  public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long postId) {
-      postFacade.deletePost(postId);
+  public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable Long postId, HttpServletRequest httpServletRequest) {
+      postFacade.deletePost(postId, httpServletRequest);
     return ApiResponse.generateResp(Status.DELETE, "게시글 삭제가 완료되었습니다.", null);
   }
 

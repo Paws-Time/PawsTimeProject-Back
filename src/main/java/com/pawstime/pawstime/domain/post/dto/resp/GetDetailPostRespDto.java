@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public record GetDetailPostRespDto(
         Long boardId,
         Long postId,
+        Long userId,
         String title,
         String content,
         LocalDateTime createdAt,
@@ -24,6 +25,7 @@ public record GetDetailPostRespDto(
         return GetDetailPostRespDto.builder()
                 .boardId(post.getBoard().getBoardId())
                 .postId(post.getPostId())
+                .userId(post.getUser().getUserId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .createdAt(post.getCreatedAt())

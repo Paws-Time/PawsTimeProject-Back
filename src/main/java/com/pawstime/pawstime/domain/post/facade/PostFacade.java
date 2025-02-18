@@ -20,6 +20,7 @@ import com.pawstime.pawstime.domain.post.service.S3Service;
 import com.pawstime.pawstime.domain.post.service.UpdatePostService;
 import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.domain.user.service.read.ReadUserService;
+import com.pawstime.pawstime.global.exception.ForbiddenException;
 import com.pawstime.pawstime.global.exception.InvalidException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 
@@ -160,12 +161,19 @@ public class PostFacade {
 
 
     // 게시글 수정
-    public void updatePost(Long postId, UpdatePostReqDto req) {
+    public void updatePost(Long postId, UpdatePostReqDto req, HttpServletRequest httpServletRequest) {
         // 게시글 조회
         Post post = readPostService.findPostById(postId);
 
-        // ******** 게시글 작성자 확인 후 게시글 수정을 요청한 유저가 해당 게시글을 작성한 유저와 일치하는지
-        // 아니면 관리자 권한을 가지고 있는지 확인하는 로직 추가 필요 ********
+        // 게시글을 쓴 유저와 현재 로그인한 유저가 같은지 확인하는 로직
+        // 게시글을 쓴 userId와 토큰에 담긴 userId가 다르면 게시글 수정 요청 처리 불가
+        if (!post.getUser().getUserId().equals(jwtUtil.getUserIdFromToken(httpServletRequest))) {
+            // userId가 다르더라도 role이 ADMIN인 경우 관리자이므로 게시글 수정 가능
+            if (!jwtUtil.getUserRoleFromToken(httpServletRequest).equals("ADMIN")) {
+                // userId도 다르고, ADMIN도 아니라면 예외 던지기
+                throw new ForbiddenException("권한이 없습니다.");
+            }
+        }
 
         // 게시글 존재 여부 및 삭제 상태 확인
         if (post == null) {
@@ -180,10 +188,16 @@ public class PostFacade {
     }
 
     @Transactional
-    public void updatePostImages(Long postId, List<Long> deletedImageIds, List<MultipartFile> newImages) {
+    public void updatePostImages(Long postId, List<Long> deletedImageIds, List<MultipartFile> newImages, HttpServletRequest httpServletRequest) {
         // 게시글 조회
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("게시글이 존재하지 않습니다."));
+
+        if (!post.getUser().getUserId().equals(jwtUtil.getUserIdFromToken(httpServletRequest))) {
+            if (!jwtUtil.getUserRoleFromToken(httpServletRequest).equals("ADMIN")) {
+                throw new ForbiddenException("권한이 없습니다.");
+            }
+        }
 
         // 삭제할 이미지 처리
         if (deletedImageIds != null && !deletedImageIds.isEmpty()) {
@@ -201,9 +215,15 @@ public class PostFacade {
     }
 
 
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, HttpServletRequest httpServletRequest) {
         // 게시글 조회
         Post post = readPostService.findPostById(postId);
+
+        if (!post.getUser().getUserId().equals(jwtUtil.getUserIdFromToken(httpServletRequest))) {
+            if (!jwtUtil.getUserRoleFromToken(httpServletRequest).equals("ADMIN")) {
+                throw new ForbiddenException("권한이 없습니다.");
+            }
+        }
 
         if (post == null) {
             throw new NotFoundException("존재하지 않는 게시글 ID입니다.");

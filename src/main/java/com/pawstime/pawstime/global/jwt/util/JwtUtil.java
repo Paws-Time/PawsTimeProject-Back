@@ -106,4 +106,19 @@ public class JwtUtil {
     return null;
   }
 
+  // 헤더에 담긴 토큰을 이용해서 로그인한 사용자의 role을 가져옴
+  public String getUserRoleFromToken(HttpServletRequest request) {
+    String authorization = request.getHeader("Authorization");
+    String token = null;
+
+    if (authorization != null && authorization.startsWith("Bearer ")) {
+      token = authorization.substring(7);
+    }
+
+    if (token != null && validateToken(token)) {
+      return parseClaims(token).get("role", String.class);
+    }
+    return null;
+  }
+
 }
