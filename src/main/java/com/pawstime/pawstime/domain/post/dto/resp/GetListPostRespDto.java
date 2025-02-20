@@ -7,6 +7,7 @@ import lombok.Builder;
 @Builder
 public record GetListPostRespDto(
         Long id,                 // 게시글 ID
+        Long userId,
         String title,            // 게시글 제목
         String contentPreview,   // 내용 미리보기
         LocalDateTime createdAt, // 작성일
@@ -19,6 +20,7 @@ public record GetListPostRespDto(
     public static GetListPostRespDto from(Post post) {
         return GetListPostRespDto.builder()
                 .id(post.getPostId())                        // 게시글 ID
+                .userId(post.getUser().getUserId())
                 .title(post.getTitle())                      // 게시글 제목
                 .contentPreview(post.getContent().length() > 100
                         ? post.getContent().substring(0, 100) + "..." // 내용 미리보기

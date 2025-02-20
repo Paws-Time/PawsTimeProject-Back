@@ -1,5 +1,6 @@
 package com.pawstime.pawstime.global.config.security;
 
+import com.pawstime.pawstime.domain.tokenBlacklist.service.TokenBlacklistService;
 import com.pawstime.pawstime.global.jwt.filter.JwtFilter;
 import com.pawstime.pawstime.global.jwt.util.JwtUtil;
 import com.pawstime.pawstime.global.security.handler.CustomAccessDeniedHandler;
@@ -24,6 +25,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final CustomUserDetailsService customUserDetailsService;
+  private final TokenBlacklistService tokenBlacklistService;
   private final JwtUtil jwtUtil;
   private final CustomAccessDeniedHandler accessDeniedHandler;
   private final CustomAuthenticationEntryPoint authenticationEntryPoint;
@@ -62,7 +64,7 @@ public class SecurityConfig {
         .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .formLogin(AbstractHttpConfigurer::disable)
         .httpBasic(AbstractHttpConfigurer::disable)
-        .addFilterBefore(new JwtFilter(customUserDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(new JwtFilter(customUserDetailsService, tokenBlacklistService, jwtUtil), UsernamePasswordAuthenticationFilter.class)
         .exceptionHandling(c -> c.authenticationEntryPoint((authenticationEntryPoint))
             .accessDeniedHandler(accessDeniedHandler))
         .authorizeHttpRequests(c -> c
@@ -84,8 +86,8 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/posts/{postId}/comments").hasAnyRole("ADMIN", "USER")
             .requestMatchers(HttpMethod.GET, "/posts/{postId}/comments").permitAll()
 
-            //.anyRequest().authenticated())  // 그 외 요청은 로그인된 사용자만 접근 가능
-            .anyRequest().permitAll())   // 그 외 요청 모두 접근 가능 (로그인을 하지 않아도 모든 요청을 허용 => 보안을 위해 하지 않는 것이 좋다)
+            .anyRequest().authenticated())  // 그 외 요청은 로그인된 사용자만 접근 가능
+            //.anyRequest().permitAll())   // 그 외 요청 모두 접근 가능 (로그인을 하지 않아도 모든 요청을 허용 => 보안을 위해 하지 않는 것이 좋다)
         .build();
   }
 }
