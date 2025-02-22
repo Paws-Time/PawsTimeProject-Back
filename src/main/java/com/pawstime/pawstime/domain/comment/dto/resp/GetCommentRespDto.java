@@ -9,6 +9,7 @@ public record GetCommentRespDto(
     Long commentId,
     String content,
     Long postId,
+    Long userId,
     LocalDateTime createAt,
     LocalDateTime updateAt
 ) {
@@ -18,6 +19,7 @@ public record GetCommentRespDto(
         .commentId(comment.getCommentId())
         .content(comment.getContent())
         .postId(comment.getPost().getPostId())
+        .userId(comment.getUser().getUserId())
         .createAt(comment.getCreatedAt())
         .updateAt(comment.getUpdatedAt())
         .build();
