@@ -9,6 +9,7 @@ import com.pawstime.pawstime.global.exception.DuplicateException;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 import com.pawstime.pawstime.global.exception.UnauthorizedException;
 import com.pawstime.pawstime.global.jwt.util.JwtUtil;
+import com.pawstime.pawstime.global.security.user.CustomUserDetails;
 import com.pawstime.pawstime.web.api.user.dto.req.LoginUserReqDto;
 import com.pawstime.pawstime.web.api.user.dto.req.UserCreateReqDto;
 import com.pawstime.pawstime.web.api.user.dto.resp.GetUserRespDto;
@@ -19,6 +20,7 @@ import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ public class UserFacade {
   private final PasswordEncoder encoder;
   private final JwtUtil jwtUtil;
   private final TokenBlacklistService tokenBlacklistService;
+
 
   public void createUser(UserCreateReqDto req) {
     try {
@@ -100,4 +103,20 @@ public class UserFacade {
     }
     return GetUserRespDto.from(user);
   }
+
+  public User getCurrentUser(){
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    if(authentication == null || !authentication.isAuthenticated()){
+
+      throw new UnauthorizedException("로그인이 필요합니다.");
+    }
+
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    return readUserService.findUserByUserIdQuery(userDetails.getUser().userId());
+
+  }
+
+
 }

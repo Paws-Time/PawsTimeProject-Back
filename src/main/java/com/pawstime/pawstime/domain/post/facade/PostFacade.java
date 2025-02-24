@@ -311,4 +311,16 @@ public class PostFacade {
 
         return readImageService.getRandomImages(pageable).map(GetImageRespDto::from);
     }
+
+    public void incrementLikesCount(Post post){
+        post.incrementLikesCount();
+        postRepository.save(post);
+        log.info("좋아요 증가: 게시글{}의 좋아요 갯수{}", post.getPostId(), post.getLikesCount());
+    }
+
+    public void decrementLikesCount(Post post){
+        post.decrementLikesCount();
+        postRepository.save(post);
+        log.info("좋아요 감소: 게시글{}의 좋아요 갯수{}", post.getPostId(), post.getLikesCount());
+    }
 }
