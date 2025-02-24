@@ -1,6 +1,7 @@
 package com.pawstime.pawstime.domain.comment.entity;
 
 import com.pawstime.pawstime.domain.post.entity.Post;
+import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,8 +35,12 @@ public class Comment extends BaseEntity {
   private String content;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "post_id")
+  @JoinColumn(name = "post_id", nullable = false)
   private Post post;
+
+  @ManyToOne
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
   public void updateComment(String content) {
     this.content = content;
