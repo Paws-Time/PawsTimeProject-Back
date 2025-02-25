@@ -25,7 +25,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Getter
 @Builder
 @Entity
@@ -54,9 +56,11 @@ public class Post extends BaseEntity {
     private User user;
 
     // 좋아요 관계 추가 (Post와 Like의 1:N 관계 설정)
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    //좋아요 목록
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes = new ArrayList<>();  // 빈 리스트로 초기화
 
+    //좋아요 수
     @Column(name = "likes_count", nullable = false)
     private int likesCount = 0;
 
@@ -85,24 +89,20 @@ public class Post extends BaseEntity {
     public int getLikesCount() {
         return likes.size();  // 연관된 Like 객체 수로 좋아요 수 계산
     }
-
-    // 좋아요를 추가하는 메서드
-    public void addLike(Like like) {
-        this.likes.add(like);
-    }
-
-    // 좋아요를 삭제하는 메서드
-    public void removeLike(Like like) {
-        this.likes.remove(like);
-    }
+    public void setLikesCount(int likesCount) {this.likesCount = likesCount;}
 
     public void incrementLikesCount() {
         this.likesCount++;
     }
 
     public void decrementLikesCount() {
-        this.likesCount--;
+        log.info("현재 사용자가 누른 해당 포스트의 좋아요 갯수:{}", this.likesCount);
+        if (this.likesCount > 0) {
+            this.likesCount--;
+        }
+        log.info("좋아요 취소 후 좋아요 갯수:{}", this.likesCount);
     }
+
 
 
     // 연관된 이미지 추가

@@ -40,6 +40,8 @@ public class JwtFilter extends OncePerRequestFilter {
         // String userId = jwtUtil.getUserId(token);
         Long userId = jwtUtil.getUserId(token);
 
+        System.out.println("*****"+userId);
+
         // UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
         UserDetails userDetails = customUserDetailsService.loadUserByUserId(userId);
 

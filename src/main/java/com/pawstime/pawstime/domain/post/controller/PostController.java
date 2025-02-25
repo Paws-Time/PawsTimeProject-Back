@@ -193,16 +193,4 @@ public class PostController {
     // Pageable 객체 생성
     return PageRequest.of(page, size, Sort.by(sortDirection, sortField));
   }
-
-  @PostMapping("/{postId}/likes")
-  @Operation(summary = "좋아요", description = "게시글에 좋아요를 누를 수 있습니다.")
-  public ResponseEntity<ApiResponse<Integer>> toggleLike(@PathVariable Long postId) {
-    try {
-      Post post = postFacade.getPostId(postId);  // 게시글 가져오기
-      likeFacade.toggleLike(post);  // 좋아요 토글 처리
-      return ApiResponse.generateResp(Status.SUCCESS, null, post.getLikesCount());  // 좋아요 수 반환
-    } catch (NotFoundException e) {
-      return ApiResponse.generateResp(Status.NOTFOUND, e.getMessage(), null);
-    }
-  }
 }
