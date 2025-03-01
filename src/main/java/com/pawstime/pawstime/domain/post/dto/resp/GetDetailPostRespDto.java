@@ -15,7 +15,8 @@ public record GetDetailPostRespDto(
         String content,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        Long commentCount // 댓글 수
+        int likeCounts,
+        Long commentCount
 
 ) {
 
@@ -30,7 +31,8 @@ public record GetDetailPostRespDto(
                 .content(post.getContent())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
-                .commentCount(commentCount)  // 댓글 수 포함
+                .commentCount(commentCount)
+                .likeCounts(post.getLikesCount())
                 .build();
     }
 }
