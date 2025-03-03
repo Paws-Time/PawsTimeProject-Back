@@ -6,18 +6,21 @@ import lombok.Builder;
 
 @Builder
 public record CustomUserInfoDto(
-    Long userId,
-    String email,
-    String password,
-    Role role
+        Long userId,
+        String email,
+        String password,
+        Role role,
+        String profileImg
+
 ) {
 
-  public static CustomUserInfoDto of(User user) {
-    return CustomUserInfoDto.builder()
-        .userId(user.getUserId())
-        .email(user.getEmail())
-        .password(user.getPassword())
-        .role(user.getRole())
-        .build();
-  }
+    public static CustomUserInfoDto of(User user) {
+        return CustomUserInfoDto.builder()
+                .userId(user.getUserId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .profileImg(user.getProfileImg().getProfileImgUrl())
+                .build();
+    }
 }
