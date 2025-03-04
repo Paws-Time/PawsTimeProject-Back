@@ -13,18 +13,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "profile_img")
 public class ProfileImg extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "profile_img")
+    @Column(name = "profile_img_id", nullable = false, updatable = false)
     private Long profileImgId;
 
     @OneToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name="user_id", unique = true)
     private User user;
 
     @Column(nullable = false)
-    private String imgUrl;
+    private String profileImgUrl;
 
 }

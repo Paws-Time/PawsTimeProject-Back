@@ -53,11 +53,4 @@ public class Image {
         this.isDefault = isDefault;
     }
 
-    // 기본 이미지를 생성하는 메서드
-    public static Image createDefaultImage(String defaultImageUrl) {
-        return Image.builder()
-                .imageUrl(defaultImageUrl)
-                .isDefault(true)
-                .build();
-    }
 }

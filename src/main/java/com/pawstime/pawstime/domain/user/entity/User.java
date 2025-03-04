@@ -37,7 +37,7 @@ public class User extends BaseEntity {
   @OneToMany(mappedBy = "user")
   private List<Post> posts;
 
-  @OneToOne(mappedBy = "user")
+  @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private ProfileImg profileImg;
 
 }
