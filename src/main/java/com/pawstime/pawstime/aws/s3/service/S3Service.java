@@ -125,4 +125,14 @@ public class S3Service {
         // S3에서 파일 삭제
         amazonS3.deleteObject(new DeleteObjectRequest(bucket, String.valueOf(fileName)));
     }
+
+    public String extractFileNameFromUrl(String fileUrl) {
+        if(fileUrl == null || fileUrl.isEmpty()){
+            throw new IllegalArgumentException("파일 URL이 비어있습니다.");
+        }
+        //url에서 마지막 '/' 이후의 문자열(파일명) 추출
+        return fileUrl.substring(fileUrl.lastIndexOf("/") + 1);
+    }
+
+
 }

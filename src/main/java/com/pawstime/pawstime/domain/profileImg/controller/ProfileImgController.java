@@ -32,4 +32,15 @@ public class ProfileImgController {
                 Status.UPDATE, "프로필 수정이 완료되었습니다.", null
         );
     }
+
+    @Operation(summary = "프로필 이미지 삭제", description = "프로필 이미지를 삭제합니다.")
+    @DeleteMapping(value = "/{userId}")
+    public ResponseEntity<ApiResponse<Void>> deleteProfileImg(
+            @PathVariable Long userId
+    ){
+        profileImgFacade.deleteProfileImg(userId);
+        return ApiResponse.generateResp(
+                Status.DELETE, "프로필 이미지 삭제가 완료되었습니다.", null
+        );
+    }
 }
