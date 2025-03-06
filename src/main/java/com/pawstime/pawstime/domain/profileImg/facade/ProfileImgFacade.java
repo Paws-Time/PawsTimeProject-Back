@@ -43,12 +43,19 @@ public class ProfileImgFacade {
 
     }
 
-/*    @Transactional
+    @Transactional
     public void deleteProfileImg(Long userId) {
         ProfileImg profileImg = readProfileImgService.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("프로필을 찾을 수 없습니다."));
 
-        profileImg.updateProfileImgUrl(defaultProfileImgUrl); // 기본 이미지로 변경
+        //s3에서 삭제할 파일명 추출
+        String fileName = s3Service.extractFileNameFromUrl(profileImg.getProfileImgUrl());
+
+        //s3에서 이미지 삭제
+        s3Service.deleteFile(fileName);
+
+        //삭제된 후 기본이미지로 변경
+        profileImg.updateProfileImgUrl(defaultProfileImgUrl);
         createProfileImgService.save(profileImg);
-    }*/
+    }
 }
