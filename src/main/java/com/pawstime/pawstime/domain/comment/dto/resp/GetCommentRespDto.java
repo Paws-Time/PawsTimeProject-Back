@@ -8,16 +8,18 @@ import lombok.Builder;
 public record GetCommentRespDto(
     Long commentId,
     String content,
+    Long boardId,
     Long postId,
     Long userId,
     LocalDateTime createAt,
     LocalDateTime updateAt
 ) {
 
-  public static GetCommentRespDto from(Comment comment) {
+  public static GetCommentRespDto from(Comment comment, Long boardId) {
     return GetCommentRespDto.builder()
         .commentId(comment.getCommentId())
         .content(comment.getContent())
+        .boardId(boardId)
         .postId(comment.getPost().getPostId())
         .userId(comment.getUser().getUserId())
         .createAt(comment.getCreatedAt())
