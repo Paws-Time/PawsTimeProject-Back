@@ -5,6 +5,7 @@ import com.pawstime.pawstime.domain.comment.dto.req.UpdateCommentReqDto;
 import com.pawstime.pawstime.domain.comment.dto.resp.CreateCommentRespDto;
 import com.pawstime.pawstime.domain.comment.dto.resp.GetCommentRespDto;
 import com.pawstime.pawstime.domain.comment.facade.CommentFacade;
+import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.global.common.ApiResponse;
 import com.pawstime.pawstime.global.enums.Status;
 import io.swagger.v3.oas.annotations.Operation;
@@ -69,6 +70,20 @@ public class CommentController {
   ) {
       return ApiResponse.generateResp(Status.SUCCESS, null,
           commentFacade.getCommentByPost(postId, pageNo, pageSize, sortBy, direction).getContent());
+  }
+
+  @Operation(summary = "현재 로그인한 사용자가 작성한 댓글 목록 조회")
+  @GetMapping("/me")
+  public ResponseEntity<ApiResponse<List<GetCommentRespDto>>> getCommentListByUser(
+      @RequestParam(defaultValue = "0") int pageNo,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "DESC") String direction,
+      HttpServletRequest httpServletRequest
+  ) {
+    return ApiResponse.generateResp(
+        Status.SUCCESS, null, commentFacade.getCommentListByUser(pageNo, pageSize, sortBy, direction, httpServletRequest).getContent()
+    );
   }
 
   @Operation(summary = "댓글 삭제", description = "선택한 댓글을 삭제합니다.")

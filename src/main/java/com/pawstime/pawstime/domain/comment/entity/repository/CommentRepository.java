@@ -2,6 +2,7 @@ package com.pawstime.pawstime.domain.comment.entity.repository;
 
 import com.pawstime.pawstime.domain.comment.entity.Comment;
 import com.pawstime.pawstime.domain.post.entity.Post;
+import com.pawstime.pawstime.domain.user.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,4 +24,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
   Page<Comment> findAllByPostQuery(Long postId, Pageable pageable);
 
   long countByPost(Post post);
+
+  Page<Comment> findByUser(Pageable pageable, User user);
 }
