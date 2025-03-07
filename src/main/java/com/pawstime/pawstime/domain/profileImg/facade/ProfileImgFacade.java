@@ -1,10 +1,13 @@
 package com.pawstime.pawstime.domain.profileImg.facade;
 
 import com.pawstime.pawstime.aws.s3.service.S3Service;
+import com.pawstime.pawstime.domain.profileImg.dto.resp.GetProfileImgRespDto;
 import com.pawstime.pawstime.domain.profileImg.entity.ProfileImg;
 import com.pawstime.pawstime.domain.profileImg.service.CreateProfileImgService;
 import com.pawstime.pawstime.domain.profileImg.service.ReadProfileImgService;
 
+import com.pawstime.pawstime.domain.user.entity.repository.UserRepository;
+import com.pawstime.pawstime.domain.user.facade.UserFacade;
 import com.pawstime.pawstime.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +32,7 @@ public class ProfileImgFacade {
     private String defaultProfileImgUrl;
 
     //1.프로필 이미지 변경
-    public void updateProfileImg(Long userId, MultipartFile file){
+    public void updateProfileImg(Long userId, MultipartFile file) {
         ProfileImg profileImg = readProfileImgService.findByUserId(userId)
                 .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
 
@@ -39,8 +42,6 @@ public class ProfileImgFacade {
         //기존 프로필 이미지 업데이트
         profileImg.updateProfileImgUrl(newImgUrl);
         createProfileImgService.save(profileImg);
-
-
     }
 
     @Transactional
@@ -57,5 +58,13 @@ public class ProfileImgFacade {
         //삭제된 후 기본이미지로 변경
         profileImg.updateProfileImgUrl(defaultProfileImgUrl);
         createProfileImgService.save(profileImg);
+    }
+
+    //프로필 이미지 조회
+    public GetProfileImgRespDto getProfileImg(Long userId) {
+        ProfileImg profileImg =  readProfileImgService.findByUserId(userId)
+                .orElseThrow(() -> new NotFoundException("사용자의 프로필 이미지를 찾을 수 없습니다."));
+
+        return GetProfileImgRespDto.from(profileImg);
     }
 }

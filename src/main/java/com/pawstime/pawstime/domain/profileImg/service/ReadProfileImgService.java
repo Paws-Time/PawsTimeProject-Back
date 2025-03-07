@@ -2,7 +2,6 @@ package com.pawstime.pawstime.domain.profileImg.service;
 
 import com.pawstime.pawstime.domain.profileImg.entity.ProfileImg;
 import com.pawstime.pawstime.domain.profileImg.entity.repository.ProfileRepository;
-import com.pawstime.pawstime.global.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,4 +19,8 @@ public class ReadProfileImgService {
     public Optional<ProfileImg> findByUserId(Long userId){
         return profileRepository.findProfileImgByUserId(userId);
     }
+
+
+
+
 }
