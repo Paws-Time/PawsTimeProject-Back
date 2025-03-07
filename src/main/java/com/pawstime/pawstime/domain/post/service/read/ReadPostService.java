@@ -1,4 +1,4 @@
-package com.pawstime.pawstime.domain.post.service;
+package com.pawstime.pawstime.domain.post.service.read;
 
 import com.pawstime.pawstime.domain.board.entity.Board;
 import com.pawstime.pawstime.domain.board.entity.repository.BoardRepository;

@@ -18,4 +18,6 @@ public class ReadUserService {
   public User findUserByUserIdQuery(Long userId) {
     return userRepository.findUserByUserIdQuery(userId);
   }
+
+
 }

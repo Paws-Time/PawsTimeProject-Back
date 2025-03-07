@@ -2,6 +2,7 @@ package com.pawstime.pawstime.domain.user.facade;
 
 import com.pawstime.pawstime.domain.tokenBlacklist.service.TokenBlacklistService;
 import com.pawstime.pawstime.domain.user.entity.User;
+import com.pawstime.pawstime.domain.user.entity.repository.UserRepository;
 import com.pawstime.pawstime.domain.user.service.create.CreateUserService;
 import com.pawstime.pawstime.domain.user.service.dto.CustomUserInfoDto;
 import com.pawstime.pawstime.domain.user.service.read.ReadUserService;
@@ -36,6 +37,7 @@ public class UserFacade {
   private final PasswordEncoder encoder;
   private final JwtUtil jwtUtil;
   private final TokenBlacklistService tokenBlacklistService;
+  private final UserRepository userRepository;
 
 
   public void createUser(UserCreateReqDto req) {
@@ -62,6 +64,10 @@ public class UserFacade {
 
     if (!encoder.matches(req.password(), user.getPassword())) {
       throw new UnauthorizedException("비밀번호가 일치하지 않습니다.");
+    }
+
+    if(user.isDeleted()){
+      throw new UnauthorizedException("탈퇴한 계정입니다.");
     }
 
     CustomUserInfoDto customUserInfoDto = CustomUserInfoDto.of(user);
@@ -118,5 +124,40 @@ public class UserFacade {
 
   }
 
+  public void deleteUser(Long userId, Authentication authentication, HttpServletRequest request) {
 
+    //1.로그인 상태 확인
+    if(authentication == null || !authentication.isAuthenticated()){
+      throw new UnauthorizedException("로그인이 필요합니다.");
+    }
+
+    //2. 현재 로그인한 유저 정보 가져오기
+    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+    User currentUser = readUserService.findUserByUserIdQuery(userDetails.getUser().userId());
+
+    //3.요청한 userId와 로그인한 userId가 같은지 확인
+    if(!currentUser.getUserId().equals(userId)){
+      throw new UnauthorizedException("본인 계정만 탈퇴할 수 있습니다.");
+    }
+    //4.유저 데이터 조회(소프트 딜리트 적용)
+    User user = readUserService.findUserByUserIdQuery(userId);
+    if (user==null){
+      throw new NotFoundException("존재하지 않는 사용자입니다.");
+    }
+    user.softDelete();
+    //  JWT 블랙리스트에 현재 토큰 등록 (자동 로그아웃)
+    String token = request.getHeader("Authorization").substring(7);
+    Claims claims = jwtUtil.parseClaims(token);
+    LocalDateTime expTime = claims.getExpiration()
+            .toInstant()
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime();
+    tokenBlacklistService.createTokenBlacklist(token, expTime);
+
+    // 세션에서 정보 제거
+    request.getSession().removeAttribute("cart");
+
+    // SecurityContextHolder 초기화 (로그아웃 처리)
+    SecurityContextHolder.clearContext();
+  }
 }

@@ -16,12 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "USER API", description = "유저 API")
 @RestController
@@ -66,4 +61,13 @@ public class UserController {
 
     return ApiResponse.generateResp(Status.SUCCESS, null, userFacade.getUserFromUserId(userId));
   }
+
+  @Operation(summary = "회원 탈퇴")
+  @DeleteMapping("/{userId}")
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long userId, Authentication authentication, HttpServletRequest request
+  ){
+      userFacade.deleteUser(userId, authentication, request);
+      return ApiResponse.generateResp(Status.DELETE, "회원탈퇴가 완료되었습니다.", null);
+  }
+
 }

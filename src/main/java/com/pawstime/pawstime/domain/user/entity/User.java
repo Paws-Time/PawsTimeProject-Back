@@ -40,4 +40,11 @@ public class User extends BaseEntity {
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private ProfileImg profileImg;
 
+  @Column(name = "is_deleted", nullable = false)
+  private boolean isDeleted = false; // 기본값 false (활성 상태)
+
+  public void deleteUser(){
+    this.isDeleted = true;
+  }
+
 }
