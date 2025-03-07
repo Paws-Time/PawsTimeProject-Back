@@ -121,6 +121,20 @@ public class PostController {
     return ApiResponse.generateResp(Status.SUCCESS, "게시글 목록 조회 성공", posts.getContent());
   }
 
+  @Operation(summary = "현재 로그인한 사용자가 작성한 게시글 목록 조회")
+  @GetMapping("/me")
+  public ResponseEntity<ApiResponse<List<GetListPostRespDto>>> getPostListByUser(
+      @RequestParam(defaultValue = "0") int pageNo,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "DESC") String direction,
+      HttpServletRequest httpServletRequest
+  ) {
+    return ApiResponse.generateResp(
+        Status.SUCCESS, null, postFacade.getPostListByUser(pageNo, pageSize, sortBy, direction, httpServletRequest).getContent()
+    );
+  }
+
   @Operation(summary = "게시글별 대표 이미지 조회")
   @GetMapping("/{postId}/thumbnail")
   public ResponseEntity<ApiResponse<List<GetImageRespDto>>> getThumbnail(@PathVariable Long postId) {

@@ -3,6 +3,7 @@ package com.pawstime.pawstime.domain.comment.service;
 import com.pawstime.pawstime.domain.comment.entity.Comment;
 import com.pawstime.pawstime.domain.comment.entity.repository.CommentRepository;
 import com.pawstime.pawstime.domain.post.entity.Post;
+import com.pawstime.pawstime.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,5 +29,9 @@ public class ReadCommentService {
 
   public Comment findById(Long commentId) {
     return commentRepository.findById(commentId).orElse(null);
+  }
+
+  public Page<Comment> findByUser(Pageable pageable, User user) {
+    return commentRepository.findByUser(pageable, user);
   }
 }
