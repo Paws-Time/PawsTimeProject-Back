@@ -1,5 +1,7 @@
 package com.pawstime.pawstime.domain.profileImg.controller;
 
+import com.pawstime.pawstime.domain.profileImg.dto.resp.GetProfileImgRespDto;
+import com.pawstime.pawstime.domain.profileImg.entity.ProfileImg;
 import com.pawstime.pawstime.domain.profileImg.facade.ProfileImgFacade;
 import com.pawstime.pawstime.global.common.ApiResponse;
 import com.pawstime.pawstime.global.enums.Status;
@@ -41,6 +43,15 @@ public class ProfileImgController {
         profileImgFacade.deleteProfileImg(userId);
         return ApiResponse.generateResp(
                 Status.DELETE, "프로필 이미지 삭제가 완료되었습니다.", null
+        );
+    }
+
+    @Operation(summary = "프로필 이미지 조회", description = "프로필 이미지를 조회합니다.")
+    @GetMapping(value = "/{userId}")
+    public ResponseEntity<ApiResponse<GetProfileImgRespDto>> getProfileImg(@PathVariable Long userId){
+        GetProfileImgRespDto profileImgRespDto = profileImgFacade.getProfileImg(userId);
+        return ApiResponse.generateResp(
+                Status.SUCCESS, "프로필 이미지 조회를 완료했습니다.", profileImgRespDto
         );
     }
 }
