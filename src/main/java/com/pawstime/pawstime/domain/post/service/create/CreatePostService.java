@@ -1,4 +1,4 @@
-package com.pawstime.pawstime.domain.post.service;
+package com.pawstime.pawstime.domain.post.service.create;
 
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.post.entity.repository.PostRepository;
