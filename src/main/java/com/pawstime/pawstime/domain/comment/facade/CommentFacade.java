@@ -8,6 +8,7 @@ import com.pawstime.pawstime.domain.comment.entity.Comment;
 import com.pawstime.pawstime.domain.comment.entity.repository.CommentRepository;
 import com.pawstime.pawstime.domain.comment.service.CreateCommentService;
 import com.pawstime.pawstime.domain.comment.service.ReadCommentService;
+import com.pawstime.pawstime.domain.post.dto.resp.GetListPostRespDto;
 import com.pawstime.pawstime.domain.post.entity.Post;
 import com.pawstime.pawstime.domain.user.entity.User;
 import com.pawstime.pawstime.domain.user.service.read.ReadUserService;
@@ -78,7 +79,7 @@ public class CommentFacade {
     Pageable pageable = PageRequest
         .of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
 
-    return readCommentService.getCommentAll(pageable).map(GetCommentRespDto::from);
+    return readCommentService.getCommentAll(pageable).map(comment -> GetCommentRespDto.from(comment, comment.getPost().getBoard().getBoardId()));
   }
 
   @Transactional(readOnly = true)
@@ -94,7 +95,7 @@ public class CommentFacade {
     Pageable pageable = PageRequest
         .of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
 
-    return readCommentService.getCommentByPost(postId, pageable).map(GetCommentRespDto::from);
+    return readCommentService.getCommentByPost(postId, pageable).map(comment -> GetCommentRespDto.from(comment, comment.getPost().getBoard().getBoardId()));
   }
 
   public void deleteComment(Long postId, Long commentId, HttpServletRequest httpServletRequest) {
@@ -149,5 +150,14 @@ public class CommentFacade {
 
     //변경된 댓글 저장
     createCommentService.createComment(comment);
+  }
+
+  public Page<GetCommentRespDto> getCommentListByUser(int pageNo, int pageSize, String sortBy, String direction, HttpServletRequest httpServletRequest) {
+    Long userId = jwtUtil.getUserIdFromToken(httpServletRequest);
+    User user = readUserService.findUserByUserIdQuery(userId);
+
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+
+    return readCommentService.findByUser(pageable, user).map(comment -> GetCommentRespDto.from(comment, comment.getPost().getBoard().getBoardId()));
   }
 }

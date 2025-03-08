@@ -38,6 +38,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -341,5 +342,14 @@ public class PostFacade {
         post.decrementLikesCount();
         postRepository.save(post);
         log.info("좋아요 감소: 게시글{}의 좋아요 갯수{}", post.getPostId(), post.getLikesCount());
+    }
+
+    public Page<GetListPostRespDto> getPostListByUser(int pageNo, int pageSize, String sortBy, String direction, HttpServletRequest httpServletRequest) {
+        Long userId = jwtUtil.getUserIdFromToken(httpServletRequest);
+        User user = readUserService.findUserByUserIdQuery(userId);
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.fromString(direction), sortBy));
+
+        return readPostService.findByUser(pageable, user).map(GetListPostRespDto::from);
     }
 }
