@@ -45,7 +45,7 @@ public class SecurityConfig {
   // 로그인 한 사용자(관리자 + 일반유저)만 접근을 허용하는 경로
   private static final String[] ADMIN_USER_ONLY = {
     "/users/logout", "/posts/{postId}/likes", "/posts/{postId}/comments/{commentId}",
-    "/posts/me", "/comments/me"
+    "/posts/me", "/comments/me", "/users/me/nick", "/users/me/password"
   };
 
   // 모든 사용자에게 접근을 허용하는 경로

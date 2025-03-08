@@ -12,10 +12,13 @@ import com.pawstime.pawstime.global.exception.UnauthorizedException;
 import com.pawstime.pawstime.global.jwt.util.JwtUtil;
 import com.pawstime.pawstime.global.security.user.CustomUserDetails;
 import com.pawstime.pawstime.web.api.user.dto.req.LoginUserReqDto;
+import com.pawstime.pawstime.web.api.user.dto.req.UpdateNickReqDto;
+import com.pawstime.pawstime.web.api.user.dto.req.UpdatePasswordReqDto;
 import com.pawstime.pawstime.web.api.user.dto.req.UserCreateReqDto;
 import com.pawstime.pawstime.web.api.user.dto.resp.GetUserRespDto;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +54,7 @@ public class UserFacade {
         throw new DuplicateException("존재하는 이메일 입니다.");
       }
     } catch (Exception e) {
-      throw new DuplicateException("존재하는 이메일 입니다123.");
+      throw new DuplicateException("존재하는 이메일 입니다.");
     }
   }
 
@@ -159,5 +162,27 @@ public class UserFacade {
 
     // SecurityContextHolder 초기화 (로그아웃 처리)
     SecurityContextHolder.clearContext();
+  }
+
+  public void updateNick(UpdateNickReqDto updateNickReqDto, HttpServletRequest httpServletRequest) {
+    Long userId = jwtUtil.getUserIdFromToken(httpServletRequest);
+    User user = readUserService.findUserByUserIdQuery(userId);
+
+    user.updateNick(updateNickReqDto.nick());
+    createUserService.updateUser(user);
+  }
+
+  public void updatePassword(@Valid UpdatePasswordReqDto updatePasswordReqDto, HttpServletRequest httpServletRequest) {
+    Long userId = jwtUtil.getUserIdFromToken(httpServletRequest);
+    User user = readUserService.findUserByUserIdQuery(userId);
+
+    if (!encoder.matches(updatePasswordReqDto.currentPassword(), user.getPassword())) {
+      throw new UnauthorizedException("입력한 기존 비밀번호가 현재 비밀번호와 일치하지 않습니다. 다시 확인해주세요");
+    }
+
+    String newPassword = encoder.encode(updatePasswordReqDto.newPassword());
+    user.updatePassword(newPassword);
+
+    createUserService.updateUser(user);
   }
 }
