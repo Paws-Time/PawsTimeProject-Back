@@ -6,6 +6,8 @@ import com.pawstime.pawstime.global.common.ApiResponse;
 import com.pawstime.pawstime.global.enums.Status;
 import com.pawstime.pawstime.global.exception.CustomException;
 import com.pawstime.pawstime.web.api.user.dto.req.LoginUserReqDto;
+import com.pawstime.pawstime.web.api.user.dto.req.UpdateNickReqDto;
+import com.pawstime.pawstime.web.api.user.dto.req.UpdatePasswordReqDto;
 import com.pawstime.pawstime.web.api.user.dto.req.UserCreateReqDto;
 import com.pawstime.pawstime.web.api.user.dto.resp.GetUserRespDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +15,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -70,4 +74,24 @@ public class UserController {
       return ApiResponse.generateResp(Status.DELETE, "회원탈퇴가 완료되었습니다.", null);
   }
 
+  @Operation(summary = "현재 로그인한 사용자의 닉네임 변경")
+  @PutMapping("/me/nick")
+  public ResponseEntity<ApiResponse<Void>> updateNick(
+      @Valid @RequestBody UpdateNickReqDto updateNickReqDto,
+      HttpServletRequest httpServletRequest) {
+    userFacade.updateNick(updateNickReqDto, httpServletRequest);
+    return ApiResponse.generateResp(Status.UPDATE, "닉네임 수정이 완료되었습니다.", null);
+  }
+
+  @Operation(summary = "현재 로그인한 사용자의 비밀번호 변경")
+  @PutMapping("/me/password")
+  public ResponseEntity<ApiResponse<Void>> updatePassword(
+      @Valid @RequestBody UpdatePasswordReqDto updatePasswordReqDto,
+      Authentication authentication,
+      HttpServletRequest httpServletRequest
+  ) {
+    userFacade.updatePassword(updatePasswordReqDto, httpServletRequest);
+    userFacade.logout(authentication, httpServletRequest);
+    return ApiResponse.generateResp(Status.UPDATE, "비밀번호 수정이 완료되었습니다.", null);
+  }
 }
