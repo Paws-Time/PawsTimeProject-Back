@@ -25,7 +25,7 @@
 
 
 ## 👥 팀원 소개
-| ![백도은](https://i.ytimg.com/vi/5pYOLJ-xXTo/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLA1vIgbDLHZDEN4WNvfUf87tvNv1Q) | ![안하령](https://i.ytimg.com/vi/5pYOLJ-xXTo/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLA1vIgbDLHZDEN4WNvfUf87tvNv1Q) | ![심재원](https://i.ytimg.com/vi/5pYOLJ-xXTo/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLA1vIgbDLHZDEN4WNvfUf87tvNv1Q) | ![박명환](https://i.ytimg.com/vi/5pYOLJ-xXTo/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLA1vIgbDLHZDEN4WNvfUf87tvNv1Q) |
+| ![백도은](https://github.com/user-attachments/assets/85286ad4-3392-4e26-92bc-d3b81d2810ff) | ![안하령](https://github.com/user-attachments/assets/4355d4e3-71fa-49f8-88fe-c9668e259ac7) | ![심재원](https://github.com/user-attachments/assets/02485414-88d3-401f-b936-2330ea09e2c9) | ![박명환](https://github.com/user-attachments/assets/bcb7a701-cf86-4200-be5e-b0ba547d2958) |
 |---|---|---|---|
 | 백도은 | 안하령 | 심재원 | 박명환 |
 | [@donna8780](https://github.com/donna8780) | [@dgf0020](https://github.com/dgf0020) | [@S-JaeWon](https://github.com/S-JaeWon) | [@freemuras](https://github.com/freemuras) |
@@ -171,7 +171,124 @@ Changelog: 주요 변경 사항은 Changelog에 기록하여, 프로젝트 진�
 
 
 ## ⚙ 배포
-(배포 방식 및 사용 기술을 설명하세요.)
+
+### 배포 방식
+이 프로젝트는 AWS EC2 인스턴스를 이용해 배포되었습니다. <br>
+EC2 인스턴스의 퍼블릭 IP 주소는 43.200.46.13이며, EC2 인스턴스는 m5.xlarge 타입으로 설정되어 있습니다. 해당 인스턴스는 Amazon Linux 2023 운영 체제를 사용하고 있으며, S3 버킷에 저장된 이미지 파일을 사용하여 필요한 리소스를 관리하고 있습니다.
+
+* 구성 요소
+1. EC2 인스턴스
+AWS EC2 인스턴스에서 애플리케이션을 실행하며, 이를 통해 사용자 요청을 처리합니다.
+EC2 인스턴스에 배포된 애플리케이션은 퍼블릭 IP를 통해 접근 가능합니다.
+2. S3 버킷
+이미지 파일 등 정적 리소스는 S3 버킷에 저장되어, EC2 인스턴스에서 이를 불러와 사용합니다.
+AWS S3를 통해 정적 리소스에 대한 안정적인 스토리지 관리가 이루어집니다.
+
+---
+
+### CI/CD for Spring Boot on AWS
+
+이 프로젝트에서는 **GitHub Actions**를 사용하여 **Spring Boot** 애플리케이션을 **AWS EC2**에 자동 배포하는 **CI/CD** 파이프라인을 설정했습니다. 각 단계는 코드를 빌드하고, Docker 이미지를 생성한 후, AWS EC2 인스턴스에 배포하는 과정을 자동화합니다.
+
+### CI/CD 파이프라인
+
+#### Workflow 구성
+
+- **GitHub Actions** 워크플로우 (`.github/workflows/ci-cd.yml`)
+  - **트리거**: `main` 브랜치에 푸시될 때마다 실행됩니다.
+  - **목표**: 애플리케이션을 빌드하고 Docker 이미지를 생성하여, **AWS EC2** 인스턴스에 배포합니다.
+
+---
+
+#### CI/CD 단계별 설명
+
+#### 1. **코드 체크아웃**
+```yaml
+- name: Checkout code
+  uses: actions/checkout@v3
+```
+* 목적: GitHub repository에서 최신 코드를 가져옵니다. 이후 모든 작업은 이 코드를 기준으로 진행됩니다.
+
+2. JDK 설정
+```yaml
+- name: Set up JDK
+  uses: actions/setup-java@v3
+  with:
+    distribution: 'temurin'
+    java-version: '17'
+```
+* 목적: Java 17을 사용하여 애플리케이션을 빌드합니다. Temurin JDK 배포판을 설정하여 Gradle 빌드 작업을 지원합니다.
+
+3. Gradle 빌드 실행
+```yaml
+- name: Add execute permission for Gradlew
+  run: chmod +x ./gradlew
+
+- name: Build with Gradle
+  run: ./gradlew clean build
+```
+* 목적: Gradle을 사용하여 프로젝트를 빌드합니다. gradlew 실행 파일에 실행 권한을 부여하고, ./gradlew clean build 명령어로 빌드를 수행합니다.
+
+4. Docker 이미지 빌드 및 Docker Hub 푸시
+```yaml
+- name: Log in to Docker Hub
+  uses: docker/login-action@v2
+  with:
+    username: ${{ secrets.DOCKER_USERNAME }}
+    password: ${{ secrets.DOCKER_PASSWORD }}
+
+- name: Build and Push Docker Image
+  run: |
+    IMAGE_TAG=dgf0020/pawstime:${{ github.sha }}
+    docker build -t $IMAGE_TAG .
+    docker push $IMAGE_TAG
+```
+* 목적: Docker Hub에 로그인하고, 최신 Docker 이미지를 빌드하여 푸시합니다. 이미지 이름은 dgf0020/pawstime이고, GitHub 커밋 SHA를 기반으로 태그를 설정합니다.
+
+5. EC2에 배포
+```yaml
+- name: Deploy to EC2
+  uses: appleboy/ssh-action@v0.1.8
+  with:
+    host: ${{ secrets.EC2_HOST }}
+    username: ${{ secrets.EC2_USER }}
+    key: ${{ secrets.PRIVATE_KEY }}
+    script: |
+      # 기존 Spring Boot 컨테이너 강제 중지 및 제거
+      docker ps -q --filter "name=springboot_app" | grep -q . && docker rm -f springboot_app || true
+    
+      # 기존 React 컨테이너 강제 중지 및 제거
+      docker ps -q --filter "name=react_app" | grep -q . && docker rm -f react_app || true
+    
+      # Spring Boot 컨테이너 이미지 태그 업데이트
+      sed -i "s|image: dgf0020/pawstime:.*|image: dgf0020/pawstime:${{ github.sha }}|" /home/***/app/docker-compose.yml
+    
+      # React 컨테이너 항상 최신 이미지 사용
+      sed -i "s|image: react_frontend:.*|image: react_frontend:latest|" /home/***/app/docker-compose.yml
+    
+      # 최신 React 프론트엔드 이미지 가져오기
+      docker-compose -f /home/***/app/docker-compose.yml pull react
+    
+      # 컨테이너 재시작
+      docker-compose -f /home/***/app/docker-compose.yml up -d springboot react
+```
+* 목적: SSH를 사용하여 AWS EC2에 접속하고, Spring Boot와 React 애플리케이션을 최신 Docker 이미지로 배포합니다. 기존의 컨테이너를 중지하고, docker-compose.yml 파일을 업데이트하여 새 이미지를 사용하도록 설정합니다. 이후, 최신 이미지를 Pull하여 새로운 컨테이너를 실행합니다.
+
+#### AWS 연동
+AWS EC2<br>
+애플리케이션은 AWS EC2에 Docker 컨테이너로 배포됩니다. EC2 인스턴스에 직접 접속하여 Docker Compose를 사용해 Spring Boot와 React 애플리케이션을 실행합니다.
+환경 변수는 GitHub Secrets에 안전하게 저장되며, 배포 시 EC2 인스턴스로 전달됩니다.
+
+#### AWS S3 연동
+AWS S3는 애플리케이션에서 파일 저장소로 사용됩니다. 사용자 프로필 이미지 및 기타 파일을 저장하며, 액세스 키와 비밀 키는 GitHub Secrets를 통해 안전하게 관리됩니다.
+
+#### 환경 변수 관리
+GitHub Secrets에 저장된 AWS 관련 환경 변수:<br>
+AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, AWS_BUCKET_NAME
+Kakao Map API Key 등 외부 API와 연동되는 비밀 키들
+배포 과정에서 이러한 변수들은 EC2 인스턴스로 전달되어 해당 애플리케이션이 올바르게 동작할 수 있도록 도와줍니다.
+
+
 
 ## 🛠 개발 도구
 
