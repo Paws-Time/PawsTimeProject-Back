@@ -26,4 +26,8 @@ public class CreateUserService {
 
     profileRepository.save(profileImg);
   }
+
+  public void updateUser(User user) {
+    userRepository.save(user);
+  }
 }

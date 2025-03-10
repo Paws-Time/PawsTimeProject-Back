@@ -38,4 +38,3 @@ aws:
 default:
   img-url: "https://s3.ap-northeast-2.amazonaws.com/paws-time-bucket/default-img.jpg"
   profile-img-url: "https://s3.ap-northeast-2.amazonaws.com/paws-time-bucket/profile/profile-img.jpg"
-
