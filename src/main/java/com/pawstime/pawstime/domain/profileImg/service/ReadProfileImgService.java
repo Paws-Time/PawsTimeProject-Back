@@ -20,7 +20,4 @@ public class ReadProfileImgService {
         return profileRepository.findProfileImgByUserId(userId);
     }
 
-
-
-
 }
