@@ -15,6 +15,10 @@ public class ReadUserService {
     return userRepository.findUserByEmail(email);
   }
 
+  public User findUserByNick(String nick) {
+    return userRepository.findUserByNick(nick);
+  }
+
   public User findUserByUserIdQuery(Long userId) {
     return userRepository.findUserByUserIdQuery(userId);
   }

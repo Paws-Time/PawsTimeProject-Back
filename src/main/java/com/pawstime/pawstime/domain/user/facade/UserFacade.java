@@ -44,18 +44,19 @@ public class UserFacade {
 
 
   public void createUser(UserCreateReqDto req) {
-    try {
-      User user = readUserService.findUserByEmail(req.email());
-
-      if (user == null) {
-        User newUser = req.of(encoder.encode(req.password()));
-        createUserService.createUser(newUser);
-      } else {
-        throw new DuplicateException("존재하는 이메일 입니다.");
-      }
-    } catch (Exception e) {
+    // 이메일 중복 체크
+    if (readUserService.findUserByEmail(req.email()) != null) {
       throw new DuplicateException("존재하는 이메일 입니다.");
     }
+
+    // 닉네임 중복 체크
+    if (readUserService.findUserByNick(req.nick()) != null) {
+      throw new DuplicateException("이미 사용 중인 닉네임입니다.");
+    }
+
+    // 이메일, 닉네임 중복이 없으면 새로운 유저 생성
+    User newUser = req.of(encoder.encode(req.password()));
+    createUserService.createUser(newUser);
   }
 
   public String login(LoginUserReqDto req) {
@@ -163,6 +164,16 @@ public class UserFacade {
   public void updateNick(UpdateNickReqDto updateNickReqDto, HttpServletRequest httpServletRequest) {
     Long userId = jwtUtil.getUserIdFromToken(httpServletRequest);
     User user = readUserService.findUserByUserIdQuery(userId);
+
+    // 변경하고자하는 닉네임이 현재 닉네임과 동일한 경우 => 변경 없음
+    if (user.getNick().equals(updateNickReqDto.nick())) {
+      return;
+    }
+
+    // 닉네임 중복 체크
+    if (readUserService.findUserByNick(updateNickReqDto.nick()) != null) {
+      throw new DuplicateException("이미 사용 중인 닉네임입니다.");
+    }
 
     user.updateNick(updateNickReqDto.nick());
     createUserService.updateUser(user);
