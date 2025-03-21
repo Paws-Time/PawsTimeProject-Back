@@ -45,7 +45,7 @@ public class UserController {
 
       String token = userFacade.login(req);
 
-      return ApiResponse.generateResp(Status.SUCCESS, null, token);
+      return ApiResponse.generateResp(Status.SUCCESS, "로그인 완료! 즐거운 시간 되세요 \uD83D\uDC3E", token);
   }
 
   @Operation(summary = "로그아웃", security = @SecurityRequirement(name = "bearerAuth"))
