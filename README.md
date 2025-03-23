@@ -1069,8 +1069,52 @@ Kakao Map API Key 등 외부 API와 연동되는 비밀 키들
 
 
 ## 📋 메뉴 구조도
-(서비스의 메뉴 및 네비게이션 구조를 설명하세요.)
+피그마로 구성한 초기 페이지
+![Image](https://github.com/user-attachments/assets/b0b78903-2fa3-4e04-9cb9-06bf319cc7bf)
+
+![Image](https://github.com/user-attachments/assets/36aa4a4c-73bd-4287-bcb5-003cdd409459)
+
+메인 페이지
+![Image](https://github.com/user-attachments/assets/6df20ec0-567f-4cf2-96df-0a55e8fb3214)
 
 ## 🖥 화면 구현
-(화면 UI/UX 관련 설명 및 스크린샷을 첨부하세요.)
+회원가입
+
+![회원가입](https://github.com/user-attachments/assets/fb9928c3-fe9f-4def-a564-9798a25fa60c)
+
+로그인
+
+![로그인](https://github.com/user-attachments/assets/f566844b-6160-4648-af02-d8102cc73f99)
+
+메인 페이지
+
+![메인페이지](https://github.com/user-attachments/assets/4d387308-e2c2-4042-be4e-81c1b3cbf7b8)
+
+검색 설정
+
+![검색설정](https://github.com/user-attachments/assets/d5c3f4b6-9921-4742-8b25-db5e080f3d18)
+
+게시글 작성
+
+![1게시글 작성](https://github.com/user-attachments/assets/a2c487cf-0c32-4cc3-9538-8eece6280f33)
+
+게시글 수정 및 삭제
+
+![2게시글 수정, 삭제](https://github.com/user-attachments/assets/17c0d0c8-a946-4a28-aa25-2bb3a104d188)
+
+댓글 작성 및 수정, 삭제
+
+![3댓글](https://github.com/user-attachments/assets/befd9e26-1002-4bd5-aeab-bc88656e4744)
+
+내가 쓴 글과 댓글
+
+![5내가쓴 글, 댓글](https://github.com/user-attachments/assets/f3745094-ea12-48c5-9e7a-c2d655ab257f)
+
+프로필 변경
+
+![6프로필변경](https://github.com/user-attachments/assets/5ab5d0b7-bfe0-44ff-86e4-d8fb8b783195)
+
+비밀번호 변경
+
+![7 비밀번호 변경](https://github.com/user-attachments/assets/b3980171-6de3-459f-be29-984434f47f99)
 
