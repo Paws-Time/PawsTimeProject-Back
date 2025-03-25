@@ -407,12 +407,14 @@ Kakao Map API Key 등 외부 API와 연동되는 비밀 키들
 
 ## 📄 API 명세서 및 ERD 설계도
 
-https://deciduous-anemone-77f.notion.site/API-paws-time-1c177449bfff807da5c7e740c595c530?pvs=4
+
 ![image](https://github.com/user-attachments/assets/45d412a2-2b4b-4629-8498-34eaa30e42ff)
 ![image](https://github.com/user-attachments/assets/20d60fff-1385-4a43-90fd-3c1ec7c634be)
 ![image](https://github.com/user-attachments/assets/0e630d2e-30e4-4355-8b4f-cedbafbd50ac)
 ![image](https://github.com/user-attachments/assets/2d83475e-b865-42af-83d4-84a8d00a23c5)
 ![image](https://github.com/user-attachments/assets/bcae7249-8482-45ff-ae5c-25520ed20edb)
+더 자세한 API 명세  예시는 **[Notion에서 확인](https://deciduous-anemone-77f.notion.site/API-paws-time-1c177449bfff807da5c7e740c595c530?pvs=4)**하세요.<br>
+Swagger 요청 및 응답 예시는 **[GitHub Wiki에서 확인](https://github.com/Paws-Time/PawsTimeProject-Back/wiki)**할 수 있습니다.
 
 ---
 ## ERD 설계도
