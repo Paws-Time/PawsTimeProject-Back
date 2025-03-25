@@ -193,7 +193,8 @@ Response는 DTO를 통해 가공 후 반환합니다.<br>
 
 
 ## ⚙ 배포
-![image](https://github.com/user-attachments/assets/2b609cd2-3d9f-4e92-aa1d-e96cc2f82b83)
+![image](https://github.com/user-attachments/assets/a8a4480b-8321-4649-bfab-cbdd733d391a)
+
 
 
 ### 배포 방식
@@ -405,6 +406,14 @@ Kakao Map API Key 등 외부 API와 연동되는 비밀 키들
 
 
 ## 📄 API 명세서 및 ERD 설계도
+
+https://deciduous-anemone-77f.notion.site/API-paws-time-1c177449bfff807da5c7e740c595c530?pvs=4
+![image](https://github.com/user-attachments/assets/45d412a2-2b4b-4629-8498-34eaa30e42ff)
+![image](https://github.com/user-attachments/assets/20d60fff-1385-4a43-90fd-3c1ec7c634be)
+![image](https://github.com/user-attachments/assets/0e630d2e-30e4-4355-8b4f-cedbafbd50ac)
+![image](https://github.com/user-attachments/assets/2d83475e-b865-42af-83d4-84a8d00a23c5)
+![image](https://github.com/user-attachments/assets/bcae7249-8482-45ff-ae5c-25520ed20edb)
+
 
 ### 유저 API
 
