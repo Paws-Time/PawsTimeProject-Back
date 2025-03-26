@@ -73,7 +73,7 @@ public class CommentController {
   }
 
   @Operation(summary = "현재 로그인한 사용자가 작성한 댓글 목록 조회")
-  @GetMapping("/me")
+  @GetMapping("/comments/me")
   public ResponseEntity<ApiResponse<List<GetCommentRespDto>>> getCommentListByUser(
       @RequestParam(defaultValue = "0") int pageNo,
       @RequestParam(defaultValue = "10") int pageSize,
