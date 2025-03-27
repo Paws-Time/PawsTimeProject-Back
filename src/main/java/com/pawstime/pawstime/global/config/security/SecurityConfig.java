@@ -89,7 +89,7 @@ public class SecurityConfig {
             .requestMatchers(HttpMethod.POST, "/posts/{postId}/comments").hasAnyRole("ADMIN", "USER")
             .requestMatchers(HttpMethod.GET, "/posts/{postId}/comments").permitAll()
 
-            .anyRequest().authenticated())  // 그 외 요청은 로그인된 사용자만 접근 가능
+            .anyRequest().permitAll())  // 그 외 요청은 로그인된 사용자만 접근 가능
             //.anyRequest().permitAll())   // 그 외 요청 모두 접근 가능 (로그인을 하지 않아도 모든 요청을 허용 => 보안을 위해 하지 않는 것이 좋다)
         .build();
   }
