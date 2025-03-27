@@ -12,6 +12,7 @@ import com.pawstime.pawstime.global.exception.UnauthorizedException;
 import com.pawstime.pawstime.global.jwt.util.JwtUtil;
 import com.pawstime.pawstime.global.security.user.CustomUserDetails;
 import com.pawstime.pawstime.web.api.user.dto.req.LoginUserReqDto;
+import com.pawstime.pawstime.web.api.user.dto.req.ResetPasswordReqDto;
 import com.pawstime.pawstime.web.api.user.dto.req.UpdateNickReqDto;
 import com.pawstime.pawstime.web.api.user.dto.req.UpdatePasswordReqDto;
 import com.pawstime.pawstime.web.api.user.dto.req.UserCreateReqDto;
@@ -188,6 +189,30 @@ public class UserFacade {
     }
 
     String newPassword = encoder.encode(updatePasswordReqDto.newPassword());
+    user.updatePassword(newPassword);
+
+    createUserService.updateUser(user);
+  }
+
+  public Long findUserByEmailAndNick(String email, String nick) {
+    User foundUserByEmail = readUserService.findUserByEmail(email);
+    User foundUserByNick = readUserService.findUserByNick(nick);
+
+    if (foundUserByEmail == null || foundUserByNick == null) {
+      throw new NotFoundException("입력한 이메일과 닉네임에 일치하는 계정이 존재하지 않습니다.");
+    }
+
+    if (!foundUserByEmail.getUserId().equals(foundUserByNick.getUserId())) {
+      throw new NotFoundException("입력한 이메일과 닉네임에 일치하는 계정이 존재하지 않습니다.");
+    }
+
+    return foundUserByEmail.getUserId();
+  }
+
+  public void resetPassword(Long userId, ResetPasswordReqDto resetPasswordReqDto) {
+    User user = readUserService.findUserByUserIdQuery(userId);
+
+    String newPassword = encoder.encode(resetPasswordReqDto.newPassword());
     user.updatePassword(newPassword);
 
     createUserService.updateUser(user);

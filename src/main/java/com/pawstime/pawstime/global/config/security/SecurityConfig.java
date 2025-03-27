@@ -51,7 +51,7 @@ public class SecurityConfig {
   // 모든 사용자에게 접근을 허용하는 경로
   private static final String[] PUBLIC_ALL = {
     "/users", "/users/login", "/users/{userId}", "/posts/{postId}/thumbnail",
-    "/posts/images/random", "/info/**"
+    "/posts/images/random", "/info/**", "users/password-reset", "users/{userId}/password-reset"
   };
 
   @Bean

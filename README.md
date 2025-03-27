@@ -193,7 +193,8 @@ Response는 DTO를 통해 가공 후 반환합니다.<br>
 
 
 ## ⚙ 배포
-![image](https://github.com/user-attachments/assets/2b609cd2-3d9f-4e92-aa1d-e96cc2f82b83)
+![image](https://github.com/user-attachments/assets/a8a4480b-8321-4649-bfab-cbdd733d391a)
+
 
 
 ### 배포 방식
@@ -406,455 +407,14 @@ Kakao Map API Key 등 외부 API와 연동되는 비밀 키들
 
 ## 📄 API 명세서 및 ERD 설계도
 
-### 유저 API
 
-| **기능**         | **회원 가입**                            |
-|------------------|-----------------------------------------|
-| **API 이름**     | `createUser`                            |
-| **API 주소**     | `/users`                                |
-| **CRUD**         | Create                                  |
-| **Method**       | POST                                    |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/802b8365-8d91-4c58-a6c3-09ad6276338e)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/1a9e4e86-ffc4-477d-8e8b-22a88896e7cb)
-
-
-| **기능**         | **로그인**                               |
-|------------------|-----------------------------------------|
-| **API 이름**     | `loginUser`                             |
-| **API 주소**     | `/users/login`                          |
-| **CRUD**         | Read                                    |
-| **Method**       | POST                                    |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/576ebb16-c8a7-4dee-9aaf-de09f0f62abf)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/aca5c5ad-feee-420f-8f33-42ef0b175570)
-
-
-| **기능**         | **로그아웃**                             |
-|------------------|-----------------------------------------|
-| **API 이름**     | `logoutUser`                            |
-| **API 주소**     | `/users/logout`                         |
-| **CRUD**         | Update                                  |
-| **Method**       | POST                                    |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/438186c3-c050-4ed2-966c-8ca4e0e12892)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/0bc3ff09-1733-476e-b28e-67d51d5e0bd3)
-
-
-| **기능**         | **userId를 통해 유저 정보 조회**          |
-|------------------|-----------------------------------------|
-| **API 이름**     | `getUserFromUserId`                     |
-| **API 주소**     | `/users/{userId}`                       |
-| **CRUD**         | Read                                    |
-| **Method**       | GET                                     |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/e1c4ec65-6454-4625-98b4-5be6e7ee376b)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/91f16ed6-34fd-4998-b462-f832ac70fafe)
-
-
-| **기능**         | **회원 탈퇴**                            |
-|------------------|-----------------------------------------|
-| **API 이름**     | `deleteUser`                            |
-| **API 주소**     | `/users/{userId}`                       |
-| **CRUD**         | Delete                                  |
-| **Method**       | DELETE                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/128d3d4a-e896-4959-82d3-1f60b0da6ec9)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/f10197b4-f392-4502-ab78-c595a160448b)
-
-
-| **기능**         | **현재 로그인한 사용자의 닉네임 변경**     |
-|------------------|-----------------------------------------|
-| **API 이름**     | `updateNick`                            |
-| **API 주소**     | `/users/me/nick`                        |
-| **CRUD**         | Update                                  |
-| **Method**       | PUT                                     |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/21f78f21-6b52-4c98-abf3-28a714fe9f05)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/6c26d940-41cb-4042-b2a9-e6ab271a701a)
-
-
-| **기능**         | **현재 로그인한 사용자의 비밀번호 변경**   |
-|------------------|-----------------------------------------|
-| **API 이름**     | `updatePassword`                        |
-| **API 주소**     | `/users/me/password`                    |
-| **CRUD**         | Update                                  |
-| **Method**       | PUT                                     |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/deadb752-6d7a-48cc-b27f-494f4f0ef4d2)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/c48ec096-0e85-40ef-9e19-1eee87c94b29)
-
-
----
-
-### 게시판 API
-
-| **기능**         | **게시판 생성**                       |
-|------------------|--------------------------------------|
-| **API 이름**     | `createBoard`                        |
-| **API 주소**     | `/boards`                            |
-| **CRUD**         | Create                               |
-| **Method**       | POST                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/3c913efa-2fec-4eac-89bc-737875fde1d1)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/d5f88437-8a25-4ee3-bd63-251ddf078895)
-
-  
-| **기능**         | **게시판 상세 조회**                  |
-|------------------|--------------------------------------|
-| **API 이름**     | `getBoard`                           |
-| **API 주소**     | `/boards/{boardId}`                  |
-| **CRUD**         | Read                                 |
-| **Method**       | GET                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/64a43f48-ae2d-4b7c-a112-f4f1de497927)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/2a283ede-bb15-4714-a320-dba982d9c0cc)
-
-
-| **기능**         | **게시판 목록 조회**                  |
-|------------------|--------------------------------------|
-| **API 이름**     | `getBoardList`                       |
-| **API 주소**     | `/boards`                            |
-| **CRUD**         | Read                                 |
-| **Method**       | GET                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/ddc0519e-b09d-4122-b080-8d081a47bd31)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/9940a36c-5c09-4d22-b232-4736a9ae0307)
-
-
-| **기능**         | **게시판 삭제**                       |
-|------------------|--------------------------------------|
-| **API 이름**     | `deleteBoard`                        |
-| **API 주소**     | `/boards/{boardId}`                  |
-| **CRUD**         | Delete                               |
-| **Method**       | DELETE                               |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/0afa1e8e-a8a8-42ef-9ba6-52443732560a)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/14a98964-9972-48ae-8459-dd4be9f3eadd)
-
-
-| **기능**         | **게시판 수정**                       |
-|------------------|--------------------------------------|
-| **API 이름**     | `updateBoard`                        |
-| **API 주소**     | `/boards/{boardId}`                  |
-| **CRUD**         | Update                               |
-| **Method**       | PUT                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/a689701f-07b3-47b9-938b-6b63009c79b9)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/9950fc02-6e29-4855-b652-fb98ccbf3dd0)
-
-
----
-
-### 게시글 API
-
-| **기능**            | **게시글 생성**                       |
-|---------------------|---------------------------------------|
-| **API 이름**        | createPost                           |
-| **API 주소**        | `/posts`                             |
-| **CRUD**            | Create                                |
-| **Method**          | POST                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/70133245-8ab7-4e08-8688-a1d082f330dd)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/e4b7032d-e321-4daa-bcc2-4b85762efcf4)
-
-
-| **기능**            | **게시글 이미지 업로드**             |
-|---------------------|--------------------------------------|
-| **API 이름**        | uploadImages                         |
-| **API 주소**        | `/posts/{postId}`                    |
-| **CRUD**            | Create                                |
-| **Method**          | POST (파일 업로드)                   |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/e449f1cd-b6d9-437b-a216-d8cdac6d15bb)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/408e47ef-917b-4157-8569-c6e0e09d41bc)
-
-
-| **기능**            | **게시글 수정**                      |
-|---------------------|--------------------------------------|
-| **API 이름**        | updatePost                           |
-| **API 주소**        | `/posts/{postId}`                    |
-| **CRUD**            | Update                               |
-| **Method**          | PUT                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/5823c1c1-0f05-4dd9-9c48-83e22d84899b)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/98d0dc5f-e907-42f5-98bf-9751abfedbcb)
-
-
-| **기능**              | **게시글 이미지 수정**                         |
-|-----------------------|------------------------------------------------|
-| **API 이름**          | updatePostImages                              |
-| **API 주소**          | `/posts/{postId}/images`                       |
-| **CRUD**              | Update                                        |
-| **Method**            | PUT                                           |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/afe19d9e-ab78-465b-91a8-9e978d706d9f)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/b5c2fb48-9e97-4b59-9e39-2f325a834612)
-
-
-| **기능**            | **게시글 삭제**                      |
-|---------------------|--------------------------------------|
-| **API 이름**        | deletePost                           |
-| **API 주소**        | `/posts/{postId}`                    |
-| **CRUD**            | Delete                               |
-| **Method**          | DELETE                               |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/f2d02fda-7545-45ca-963c-e4425f8c609a)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/e5ecce7e-6c5a-4016-9b17-dc0b34ade290)
-
-
-| **기능**              | **게시글 상세 조회**                           |
-|-----------------------|------------------------------------------------|
-| **API 이름**          | getDetailPost                                  |
-| **API 주소**          | `/posts/{postId}`                              |
-| **CRUD**              | Read                                          |
-| **Method**            | GET                                           |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/88436c01-2414-4396-aa8e-c632aeee3b9a)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/8ea0a6b0-821f-4462-86ef-d6d2c0ff47e0)
-
-
-| **기능**              | **게시글 목록 조회**                           |
-|-----------------------|------------------------------------------------|
-| **API 이름**          | getPosts                                      |
-| **API 주소**          | `/posts`                                      |
-| **CRUD**              | Read                                          |
-| **Method**            | GET                                           |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/1bcd8ee2-38ab-4a37-ad1d-ca5f4fd330bd)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/8776009e-51dc-414b-bb62-c1bca0c0b347)
-
-
-| **기능**              | **현재 로그인한 사용자가 작성한 게시글 목록 조회** |
-|-----------------------|---------------------------------------------------|
-| **API 이름**          | getPostListByUser                               |
-| **API 주소**          | `/posts/me`                                     |
-| **CRUD**              | Read                                           |
-| **Method**            | GET                                            |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/bca1dc2c-6d06-44da-8fd9-0850e2b39074)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/05727b68-7bf6-4308-8dfe-c347aee3974f)
-
-
-| **기능**              | **게시글별 대표 이미지 조회**                   |
-|-----------------------|------------------------------------------------|
-| **API 이름**          | getThumbnail                                   |
-| **API 주소**          | `/posts/{postId}/thumbnail`                    |
-| **CRUD**              | Read                                          |
-| **Method**            | GET                                           |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/b2829ab3-c9a2-435d-a6fd-b4339da890bf)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/62db5292-8e8f-437b-9bc4-e1f414f607c5)
-
-
-| **기능**              | **게시글별 이미지 전체 조회**                   |
-|-----------------------|------------------------------------------------|
-| **API 이름**          | getImages                                      |
-| **API 주소**          | `/posts/{postId}/images`                       |
-| **CRUD**              | Read                                          |
-| **Method**            | GET                                           |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/ad3479df-c9e1-445a-98b4-9f39a0e517fd)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/8b209246-67d2-4004-be45-f46a14f6eba5)
-
-
-| **기능**              | **메인페이지에서 사용할 랜덤 이미지 조회**      |
-|-----------------------|------------------------------------------------|
-| **API 이름**          | getRandomImages                                |
-| **API 주소**          | `/posts/images/random`                         |
-| **CRUD**              | Read                                          |
-| **Method**            | GET                                           |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/f721b0a4-47ea-445f-b0b7-1c9879c82a1f)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/c3050e27-f4ad-468a-8b42-e6d35e541026)
-
-
----
-
-### 댓글 API
-
-| **기능**            | **댓글 생성**                        |
-|---------------------|--------------------------------------|
-| **API 이름**        | createComment                        |
-| **API 주소**        | `/posts/{postId}/comments`           |
-| **CRUD**            | Create                               |
-| **Method**          | POST                                 |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/0e4440df-5bd0-4104-ba79-62e9a085621c)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/bc63d45b-3652-44fc-b48d-2ff739981edc)
-
-
-| **기능**            | **댓글 전체 목록 조회**              |
-|---------------------|--------------------------------------|
-| **API 이름**        | getCommentAll                        |
-| **API 주소**        | `/comments`                          |
-| **CRUD**            | Read                                 |
-| **Method**          | GET                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/8d83a740-7775-494b-99a9-329b4f311fd8)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/3c86f8d9-65cd-4cc7-80da-811789b9d116)
-
-
-| **기능**            | **특정 게시글 댓글 조회**            |
-|---------------------|--------------------------------------|
-| **API 이름**        | getCommentByPost                     |
-| **API 주소**        | `/posts/{postId}/comments`           |
-| **CRUD**            | Read                                 |
-| **Method**          | GET                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/7adf8bc0-27db-4360-9265-b34a67191be8)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/caa4cb16-a803-427b-ae89-f91da356a7f2)
-
-
-| **기능**            | **댓글 삭제**                        |
-|---------------------|--------------------------------------|
-| **API 이름**        | deleteComment                        |
-| **API 주소**        | `/posts/{postId}/comments/{commentId}`|
-| **CRUD**            | Delete                               |
-| **Method**          | DELETE                               |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/c4cf52fc-7ce7-4d5b-bec0-5c6c796c1a88)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/9d4a06ff-8298-4348-be61-a4b01db67b40)
-
-
-| **기능**            | **댓글 수정**                        |
-|---------------------|--------------------------------------|
-| **API 이름**        | updateComment                        |
-| **API 주소**        | `/posts/{postId}/comments/{commentId}`|
-| **CRUD**            | Update                               |
-| **Method**          | PUT                                  |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/4f01bd19-7dbd-40a3-a0c1-eecf1d2a1311)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/4ef8b2cd-02de-4dad-9bb4-100ab01bea10)
-
-
-| **기능**            | **현재 로그인한 사용자가 작성한 댓글 목록 조회**|
-|---------------------|--------------------------------------|
-| **API 이름**        | getCommentListByUser        |
-| **API 주소**        | `/comments/me`    |
-| **CRUD**            | Read    |
-| **Method**          | GET                                |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/0ab75e92-6fa0-4ba4-832e-f2c382108622)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/f7908b08-d711-4fed-8a80-90755c2b518e)
-
-
----
-
-### 좋아요 API
-
-| **기능**      | **좋아요 토글**                           |
-|---------------|------------------------------------------|
-| **API 이름**  | `toggleLike`                             |
-| **API 주소**  | `/likes/{postId}`                        |
-| **CRUD**      | Update                                   |
-| **Method**    | PUT                                      |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/14028bd6-3384-4f79-ade5-f0ca3f69030c)
-* 응답 예시
-  (한 번 클릭시 좋아요 증가 (데이터:1)
-  ![image](https://github.com/user-attachments/assets/6aa85cd2-c45a-4092-b20e-049fb39570b9)
-  (한 번 더 클릭시 좋아요 감소 (데이터:0)
-  ![image](https://github.com/user-attachments/assets/717501c2-f1f9-4b7d-ac9f-dcafe223a7d4)
-
-
-
----
-
-### 프로필 이미지 API
-
-| **기능**          | **프로필 이미지 변경**                     |
-|-------------------|-------------------------------------------|
-| **API 이름**      | `updateProfileImg`                        |
-| **API 주소**      | `/profileImg/{userId}`                    |
-| **CRUD**          | Update                                    |
-| **Method**        | PUT                                       |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/f5189496-7c5a-4e37-8d7f-7856165aff6d)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/26a49d74-68ab-4350-a591-f8866e5b62fd)
-
-
-| **기능**          | **프로필 이미지 삭제**                     |
-|-------------------|-------------------------------------------|
-| **API 이름**      | `deleteProfileImg`                        |
-| **API 주소**      | `/profileImg/{userId}`                    |
-| **CRUD**          | Delete                                    |
-| **Method**        | DELETE                                    |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/806d44b8-8fef-4305-9814-8327dc2a3f62)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/e22f9458-5854-44b8-bcb5-7059e991ca70)
-
-
-| **기능**          | **프로필 이미지 조회**                     |
-|-------------------|-------------------------------------------|
-| **API 이름**      | `getProfileImg`                           |
-| **API 주소**      | `/profileImg/{userId}`                    |
-| **CRUD**          | Read                                      |
-| **Method**        | GET                                       |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/00420595-e39b-41e9-bc30-1bd95b257fec)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/d52e55cf-a842-4de4-a92a-fbe16ba4c7ed)
-
-
----
-
-### 정보게시판 API
-
-| **기능**         | **지역별 동물 병원 정보 목록 조회**         |
-|------------------|-----------------------------------------|
-| **API 이름**     | `getHospitalInfo`                       |
-| **API 주소**     | `/info/hospitals/{addNum}`              |
-| **CRUD**         | Read                                    |
-| **Method**       | GET                                     |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/74c3ad4a-a418-47f5-a761-d9cf90ff6a8e)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/aa92603d-658f-4ab9-b791-5a281abaf6ad)
-
-
-| **기능**         | **지역별 동물 보호소 정보 목록 조회**      |
-|------------------|-----------------------------------------|
-| **API 이름**     | `getShelterInfo`                        |
-| **API 주소**     | `/info/shelters/{addNum}`               |
-| **CRUD**         | Read                                    |
-| **Method**       | GET                                     |
-* 요청 예시
-  ![image](https://github.com/user-attachments/assets/3c99d2be-3902-4e22-839b-3d8f2e402f2c)
-* 응답 예시
-  ![image](https://github.com/user-attachments/assets/fc014b99-cf1f-4996-9272-9111cbfd271b)
-
+![image](https://github.com/user-attachments/assets/45d412a2-2b4b-4629-8498-34eaa30e42ff)
+![image](https://github.com/user-attachments/assets/20d60fff-1385-4a43-90fd-3c1ec7c634be)
+![image](https://github.com/user-attachments/assets/0e630d2e-30e4-4355-8b4f-cedbafbd50ac)
+![image](https://github.com/user-attachments/assets/2d83475e-b865-42af-83d4-84a8d00a23c5)
+![image](https://github.com/user-attachments/assets/bcae7249-8482-45ff-ae5c-25520ed20edb)
+더 자세한 API 명세  예시는 **[Notion에서 확인](https://deciduous-anemone-77f.notion.site/API-paws-time-1c177449bfff807da5c7e740c595c530?pvs=4)**하세요.<br>
+Swagger 요청 및 응답 예시는 **[GitHub Wiki에서 확인](https://github.com/Paws-Time/PawsTimeProject-Back/wiki)**할 수 있습니다.
 
 ---
 ## ERD 설계도
@@ -1069,8 +629,52 @@ Kakao Map API Key 등 외부 API와 연동되는 비밀 키들
 
 
 ## 📋 메뉴 구조도
-(서비스의 메뉴 및 네비게이션 구조를 설명하세요.)
+피그마로 구성한 초기 페이지
+![Image](https://github.com/user-attachments/assets/b0b78903-2fa3-4e04-9cb9-06bf319cc7bf)
+
+![Image](https://github.com/user-attachments/assets/36aa4a4c-73bd-4287-bcb5-003cdd409459)
+
+메인 페이지
+![Image](https://github.com/user-attachments/assets/6df20ec0-567f-4cf2-96df-0a55e8fb3214)
 
 ## 🖥 화면 구현
-(화면 UI/UX 관련 설명 및 스크린샷을 첨부하세요.)
+회원가입
+
+![회원가입](https://github.com/user-attachments/assets/fb9928c3-fe9f-4def-a564-9798a25fa60c)
+
+로그인
+
+![로그인](https://github.com/user-attachments/assets/f566844b-6160-4648-af02-d8102cc73f99)
+
+메인 페이지
+
+![메인페이지](https://github.com/user-attachments/assets/4d387308-e2c2-4042-be4e-81c1b3cbf7b8)
+
+검색 설정
+
+![검색설정](https://github.com/user-attachments/assets/d5c3f4b6-9921-4742-8b25-db5e080f3d18)
+
+게시글 작성
+
+![1게시글 작성](https://github.com/user-attachments/assets/a2c487cf-0c32-4cc3-9538-8eece6280f33)
+
+게시글 수정 및 삭제
+
+![2게시글 수정, 삭제](https://github.com/user-attachments/assets/17c0d0c8-a946-4a28-aa25-2bb3a104d188)
+
+댓글 작성 및 수정, 삭제
+
+![3댓글](https://github.com/user-attachments/assets/befd9e26-1002-4bd5-aeab-bc88656e4744)
+
+내가 쓴 글과 댓글
+
+![5내가쓴 글, 댓글](https://github.com/user-attachments/assets/f3745094-ea12-48c5-9e7a-c2d655ab257f)
+
+프로필 변경
+
+![6프로필변경](https://github.com/user-attachments/assets/5ab5d0b7-bfe0-44ff-86e4-d8fb8b783195)
+
+비밀번호 변경
+
+![7 비밀번호 변경](https://github.com/user-attachments/assets/b3980171-6de3-459f-be29-984434f47f99)
 
