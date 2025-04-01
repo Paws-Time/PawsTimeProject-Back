@@ -42,6 +42,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
         System.out.println("*****"+userId);
 
+
+
         // UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
         UserDetails userDetails = customUserDetailsService.loadUserByUserId(userId);
 
