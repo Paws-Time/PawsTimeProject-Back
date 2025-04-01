@@ -1,14 +1,14 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://my_mysql:3306/pawsTime?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://43.200.46.13:3306/pawsTime?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: 1234
   application:
     name: basic
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     database: mysql
     show-sql: true
     properties:
