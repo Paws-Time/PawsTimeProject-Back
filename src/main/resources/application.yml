@@ -10,3 +10,4 @@ spring:
 
 springdoc:
   override-with-generic-response: false   # Swagger와 관련된 설정
+# e
