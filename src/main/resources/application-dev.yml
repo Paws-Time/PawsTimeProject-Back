@@ -1,11 +1,10 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://43.200.46.13:3306/pawsTime?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
-#   url: jdbc:mysql://localhost:3306/pawstime
+#    url: jdbc:mysql://43.200.46.13:3306/pawsTime?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://10.0.5.137:3306/pawsTime?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
     username: appuser
     password: your_password_here
-#    url: jdbc:mysql://10.0.5.137:3306/pawsTime?serverTimezone=Asia/Seoul&useSSL=false&allowPublicKeyRetrieval=true
 #    username: root
 #    password: 1234
   application:
